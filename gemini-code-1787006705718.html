@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programa para la Predicación</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .contenedor-controles {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel-control {
+            background-color: #e2e8f0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .selector-semana {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .selector-semana label {
+            min-height: 48px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background-color: #334155;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            font-size: 1.05em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.16);
+        }
+
+        #fecha-lunes {
+            min-height: 48px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 2px solid #94a3b8;
+            background-color: white;
+            color: #1e293b;
+            font: inherit;
+            font-size: 1.05em;
+            cursor: pointer;
+        }
+
+        .selector-semana label:focus-within,
+        #fecha-lunes:focus-visible {
+            outline: 3px solid #93c5fd;
+            outline-offset: 2px;
+        }
+
+        .panel-admin {
+            background-color: #cbd5e1;
+            padding: 15px;
+            border-radius: 8px;
+            display: none; 
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 2px dashed #64748b;
+        }
+
+        .panel-admin h3 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 1.1em;
+            border-bottom: 1px solid #94a3b8;
+            padding-bottom: 5px;
+        }
+
+        .panel-admin label {
+            font-weight: bold;
+            font-size: 0.85em;
+            color: #334155;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .panel-admin textarea {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .btn-accion {
+            padding: 8px 15px;
+            font-size: 0.95em;
+            color: white;
+            background-color: #10b981;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-accion:hover { background-color: #059669; }
+
+        .btn-imprimir {
+            padding: 8px 15px;
+            font-size: 1em;
+            color: white;
+            background-color: #4a90e2;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+        }
+        .btn-imprimir:hover { background-color: #357abd; }
+        
+        .btn-compartir {
+            padding: 8px 15px;
+            font-size: 1em;
+            color: white;
+            background-color: #25d366; /* Verde tipo WhatsApp */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+        }
+        .btn-compartir:hover { background-color: #128c7e; }
+
+        .btn-config {
+            background: none;
+            border: none;
+            font-size: 1.3em;
+            cursor: pointer;
+            padding: 5px;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        .btn-config:hover { opacity: 1; }
+
+        .asamblea-activa {
+            background-color: #fef08a !important; 
+            color: #854d0e;
+            font-weight: bold;
+            font-size: 1.05em;
+            letter-spacing: 1px;
+        }
+
+        #documento-imagen {
+            background-color: white;
+            padding: 20px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 6px;
+        }
+
+        h1 { text-align: center; margin-top: 5px; margin-bottom: 5px; color: #000; font-size: 1.6em; }
+        .subtitulo { text-align: center; font-size: 1.2em; color: #333; margin-bottom: 5px; }
+        .rango-fechas { text-align: center; font-size: 1.05em; color: #555; margin-bottom: 15px; font-style: italic; }
+
+        .mes-select {
+            font-size: 1.8em; 
+            font-weight: bold;
+            color: #6a2c70;
+            border: none;
+            border-left: 4px solid #4a90e2;
+            padding: 4px 8px; 
+            line-height: normal; 
+            margin-bottom: 10px;
+            outline: none;
+            width: auto;
+            background-color: transparent;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            display: inline-block;
+        }
+        .mes-select:hover { border-bottom: 1px dashed #ccc; }
+
+        .campana-input {
+            font-size: 1em;
+            color: #8b3a62;
+            font-style: italic;
+            font-weight: bold;
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-bottom: 15px;
+            padding-bottom: 2px;
+            font-family: inherit;
+        }
+        .campana-input:hover { border-bottom: 1px dashed #ccc; }
+        .campana-input::placeholder { color: #cbd5e1; font-weight: normal; }
+
+        .tabla-contenedor {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 15px;
+        }
+
+        table { width: 100%; min-width: 550px; border-collapse: collapse; text-align: center; }
+        th, td { border: 1px solid #b3cde0; padding: 8px 6px; font-size: 0.95em; vertical-align: middle; }
+        th { background-color: #a1c4fd; color: #000; font-weight: bold; }
+        tbody tr:nth-child(even):not(.fila-extra) { background-color: #f1f6fe; }
+        .fila-extra { background-color: #f8fafc; }
+        td.celda-dia { font-weight: bold; }
+
+        input[type="text"].in-fecha, select.tabla-select {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid transparent;
+            background-color: transparent;
+            font-family: inherit;
+            font-size: 0.95em;
+            text-align: center;
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        input[type="text"].in-fecha:hover, select.tabla-select:hover { border-bottom: 1px dashed #ccc; }
+
+        [hidden] { display: none !important; }
+
+        .valor-exportacion {
+            white-space: pre-wrap;
+        }
+
+        .tabla-valor-exportacion {
+            display: block;
+            width: 100%;
+            text-align: center;
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 560px) {
+            body {
+                padding: 0;
+                background-color: white;
+            }
+
+            .contenedor-controles {
+                padding: 12px;
+                margin-bottom: 0;
+                background-color: #f4f4f9;
+            }
+
+            .panel-control { align-items: stretch; }
+            .selector-semana { width: 100%; }
+            .selector-semana label,
+            #fecha-lunes { width: 100%; justify-content: center; }
+
+            .panel-control > div:last-child {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .btn-compartir {
+                flex: 1;
+                min-height: 46px;
+            }
+
+            #documento-imagen {
+                max-width: none;
+                padding: 22px 14px 28px;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            h1 { font-size: 1.45em; }
+            .subtitulo { font-size: 1.05em; }
+            .rango-fechas { font-size: 0.95em; margin-bottom: 12px; }
+            .mes-select { max-width: 100%; font-size: 1.5em; }
+
+            .tabla-contenedor {
+                overflow: visible;
+                margin-top: 4px;
+            }
+
+            table,
+            tbody {
+                display: block;
+                width: 100%;
+                min-width: 0;
+            }
+
+            thead { display: none; }
+
+            tbody {
+                display: grid;
+                gap: 12px;
+            }
+
+            tbody tr {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                overflow: hidden;
+                border: 1px solid #b3cde0;
+                border-radius: 12px;
+                background: #f8fbff;
+                box-shadow: 0 3px 10px rgba(51, 65, 85, 0.08);
+            }
+
+            tbody tr.fila-extra {
+                position: relative;
+                grid-template-columns: 1fr;
+                margin-top: -13px;
+                padding-top: 30px;
+                border-top: 3px solid #78a7d4;
+                border-radius: 0 0 12px 12px;
+                background: #eef6ff;
+            }
+
+            tbody tr.fila-extra::before {
+                content: "Segunda salida";
+                position: absolute;
+                top: 8px;
+                left: 12px;
+                color: #315b7d;
+                font-size: 0.72em;
+                font-weight: 800;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            tbody td {
+                display: grid;
+                grid-template-columns: minmax(92px, 0.42fr) minmax(0, 1fr);
+                align-items: center;
+                gap: 8px;
+                min-width: 0;
+                padding: 9px 11px;
+                border: 0;
+                border-top: 1px solid #d8e6f2;
+                text-align: left;
+            }
+
+            tbody td::before {
+                content: attr(data-label);
+                color: #52697d;
+                font-size: 0.75em;
+                font-weight: 800;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+
+            tbody td.celda-dia,
+            tbody td.celda-fecha {
+                display: flex;
+                justify-content: center;
+                gap: 5px;
+                padding: 11px 8px;
+                border-top: 0;
+                background: #a1c4fd;
+                color: #1f3347;
+                text-align: center;
+            }
+
+            tbody td.celda-dia::before,
+            tbody td.celda-fecha::before {
+                color: #315b7d;
+            }
+
+            tbody td.celda-asamblea {
+                grid-column: 1 / -1;
+                display: block;
+                padding: 18px 12px;
+                border-top: 1px solid #e7cf4f;
+                text-align: center;
+            }
+
+            tbody td.celda-asamblea::before { content: none; }
+
+            select.tabla-select,
+            input[type="text"].in-fecha {
+                min-width: 0;
+                min-height: 38px;
+                padding: 7px 9px;
+                border: 1px solid #c8d8e6;
+                border-radius: 7px;
+                background-color: white;
+                text-align: left;
+            }
+
+            input[type="text"].in-fecha {
+                width: 40px !important;
+                min-height: 0;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                text-align: center;
+            }
+        }
+
+        .modo-exportacion {
+            width: 800px !important;
+            max-width: none !important;
+            padding: 40px !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .modo-exportacion .tabla-contenedor {
+            overflow: visible !important;
+        }
+
+        .modo-exportacion table {
+            display: table !important;
+            width: 100% !important;
+            min-width: 0 !important;
+        }
+
+        .modo-exportacion thead { display: table-header-group !important; }
+        .modo-exportacion tbody { display: table-row-group !important; }
+
+        .modo-exportacion tbody tr {
+            display: table-row !important;
+            border: 0 !important;
+            background: transparent;
+            box-shadow: none !important;
+        }
+
+        .modo-exportacion tbody tr:nth-child(even):not(.fila-extra) { background-color: #f1f6fe; }
+        .modo-exportacion tbody tr.fila-extra { background-color: #f8fafc; }
+        .modo-exportacion tbody tr.fila-extra::before { content: none !important; }
+
+        .modo-exportacion th,
+        .modo-exportacion td {
+            display: table-cell !important;
+            padding: 10px !important;
+            border: 1px solid #b3cde0 !important;
+            font-size: 1em !important;
+            text-align: center !important;
+        }
+
+        .modo-exportacion td::before { content: none !important; }
+        .modo-exportacion [hidden] { display: none !important; }
+
+        @media (min-width: 768px) {
+            body { padding: 20px; }
+            #documento-imagen { padding: 40px; }
+            h1 { font-size: 2em; }
+            .subtitulo { font-size: 1.5em; }
+            .rango-fechas { font-size: 1.3em; }
+            th, td { padding: 10px; font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-controles" data-html2canvas-ignore>
+        <div class="panel-control">
+            <div class="selector-semana">
+                <label for="fecha-lunes">Lunes de esta semana:</label>
+                <input type="date" id="fecha-lunes">
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <!-- Indicador sutil de guardado -->
+                <span id="indicador-guardado" style="color: #64748b; font-size: 0.8em; font-style: italic; opacity: 0; transition: opacity 0.5s;">Guardado</span>
+                
+                <!-- Nuevos botones -->
+                <button class="btn-compartir" id="btn-compartir" onclick="compartirImagen()" title="Enviar por WhatsApp u otras apps">📲 Compartir</button>
+                <button class="btn-imprimir" id="btn-descargar" onclick="exportarJPG()" title="Descargar imagen en el dispositivo">⬇️</button>
+                <button class="btn-config" onclick="solicitarAccesoAdmin()" title="Ajustes de Administrador">⚙️</button>
+            </div>
+        </div>
+
+        <!-- PANEL DE ADMINISTRACIÓN EN LA NUBE -->
+        <div class="panel-admin" id="panel-admin">
+            <h3>☁️ Panel de Control Global</h3>
+            <div>
+                <label>Conductores (separados por coma):</label>
+                <textarea id="admin-conductores" rows="2"></textarea>
+            </div>
+            <div>
+                <label>Lugares de Encuentro (separados por coma):</label>
+                <textarea id="admin-lugares" rows="2"></textarea>
+            </div>
+            <div>
+                <label>Horarios (separados por coma):</label>
+                <textarea id="admin-horarios" rows="2"></textarea>
+            </div>
+            
+            <div style="border-top: 1px solid #94a3b8; padding-top: 8px;">
+                <label style="color:#047857;">👥 Visita del Sup. de Servicio a Grupos (Días con 2 salidas):</label>
+                <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap: wrap;">
+                    <input type="date" id="in-grupo-fecha" style="padding:6px; border-radius:4px; border:1px solid #ccc; flex:1; min-width: 120px;">
+                    <select id="in-grupo-num" style="padding:6px; border-radius:4px; border:1px solid #ccc; flex:1;">
+                        <option value="1">Grupo 1</option>
+                        <option value="2">Grupo 2</option>
+                        <option value="3">Grupo 3</option>
+                    </select>
+                    <button class="btn-accion" style="background-color: #059669;" onclick="agregarVisitaGrupoAdmin()">Añadir</button>
+                </div>
+                <div id="lista-grupos-ui" style="max-height: 90px; overflow-y: auto; background: white; padding: 5px; border-radius: 4px;"></div>
+            </div>
+
+            <div style="border-top: 1px solid #94a3b8; padding-top: 8px;">
+                <label style="color:#6a2c70;">📅 Fechas de Asambleas:</label>
+                <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap: wrap;">
+                    <input type="date" id="in-asamblea-fecha" style="padding:6px; border-radius:4px; border:1px solid #ccc; flex:1; min-width: 120px;">
+                    <input type="text" id="in-asamblea-nombre" placeholder="Ej. Asamblea Regional" style="padding:6px; border-radius:4px; border:1px solid #ccc; flex:2; min-width: 140px;">
+                    <button class="btn-accion" onclick="agregarAsambleaAdmin()">Añadir</button>
+                </div>
+                <div id="lista-asambleas-ui" style="max-height: 90px; overflow-y: auto; background: white; padding: 5px; border-radius: 4px;"></div>
+            </div>
+
+            <div style="border-top: 1px solid #94a3b8; padding-top: 8px;">
+                <label style="color:#1e3a8a;">👔 Lunes de Visita del Viajante:</label>
+                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                    <input type="date" id="in-visita-fecha" style="padding:6px; border-radius:4px; border:1px solid #ccc; flex:1;">
+                    <button class="btn-accion" onclick="agregarVisitaAdmin()">Añadir</button>
+                </div>
+                <div id="lista-visitas-ui" style="max-height: 90px; overflow-y: auto; background: white; padding: 5px; border-radius: 4px;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; flex-wrap: wrap; gap: 8px;">
+                <button class="btn-accion" style="background-color: #2563eb;" onclick="guardarEnLaNube()">💾 Guardar en la Nube Global</button>
+                <span id="estado-nube" style="font-size: 0.9em; font-style: italic; color: #334155;"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documento a exportar -->
+    <div id="documento-imagen">
+        <h1>Programa para la Predicación</h1>
+        <div class="subtitulo">Congregación Ojo de Agua</div>
+        <div class="rango-fechas" id="texto-rango">Selecciona una fecha para generar el rango</div>
+
+        <select class="mes-select" id="selector-mes" onchange="guardarBorradorLocal()">
+            <!-- Se llena por JavaScript -->
+        </select>
+        <input type="text" class="campana-input" id="input-campana" value="" placeholder="Escribe aquí el título del evento o notas (opcional)">
+
+        <div class="tabla-contenedor">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Día</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Lugar de encuentro</th>
+                        <th>📍</th>
+                        <th>Conductor</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-body">
+                    <!-- Se llena por JavaScript con filas dobles -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // 🔑 TUS CREDENCIALES CONFIGURADAS
+        // =========================================================================
+        const PASSWORD_SECRETA = "1234"; 
+        const BIN_ID = "6a774d7af5f4af5e29fbc635";
+        const MASTER_KEY = "$2a$10$7LrQ800nwrfdapwko0WbP.4jtdfH0GatKcaGLl2xfa.d0td6Xdnve";
+        // =========================================================================
+
+        // Reemplazamos los guiones por strings vacíos "" para que queden en blanco
+        let horarios = ["", "8:20 a.m.", "8:50 a.m.", "4:20 p.m."];
+        let conductores = [""];
+        let lugares = [""];
+        let asambleas = [];
+        let visitas = [];
+        let visitasGrupos = []; 
+
+        const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        const territorios = [""].concat(Array.from({length: 18}, (_, i) => (i + 1).toString()));
+        const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+
+        // ==================== AUTO-GUARDADO LOCAL ====================
+        function guardarBorradorLocal() {
+            const fechaLunes = document.getElementById('fecha-lunes').value;
+            if(!fechaLunes) return;
+
+            const selects = document.querySelectorAll('.tabla-select');
+            let valores = {};
+            selects.forEach(s => { if(s.id) valores[s.id] = s.value; });
+
+            const borrador = {
+                fechaLunes: fechaLunes,
+                mes: document.getElementById('selector-mes').value,
+                notas: document.getElementById('input-campana').value,
+                valores: valores
+            };
+            localStorage.setItem('borrador_predicacion', JSON.stringify(borrador));
+
+            // Indicador sutil
+            const indicador = document.getElementById('indicador-guardado');
+            if(indicador) {
+                indicador.style.opacity = '1';
+                clearTimeout(window.timeoutGuardado);
+                window.timeoutGuardado = setTimeout(() => { indicador.style.opacity = '0'; }, 1500);
+            }
+        }
+
+        function cargarBorradorLocal(fechaLunesActual) {
+            const guardado = localStorage.getItem('borrador_predicacion');
+            if(guardado) {
+                try {
+                    const borrador = JSON.parse(guardado);
+                    if(borrador.fechaLunes === fechaLunesActual) {
+                        document.getElementById('selector-mes').value = borrador.mes;
+                        document.getElementById('input-campana').value = borrador.notas;
+                        for(const [id, val] of Object.entries(borrador.valores)) {
+                            const el = document.getElementById(id);
+                            if(el) el.value = val;
+                        }
+                    }
+                } catch(e){}
+            }
+        }
+        // =============================================================
+
+        async function cargarDatosDesdeLaNube() {
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': MASTER_KEY }
+                });
+                const resultado = await response.json();
+                const datos = resultado.record;
+
+                horarios = datos.horarios || horarios;
+                conductores = datos.conductores || conductores;
+                lugares = datos.lugares || lugares;
+                asambleas = datos.asambleas || [];
+                visitas = datos.visitas || [];
+                visitasGrupos = datos.visitasGrupos || [];
+
+                actualizarListasDesplegables();
+            } catch (error) {
+                console.error("Error al cargar de la nube:", error);
+            }
+        }
+
+        function solicitarAccesoAdmin() {
+            let password = prompt("Introduce tu contraseña de administrador:");
+            if (password === PASSWORD_SECRETA) {
+                const panel = document.getElementById('panel-admin');
+                panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
+                cargarDatosEnPanel();
+            } else if (password !== null) {
+                alert("Contraseña incorrecta.");
+            }
+        }
+
+        function cargarDatosEnPanel() {
+            document.getElementById('admin-horarios').value = horarios.join(", ");
+            document.getElementById('admin-conductores').value = conductores.join(", ");
+            document.getElementById('admin-lugares').value = lugares.join(", ");
+            renderizarAsambleasAdmin();
+            renderizarVisitasAdmin();
+            renderizarVisitasGruposAdmin();
+        }
+
+        function renderizarAsambleasAdmin() {
+            const contenedor = document.getElementById('lista-asambleas-ui');
+            contenedor.innerHTML = '';
+            asambleas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            asambleas.forEach((asam, index) => {
+                const p = asam.fecha.split('-');
+                contenedor.innerHTML += `<div style="display:flex; justify-content:space-between; padding:4px 8px; border-bottom:1px solid #eee;"><span style="font-size:0.85em;"><strong>${p[2]}/${p[1]}/${p[0]}</strong> - ${asam.nombre}</span><button type="button" style="color:red; cursor:pointer; background:none; border:none; font-weight:bold;" onclick="eliminarAsamblea(${index})">X</button></div>`;
+            });
+        }
+        function agregarAsambleaAdmin() {
+            const f = document.getElementById('in-asamblea-fecha').value;
+            const n = document.getElementById('in-asamblea-nombre').value.trim();
+            if(f && n) { asambleas.push({fecha: f, nombre: n}); renderizarAsambleasAdmin(); }
+        }
+        function eliminarAsamblea(index) { asambleas.splice(index, 1); renderizarAsambleasAdmin(); }
+
+        function renderizarVisitasAdmin() {
+            const contenedor = document.getElementById('lista-visitas-ui');
+            contenedor.innerHTML = '';
+            visitas.sort((a, b) => new Date(a) - new Date(b));
+            visitas.forEach((f, index) => {
+                const p = f.split('-');
+                contenedor.innerHTML += `<div style="display:flex; justify-content:space-between; padding:4px 8px; border-bottom:1px solid #eee;"><span style="font-size:0.85em; color:#1e3a8a;"><strong>Lunes ${p[2]}/${p[1]}/${p[0]}</strong></span><button type="button" style="color:red; cursor:pointer; background:none; border:none; font-weight:bold;" onclick="eliminarVisita(${index})">X</button></div>`;
+            });
+        }
+        function agregarVisitaAdmin() {
+            const f = document.getElementById('in-visita-fecha').value;
+            if(f && !visitas.includes(f)) { visitas.push(f); renderizarVisitasAdmin(); }
+        }
+        function eliminarVisita(index) { visitas.splice(index, 1); renderizarVisitasAdmin(); }
+
+        function renderizarVisitasGruposAdmin() {
+            const contenedor = document.getElementById('lista-grupos-ui');
+            contenedor.innerHTML = '';
+            visitasGrupos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            visitasGrupos.forEach((v, index) => {
+                const p = v.fecha.split('-');
+                contenedor.innerHTML += `<div style="display:flex; justify-content:space-between; padding:4px 8px; border-bottom:1px solid #eee;"><span style="font-size:0.85em; color:#047857;"><strong>${p[2]}/${p[1]}/${p[0]}</strong> - Grupo ${v.grupo}</span><button type="button" style="color:red; cursor:pointer; background:none; border:none; font-weight:bold;" onclick="eliminarVisitaGrupo(${index})">X</button></div>`;
+            });
+        }
+        function agregarVisitaGrupoAdmin() {
+            const f = document.getElementById('in-grupo-fecha').value;
+            const g = document.getElementById('in-grupo-num').value;
+            if(f) { visitasGrupos.push({fecha: f, grupo: g}); renderizarVisitasGruposAdmin(); }
+        }
+        function eliminarVisitaGrupo(index) { visitasGrupos.splice(index, 1); renderizarVisitasGruposAdmin(); }
+
+        async function guardarEnLaNube() {
+            horarios = document.getElementById('admin-horarios').value.split(',').map(s => s.trim()).filter(s => s !== "");
+            conductores = document.getElementById('admin-conductores').value.split(',').map(s => s.trim()).filter(s => s !== "");
+            lugares = document.getElementById('admin-lugares').value.split(',').map(s => s.trim()).filter(s => s !== "");
+
+            // Aseguramos que siempre haya una opción en blanco al principio de cada lista
+            if(horarios[0] !== "") horarios.unshift("");
+            if(conductores[0] !== "") conductores.unshift("");
+            if(lugares[0] !== "") lugares.unshift("");
+
+            const nuevosDatos = { horarios, conductores, lugares, asambleas, visitas, visitasGrupos };
+            const estadoNube = document.getElementById('estado-nube');
+            estadoNube.innerText = "Guardando en la nube...";
+
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY },
+                    body: JSON.stringify(nuevosDatos)
+                });
+                if(response.ok) {
+                    estadoNube.innerText = "¡Guardado con éxito!";
+                    actualizarListasDesplegables();
+                    setTimeout(() => { document.getElementById('panel-admin').style.display = 'none'; estadoNube.innerText = ""; }, 1500);
+                } else { estadoNube.innerText = "Error al guardar."; }
+            } catch (error) { estadoNube.innerText = "Error de conexión."; }
+        }
+
+        function crearOpciones(arrayDatos) { 
+            return arrayDatos.map(dato => `<option value="${dato}">${dato}</option>`).join(''); 
+        }
+
+        const selectorMes = document.getElementById('selector-mes');
+        selectorMes.innerHTML = crearOpciones(meses);
+        
+        const tablaBody = document.getElementById('tabla-body');
+        
+        function inicializarTabla() {
+            tablaBody.innerHTML = ''; 
+            dias.forEach((dia, index) => {
+                const tr1 = document.createElement('tr');
+                tr1.id = `fila-${index}-1`;
+                tr1.innerHTML = `
+                    <td class="celda-dia" data-label="Día">${dia}</td>
+                    <td class="celda-fecha" data-label="Fecha"><input type="text" class="in-fecha" id="dia-${index}" readonly style="width: 35px; font-weight: bold; cursor: default;"></td>
+                    <td data-label="Hora"><select class="tabla-select sel-horario" id="h-${index}-1" onchange="guardarBorradorLocal()"></select></td>
+                    <td data-label="Lugar"><select class="tabla-select sel-lugar" id="l-${index}-1" onchange="guardarBorradorLocal()"></select></td>
+                    <td data-label="Territorio"><select class="tabla-select sel-territorio" id="t-${index}-1" onchange="guardarBorradorLocal()"></select></td>
+                    <td data-label="Conductor"><select class="tabla-select sel-conductor" id="c-${index}-1" onchange="guardarBorradorLocal()"></select></td>
+                    <td class="celda-asamblea" colspan="4" hidden></td>
+                `;
+                tablaBody.appendChild(tr1);
+
+                const tr2 = document.createElement('tr');
+                tr2.id = `fila-${index}-2`;
+                tr2.className = 'fila-extra';
+                tr2.hidden = true;
+                tr2.innerHTML = `
+                    <td data-label="Hora"><select class="tabla-select sel-horario" id="h-${index}-2" onchange="guardarBorradorLocal()"></select></td>
+                    <td data-label="Lugar"><select class="tabla-select sel-lugar" id="l-${index}-2" onchange="guardarBorradorLocal()"></select></td>
+                    <td data-label="Territorio"><select class="tabla-select sel-territorio" id="t-${index}-2" onchange="guardarBorradorLocal()"></select></td>
+                    <td data-label="Conductor"><select class="tabla-select sel-conductor" id="c-${index}-2" onchange="guardarBorradorLocal()"></select></td>
+                `;
+                tablaBody.appendChild(tr2);
+            });
+        }
+
+        function actualizarListasDesplegables() {
+            document.querySelectorAll('.sel-horario').forEach(sel => { const v = sel.value; sel.innerHTML = crearOpciones(horarios); if(horarios.includes(v)) sel.value = v; });
+            document.querySelectorAll('.sel-conductor').forEach(sel => { const v = sel.value; sel.innerHTML = crearOpciones(conductores); if(conductores.includes(v)) sel.value = v; });
+            document.querySelectorAll('.sel-lugar').forEach(sel => { const v = sel.value; sel.innerHTML = crearOpciones(lugares); if(lugares.includes(v)) sel.value = v; });
+            document.querySelectorAll('.sel-territorio').forEach(sel => { const v = sel.value; sel.innerHTML = crearOpciones(territorios); if(territorios.includes(v)) sel.value = v; });
+        }
+
+        function autocompletarFechas(fechaSeleccionada) {
+            if (!fechaSeleccionada) return;
+            const fechaBase = new Date(fechaSeleccionada + 'T12:00:00'); 
+            
+            selectorMes.value = meses[fechaBase.getMonth()];
+            let grupoDeServicioVisitado = null;
+
+            for (let i = 0; i < 7; i++) {
+                const fechaDia = new Date(fechaBase);
+                fechaDia.setDate(fechaBase.getDate() + i);
+                
+                let diaNum = fechaDia.getDate();
+                diaNum = diaNum < 10 ? '0' + diaNum : diaNum; 
+                document.getElementById(`dia-${i}`).value = diaNum;
+
+                const yyyy = fechaDia.getFullYear();
+                const mm = String(fechaDia.getMonth() + 1).padStart(2, '0');
+                const d = String(fechaDia.getDate()).padStart(2, '0');
+                const fechaStr = `${yyyy}-${mm}-${d}`;
+
+                const tr1 = document.getElementById(`fila-${i}-1`);
+                const tr2 = document.getElementById(`fila-${i}-2`);
+                
+                const celdasNormales = tr1.querySelectorAll('td:not(.celda-asamblea)');
+                const celdaAsamblea = tr1.querySelector('.celda-asamblea');
+                
+                celdasNormales.forEach(c => c.hidden = false);
+                celdaAsamblea.hidden = true;
+                tr2.hidden = true;
+                tr1.querySelector('.celda-dia').rowSpan = 1;
+                tr1.querySelector('.celda-fecha').rowSpan = 1;
+
+                const asambleaHoy = asambleas.find(a => a.fecha === fechaStr);
+                if (asambleaHoy) {
+                    celdasNormales.forEach(c => { if(c.cellIndex > 1) c.hidden = true; });
+                    celdaAsamblea.hidden = false;
+                    celdaAsamblea.innerText = `🎉 ${asambleaHoy.nombre.toUpperCase()}`;
+                    celdaAsamblea.className = 'celda-asamblea asamblea-activa';
+                } else {
+                    const visitaGrupoHoy = visitasGrupos.find(v => v.fecha === fechaStr);
+                    if (visitaGrupoHoy) {
+                        grupoDeServicioVisitado = visitaGrupoHoy.grupo;
+                        tr2.hidden = false;
+                        tr1.querySelector('.celda-dia').rowSpan = 2;
+                        tr1.querySelector('.celda-fecha').rowSpan = 2;
+                    }
+                }
+            }
+
+            const inputCampana = document.getElementById('input-campana');
+            if (grupoDeServicioVisitado) {
+                inputCampana.value = `VISITA DEL SUP. DE SERVICIO AL GRUPO ${grupoDeServicioVisitado}`;
+            } else if (visitas.includes(fechaSeleccionada)) {
+                inputCampana.value = "SEMANA DE VISITA DEL SUPERINTENDENTE DE CIRCUITO";
+            } else {
+                if(inputCampana.value.includes("VISITA DEL SUP.")) inputCampana.value = "";
+            }
+
+            const fechaDomingo = new Date(fechaBase);
+            fechaDomingo.setDate(fechaBase.getDate() + 6);
+            let d1 = fechaBase.getDate(); d1 = d1 < 10 ? '0' + d1 : d1;
+            let m1 = meses[fechaBase.getMonth()].toLowerCase();
+            let d2 = fechaDomingo.getDate(); d2 = d2 < 10 ? '0' + d2 : d2;
+            let m2 = meses[fechaDomingo.getMonth()].toLowerCase();
+
+            let textoRango = `Desde el ${d1} de ${m1} hasta el ${d2} de ${m2}`;
+            if (m1 === m2) textoRango = `Desde el ${d1} hasta el ${d2} de ${m1}`;
+            document.getElementById('texto-rango').innerText = textoRango;
+
+            cargarBorradorLocal(fechaSeleccionada);
+            guardarBorradorLocal(); 
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            inicializarTabla();
+            
+            let savedDate = new Date().toISOString().split('T')[0];
+            const guardado = localStorage.getItem('borrador_predicacion');
+            if(guardado) {
+                try { savedDate = JSON.parse(guardado).fechaLunes || savedDate; } catch(e){}
+            }
+            
+            // Si la fecha guardada (o de hoy) no es lunes, la ajustamos
+            let fechaInicial = new Date(savedDate + 'T12:00:00');
+            if (fechaInicial.getDay() !== 1) {
+                let ajuste = (fechaInicial.getDay() === 0) ? -6 : (1 - fechaInicial.getDay());
+                fechaInicial.setDate(fechaInicial.getDate() + ajuste);
+                savedDate = fechaInicial.toISOString().split('T')[0];
+            }
+            document.getElementById('fecha-lunes').value = savedDate;
+            
+            await cargarDatosDesdeLaNube();
+            autocompletarFechas(document.getElementById('fecha-lunes').value);
+            
+            // Listener mejorado: Corrección automática al lunes
+            document.getElementById('fecha-lunes').addEventListener('change', (e) => {
+                if (!e.target.value) return;
+                let fechaElegida = new Date(e.target.value + 'T12:00:00');
+                let diaSemana = fechaElegida.getDay();
+                
+                if (diaSemana !== 1) {
+                    alert("Has seleccionado un día que no es Lunes. El sistema ajustará la fecha automáticamente al Lunes de esa semana para mantener el orden.");
+                    let ajuste = (diaSemana === 0) ? -6 : (1 - diaSemana);
+                    fechaElegida.setDate(fechaElegida.getDate() + ajuste);
+                    let yyyy = fechaElegida.getFullYear();
+                    let mm = String(fechaElegida.getMonth() + 1).padStart(2, '0');
+                    let dd = String(fechaElegida.getDate()).padStart(2, '0');
+                    e.target.value = `${yyyy}-${mm}-${dd}`;
+                }
+                autocompletarFechas(e.target.value);
+            });
+
+            document.getElementById('input-campana').addEventListener('input', guardarBorradorLocal);
+        });
+
+        function prepararDocumentoParaExportar(elemento) {
+            const clon = elemento.cloneNode(true);
+            const controlesOriginales = elemento.querySelectorAll('select, input, textarea');
+            const controlesClonados = clon.querySelectorAll('select, input, textarea');
+
+            controlesClonados.forEach((control, index) => {
+                const original = controlesOriginales[index];
+                const valor = original.tagName === 'SELECT'
+                    ? (original.selectedOptions[0]?.textContent || original.value)
+                    : original.value;
+                const texto = document.createElement(control.id === 'input-campana' ? 'div' : 'span');
+
+                texto.className = `${control.className} valor-exportacion`.trim();
+                texto.textContent = valor;
+
+                if (control.classList.contains('tabla-select') || control.classList.contains('in-fecha')) {
+                    texto.classList.add('tabla-valor-exportacion');
+                }
+                control.replaceWith(texto);
+            });
+
+            clon.removeAttribute('id');
+            clon.classList.add('modo-exportacion');
+            return clon;
+        }
+
+        async function generarCanvasExportacion() {
+            const elemento = document.getElementById('documento-imagen');
+            const contenedorTemporal = document.createElement('div');
+            const documentoExportacion = prepararDocumentoParaExportar(elemento);
+
+            contenedorTemporal.style.cssText = 'position:absolute;left:-10000px;top:0;width:800px;background:white;';
+            contenedorTemporal.appendChild(documentoExportacion);
+            document.body.appendChild(contenedorTemporal);
+
+            await document.fonts?.ready;
+            const ancho = documentoExportacion.scrollWidth;
+            const alto = documentoExportacion.scrollHeight;
+            const canvas = await html2canvas(documentoExportacion, {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                width: ancho,
+                height: alto,
+                windowWidth: ancho,
+                windowHeight: alto,
+                scrollX: 0,
+                scrollY: 0
+            });
+            
+            contenedorTemporal.remove();
+            return canvas;
+        }
+
+        // --- NUEVA FUNCIÓN PARA COMPARTIR ---
+        async function compartirImagen() {
+            const boton = document.getElementById('btn-compartir');
+            boton.disabled = true;
+            boton.textContent = 'Preparando...';
+
+            try {
+                const canvas = await generarCanvasExportacion();
+                canvas.toBlob(async (blob) => {
+                    if (!blob) throw new Error("Error generando imagen");
+                    const archivo = new File([blob], 'Programa_Predicacion.jpg', { type: 'image/jpeg' });
+                    
+                    if (navigator.canShare && navigator.canShare({ files: [archivo] })) {
+                        await navigator.share({
+                            title: 'Programa de Predicación',
+                            files: [archivo]
+                        });
+                    } else {
+                        alert("Tu teléfono o navegador no soporta enviar la imagen directamente. Por favor, usa el botón de la flecha hacia abajo (⬇️) para descargarla primero.");
+                    }
+                }, 'image/jpeg', 0.98);
+            } catch (error) {
+                alert('No se pudo compartir la imagen. Usa el botón de descarga.');
+                console.error(error);
+            } finally {
+                boton.disabled = false;
+                boton.textContent = '📲 Compartir';
+            }
+        }
+
+        async function exportarJPG() {
+            const boton = document.getElementById('btn-descargar');
+            boton.disabled = true;
+
+            try {
+                const canvas = await generarCanvasExportacion();
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                const link = document.createElement('a');
+                link.download = 'Programa_Predicacion.jpg';
+                link.href = imgData;
+                link.click();
+            } catch (error) {
+                alert('No se pudo generar la imagen. Intenta nuevamente.');
+            } finally {
+                boton.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
