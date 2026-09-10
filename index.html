@@ -139,6 +139,118 @@
         input[type="text"].in-fecha, select.tabla-select { width: 100%; padding: 4px; border: 1px solid transparent; background-color: transparent; font-family: inherit; font-size: 0.95em; text-align: center; outline: none; appearance: none; cursor: pointer; }
         input[type="text"].in-fecha:hover, select.tabla-select:hover { border-bottom: 1px dashed #ccc; }
         [hidden] { display: none !important; }
+        
+        /* BOTÓN DINÁMICO DE AÑADIR SALIDA */
+        .btn-add-salida {
+            background: #3b82f6; color: white; border: none; border-radius: 50%;
+            width: 26px; height: 26px; font-weight: bold; font-size: 1.2em;
+            cursor: pointer; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: background 0.3s; padding: 0; line-height: 1;
+        }
+        .btn-add-salida:hover { background: #2563eb; }
+
+        /* --- BOTÓN FLOTANTE VISTA --- */
+        .btn-flotante-vista {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #1e293b;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            font-size: 1.3em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .btn-flotante-vista:hover {
+            transform: scale(1.08);
+            background-color: #334155;
+        }
+
+        /* --- ESTILOS MÓVILES (PANTALLAS PEQUEÑAS) --- */
+        @media screen and (max-width: 768px) {
+            #documento-imagen:not(.modo-exportacion) table { display: block !important; width: 100% !important; min-width: 0 !important; }
+            #documento-imagen:not(.modo-exportacion) thead { display: none !important; }
+            #documento-imagen:not(.modo-exportacion) tbody { display: flex !important; flex-direction: column !important; gap: 14px !important; width: 100% !important; }
+            #documento-imagen:not(.modo-exportacion) tbody tr { display: flex !important; flex-direction: column !important; width: 100% !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important; border-radius: 10px !important; padding: 0 12px 12px 12px !important; box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important; }
+            
+            #documento-imagen:not(.modo-exportacion) tbody td { display: flex !important; flex-direction: column !important; align-items: flex-start !important; width: 100% !important; padding: 8px 0 !important; border: none !important; gap: 6px !important; }
+            #documento-imagen:not(.modo-exportacion) tbody td::before { content: attr(data-label); font-weight: bold; color: #334155; font-size: 0.85em; width: 100%; text-align: left; }
+            #documento-imagen:not(.modo-exportacion) td:last-child { border-bottom: none !important; }
+            #documento-imagen:not(.modo-exportacion) tr[hidden] { display: none !important; }
+            
+            /* Estilización de los campos */
+            #documento-imagen:not(.modo-exportacion) select.tabla-select,
+            #documento-imagen:not(.modo-exportacion) input[type="text"].in-fecha {
+                width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; text-align: left; text-align-last: left; outline: none; font-size: 1em !important; color: #1e293b !important;
+            }
+            
+            #documento-imagen:not(.modo-exportacion) tbody td > div { width: 100% !important; justify-content: flex-start !important; gap: 8px !important;}
+            #documento-imagen:not(.modo-exportacion) tbody td > div select { width: 100% !important; }
+            
+            /* Cabecera unificada (Día y Fecha) */
+            #documento-imagen:not(.modo-exportacion) td.celda-dia { 
+                background-color: #1e293b !important; color: white !important; border-radius: 10px 10px 0 0 !important; text-align: center !important; padding: 12px !important; margin: 0 -12px !important; width: calc(100% + 24px) !important; flex-direction: row !important; align-items: center !important; justify-content: center !important;
+            }
+            #documento-imagen:not(.modo-exportacion) td.celda-dia > div { justify-content: center !important; position: relative; }
+            #documento-imagen:not(.modo-exportacion) td.celda-dia > div span { text-align: center; width: 100%; }
+            #documento-imagen:not(.modo-exportacion) td.celda-dia > div button { position: absolute; right: 0; }
+
+            #documento-imagen:not(.modo-exportacion) td.celda-fecha { 
+                background-color: #334155 !important; color: white !important; justify-content: center !important; align-items: center !important; text-align: center !important; border: none !important; padding: 10px !important; margin: 0 -12px 10px -12px !important; width: calc(100% + 24px) !important;
+            }
+            #documento-imagen:not(.modo-exportacion) td.celda-fecha input.in-fecha { 
+                background-color: transparent !important; border: none !important; color: white !important; text-align: center !important; text-align-last: center !important; font-size: 1.1em !important; padding: 0 !important; margin: 0 !important; width: 100% !important;
+            }
+            
+            #documento-imagen:not(.modo-exportacion) td.celda-dia::before, #documento-imagen:not(.modo-exportacion) td.celda-fecha::before { display: none !important; }
+            #documento-imagen:not(.modo-exportacion) td.celda-asamblea { padding: 15px !important; text-align: center !important; justify-content: center !important; background-color: #fef08a !important; color: #854d0e !important; }
+            #documento-imagen:not(.modo-exportacion) tr.fila-extra { margin-top: -10px !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border-top: 3px dashed #cbd5e1 !important; padding-top: 15px !important; }
+        }
+
+        /* --- ESTILOS MÓVILES (FORZADOS POR BOTÓN) --- */
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) table { display: block !important; width: 100% !important; min-width: 0 !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) thead { display: none !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody { display: flex !important; flex-direction: column !important; gap: 14px !important; width: 100% !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody tr { display: flex !important; flex-direction: column !important; width: 100% !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important; border-radius: 10px !important; padding: 0 12px 12px 12px !important; box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important; }
+        
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td { display: flex !important; flex-direction: column !important; align-items: flex-start !important; width: 100% !important; padding: 8px 0 !important; border: none !important; gap: 6px !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td::before { content: attr(data-label); font-weight: bold; color: #334155; font-size: 0.9em; width: 100%; text-align: left; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td:last-child { border-bottom: none !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr[hidden] { display: none !important; }
+        
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) select.tabla-select,
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) input[type="text"].in-fecha {
+            width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; text-align: left; text-align-last: left; outline: none; font-size: 1em !important; color: #1e293b !important;
+        }
+        
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td > div { width: 100% !important; justify-content: flex-start !important; gap: 8px !important;}
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td > div select { width: 100% !important; }
+        
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia { 
+            background-color: #1e293b !important; color: white !important; border-radius: 10px 10px 0 0 !important; text-align: center !important; padding: 12px !important; margin: 0 -12px !important; width: calc(100% + 24px) !important; flex-direction: row !important; align-items: center !important; justify-content: center !important;
+        }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia > div { justify-content: center !important; position: relative; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia > div span { text-align: center; width: 100%; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia > div button { position: absolute; right: 0; }
+
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-fecha { 
+            background-color: #334155 !important; color: white !important; justify-content: center !important; align-items: center !important; text-align: center !important; border: none !important; padding: 10px !important; margin: 0 -12px 10px -12px !important; width: calc(100% + 24px) !important;
+        }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-fecha input.in-fecha { 
+            background-color: transparent !important; border: none !important; color: white !important; text-align: center !important; text-align-last: center !important; font-size: 1.1em !important; padding: 0 !important; margin: 0 !important; width: 100% !important;
+        }
+        
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia::before, body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-fecha::before { display: none !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-asamblea { padding: 15px !important; text-align: center !important; justify-content: center !important; background-color: #fef08a !important; color: #854d0e !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr.fila-extra { margin-top: -10px !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border-top: 3px dashed #cbd5e1 !important; padding-top: 15px !important; }
 
         /* --- ESTILOS DE TERRITORIOS Y S-13 (VISTA 2) --- */
         .contenedor-territorios { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 20px; }
@@ -193,71 +305,45 @@
         .modo-exportacion table { display: table !important; width: 100% !important; min-width: 0 !important; }
         .modo-exportacion thead { display: table-header-group !important; }
         .modo-exportacion tbody { display: table-row-group !important; }
-        .modo-exportacion tbody tr { display: table-row !important; border: 0 !important; background: transparent; box-shadow: none !important; }
+        .modo-exportacion tbody tr { display: table-row !important; border: 0 !important; background: transparent; box-shadow: none !important; margin: 0 !important; padding: 0 !important;}
         .modo-exportacion tbody tr:nth-child(even):not(.fila-extra) { background-color: #f1f6fe; }
-        .modo-exportacion tbody tr.fila-extra { background-color: #f8fafc; }
+        .modo-exportacion tbody tr.fila-extra { background-color: #f8fafc; border-top: 0 !important; }
         .modo-exportacion tbody tr.fila-extra::before { content: none !important; }
-        .modo-exportacion th, .modo-exportacion td { display: table-cell !important; padding: 10px !important; border: 1px solid #b3cde0 !important; font-size: 1em !important; text-align: center !important; }
+        .modo-exportacion th, .modo-exportacion td { display: table-cell !important; padding: 10px !important; border: 1px solid #b3cde0 !important; font-size: 1em !important; text-align: center !important; flex: unset !important; justify-content: unset !important;}
         .modo-exportacion td::before { content: none !important; }
         .modo-exportacion [hidden] { display: none !important; }
+        .modo-exportacion td.celda-dia { display: table-cell !important; border-radius: 0 !important; }
+        .modo-exportacion td.celda-fecha { display: table-cell !important; }
 
         /* --- ESTILOS DE IMPRESIÓN (NATIVO S-13-S 1/22) --- */
-        @media screen {
-            #zona-impresion { display: none !important; }
-        }
-        
+        @media screen { #zona-impresion { display: none !important; } }
         @media print {
             @page { size: landscape; margin: 8mm; }
             body { background: white; margin: 0; padding: 0; display: block; }
             body > *:not(#zona-impresion) { display: none !important; }
             
             #zona-impresion { 
-                display: block !important; 
-                width: 100%; 
-                font-family: Arial, Helvetica, sans-serif; 
-                color: #000;
+                display: block !important; width: 100%; font-family: Arial, Helvetica, sans-serif; color: #000;
             }
             #zona-impresion .header-s13 { 
-                font-size: 14pt; 
-                font-weight: bold; 
-                text-align: center; 
-                margin-bottom: 10px; 
-                letter-spacing: 1px;
+                font-size: 14pt; font-weight: bold; text-align: center; margin-bottom: 10px; letter-spacing: 1px;
             }
-            
             #zona-impresion table { 
-                display: table !important; 
-                width: 100% !important; 
-                border-collapse: collapse !important; 
-                font-size: 9pt; 
+                display: table !important; width: 100% !important; border-collapse: collapse !important; font-size: 9pt; 
             }
             #zona-impresion thead { display: table-header-group !important; }
             #zona-impresion tbody { display: table-row-group !important; }
             #zona-impresion tr { display: table-row !important; page-break-inside: avoid; }
-            
             #zona-impresion th, #zona-impresion td { 
-                display: table-cell !important; 
-                border: 1px solid #000 !important; 
-                padding: 4px !important; 
-                text-align: center !important; 
-                vertical-align: middle !important;
+                display: table-cell !important; border: 1px solid #000 !important; padding: 4px !important; text-align: center !important; vertical-align: middle !important;
             }
             #zona-impresion th { 
-                background-color: #f0f0f0 !important; 
-                -webkit-print-color-adjust: exact;
-                color-adjust: exact;
-                font-weight: bold;
+                background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; color-adjust: exact; font-weight: bold;
             }
-            
             #zona-impresion .footer-s13 { 
-                display: flex; 
-                justify-content: space-between; 
-                font-size: 8pt; 
-                margin-top: 10px; 
-                font-weight: bold;
+                display: flex; justify-content: space-between; font-size: 8pt; margin-top: 10px; font-weight: bold;
             }
         }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
@@ -326,7 +412,7 @@
                         </tr>
                     </thead>
                     <tbody id="tabla-body">
-                        <!-- Llenado por JS -->
+                        <!-- Llenado dinámicamente por JS -->
                     </tbody>
                 </table>
             </div>
@@ -442,6 +528,9 @@
     <!-- ZONA EXCLUSIVA PARA IMPRESIÓN NATIVA S-13 -->
     <div id="zona-impresion"></div>
 
+    <!-- BOTÓN DE ALTERNANCIA DE VISTA -->
+    <button id="btn-toggle-vista" class="btn-flotante-vista" onclick="alternarModoVista()" title="Cambiar modo de vista" data-html2canvas-ignore>📱</button>
+
     <script>
         // =========================================================================
         // 🔑 CREDENCIALES
@@ -493,6 +582,18 @@
         }
 
         // =========================================================================
+        // LÓGICA DE ALTERNANCIA DE VISTA MÓVIL/ESCRITORIO
+        // =========================================================================
+        function alternarModoVista() {
+            document.body.classList.toggle('vista-movil-activa');
+            const boton = document.getElementById('btn-toggle-vista');
+            const esMovil = document.body.classList.contains('vista-movil-activa');
+            boton.textContent = esMovil ? '💻' : '📱';
+            boton.title = esMovil ? 'Cambiar a vista de escritorio' : 'Cambiar a vista móvil';
+            localStorage.setItem('preferencia_vista', esMovil ? 'movil' : 'escritorio');
+        }
+
+        // =========================================================================
         // LÓGICA DE TERRITORIOS, FILTROS Y FICHAS S-13
         // =========================================================================
         function parseFechaDDMMYYYY(fechaStr) {
@@ -509,8 +610,10 @@
             if (!fechaReferencia) return;
 
             for (let i = 0; i < 7; i++) {
-                procesarSeleccionDeTabla(i, 1, fechaReferencia);
-                procesarSeleccionDeTabla(i, 2, fechaReferencia);
+                // Soportar ahora hasta 4 filas posibles por día para autogenerar
+                for (let sf = 1; sf <= 4; sf++) {
+                    procesarSeleccionDeTabla(i, sf, fechaReferencia);
+                }
             }
             localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
             actualizarFiltroConductores();
@@ -527,9 +630,18 @@
                 const conductor = selConductor.value;
 
                 if (numTerritorio !== "" && conductor !== "") {
+                    // Solo crear si no existe (cumple regla de no sobreescribir)
                     if (!fichasActivas[numTerritorio]) {
+                        // Calcular fecha exacta basada en el lunes + los días correspondientes a esa fila
+                        const fechaBase = new Date(fechaReferencia + 'T12:00:00');
+                        fechaBase.setDate(fechaBase.getDate() + diaIndex);
+                        
+                        const dd = String(fechaBase.getDate()).padStart(2, '0');
+                        const mm = String(fechaBase.getMonth() + 1).padStart(2, '0');
+                        const yyyy = fechaBase.getFullYear();
+                        
                         fichasActivas[numTerritorio] = {
-                            fechaInicio: formatearFechaParaLectura(fechaReferencia),
+                            fechaInicio: `${dd}/${mm}/${yyyy}`,
                             conductor: conductor
                         };
                     }
@@ -579,7 +691,7 @@
                 ficha.className = 'ficha';
                 ficha.innerHTML = `
                     <h3>Territorio ${num}</h3>
-                    <p><strong>Asignado el:</strong> ${datos.fechaInicio}</p>
+                    <p><strong>Empezado el:</strong> ${datos.fechaInicio}</p>
                     <p><strong>Conductor:</strong> ${datos.conductor}</p>
                     <button class="btn-terminar" onclick="marcarComoTerminado('${num}')">✅ Marcar Terminado</button>
                     <button class="btn-eliminar" onclick="eliminarFichaActiva('${num}')">🗑️ Eliminar</button>
@@ -657,7 +769,7 @@
                         <table class="historial-tabla">
                             <thead>
                                 <tr>
-                                    <th>Asignado el</th>
+                                    <th>Empezado el</th>
                                     <th>Conductor</th>
                                     <th>Completado el</th>
                                 </tr>
@@ -755,7 +867,7 @@
             
             for (let i = 1; i <= 18; i++) {
                 const num = i.toString();
-                // Consolidar Historial y Activos
+                
                 let asignaciones = registroS13.filter(r => r.numTerritorio === num).map(r => ({
                     c: r.conductor, a: r.fechaAsignacion, f: r.fechaCompletado
                 }));
@@ -763,17 +875,14 @@
                     asignaciones.push({ c: fichasActivas[num].conductor, a: fichasActivas[num].fechaInicio, f: '' });
                 }
                 
-                // Ordenar de más antiguo a más reciente para fluir de izquierda a derecha
                 asignaciones.sort((a, b) => parseFechaDDMMYYYY(a.a) - parseFechaDDMMYYYY(b.a));
                 
-                // Fragmentar en bloques de 4 (como la tabla real de la S-13-S 1/22)
                 let chunks = [];
                 for (let j = 0; j < Math.max(asignaciones.length, 1); j += 4) {
                     chunks.push(asignaciones.slice(j, j + 4));
                 }
 
                 chunks.forEach((chunk, index) => {
-                    // Extraer fecha del bloque anterior si existe
                     let uFecha = index === 0 ? '' : (chunks[index-1][3]?.f || ''); 
                     
                     let row = `<tr>
@@ -801,19 +910,19 @@
                             <th>Última fecha<br>en que se<br>completó*</th>
                             
                             <th>Asignado a</th>
-                            <th>Fecha en que<br>se asignó</th>
+                            <th>Fecha en que<br>se empezó</th>
                             <th>Fecha en que<br>se completó</th>
                             
                             <th>Asignado a</th>
-                            <th>Fecha en que<br>se asignó</th>
+                            <th>Fecha en que<br>se empezó</th>
                             <th>Fecha en que<br>se completó</th>
                             
                             <th>Asignado a</th>
-                            <th>Fecha en que<br>se asignó</th>
+                            <th>Fecha en que<br>se empezó</th>
                             <th>Fecha en que<br>se completó</th>
                             
                             <th>Asignado a</th>
-                            <th>Fecha en que<br>se asignó</th>
+                            <th>Fecha en que<br>se empezó</th>
                             <th>Fecha en que<br>se completó</th>
                         </tr>
                     </thead>
@@ -831,8 +940,49 @@
         }
 
         // =========================================================================
-        // LÓGICA DEL PROGRAMA SEMANAL Y LA NUBE
+        // LÓGICA DEL PROGRAMA SEMANAL (NUEVAS FILAS DINÁMICAS Y NUBE)
         // =========================================================================
+        function agregarSalida(diaIndex) {
+            let tr1 = document.getElementById(`fila-${diaIndex}-1`);
+            let celdaDia = tr1.querySelector('.celda-dia');
+            let celdaFecha = tr1.querySelector('.celda-fecha');
+            
+            // Busca la siguiente fila disponible para mostrarla
+            for (let sf = 2; sf <= 4; sf++) {
+                let trExtra = document.getElementById(`fila-${diaIndex}-${sf}`);
+                if (trExtra.hidden) {
+                    trExtra.hidden = false;
+                    let actualSpan = parseInt(celdaDia.rowSpan) || 1;
+                    celdaDia.rowSpan = actualSpan + 1;
+                    celdaFecha.rowSpan = actualSpan + 1;
+                    return;
+                }
+            }
+            alert("Has alcanzado el límite máximo de salidas simultáneas para este día.");
+        }
+
+        function quitarSalida(diaIndex, sf) {
+            let trExtra = document.getElementById(`fila-${diaIndex}-${sf}`);
+            trExtra.hidden = true;
+            
+            // Limpiar valores para que el guardado no las reviva
+            document.getElementById(`h-${diaIndex}-${sf}`).value = "";
+            document.getElementById(`l-${diaIndex}-${sf}`).value = "";
+            document.getElementById(`t-${diaIndex}-${sf}`).value = "";
+            document.getElementById(`c-${diaIndex}-${sf}`).value = "";
+
+            let tr1 = document.getElementById(`fila-${diaIndex}-1`);
+            let celdaDia = tr1.querySelector('.celda-dia');
+            let celdaFecha = tr1.querySelector('.celda-fecha');
+            let actualSpan = parseInt(celdaDia.rowSpan) || 1;
+            
+            if (actualSpan > 1) {
+                celdaDia.rowSpan = actualSpan - 1;
+                celdaFecha.rowSpan = actualSpan - 1;
+            }
+            guardarBorradorLocal();
+        }
+
         function guardarBorradorLocal() {
             const fechaLunes = document.getElementById('fecha-lunes').value;
             if(!fechaLunes) return;
@@ -866,9 +1016,34 @@
                     if(borrador.fechaLunes === fechaLunesActual) {
                         document.getElementById('selector-mes').value = borrador.mes;
                         document.getElementById('input-campana').value = borrador.notas;
+                        
+                        // Restablecer valores primero
                         for(const [id, val] of Object.entries(borrador.valores)) {
                             const el = document.getElementById(id);
                             if(el) el.value = val;
+                        }
+
+                        // Ajustar dinámicamente las filas visibles (1 hasta 4) dependiendo de si tienen valor guardado
+                        for (let i = 0; i < 7; i++) {
+                            let span = 1;
+                            for (let sf = 2; sf <= 4; sf++) {
+                                let trExtra = document.getElementById(`fila-${i}-${sf}`);
+                                let h = document.getElementById(`h-${i}-${sf}`).value;
+                                let l = document.getElementById(`l-${i}-${sf}`).value;
+                                let t = document.getElementById(`t-${i}-${sf}`).value;
+                                let c = document.getElementById(`c-${i}-${sf}`).value;
+                                
+                                // Si tiene algún dato seleccionado O si el sistema la necesita abierta (ej. por grupo), mantener visible
+                                if (h || l || t || c || !trExtra.hidden) {
+                                    trExtra.hidden = false;
+                                    span++;
+                                } else {
+                                    trExtra.hidden = true;
+                                }
+                            }
+                            let tr1 = document.getElementById(`fila-${i}-1`);
+                            tr1.querySelector('.celda-dia').rowSpan = span;
+                            tr1.querySelector('.celda-fecha').rowSpan = span;
                         }
                     }
                 } catch(e){}
@@ -985,10 +1160,16 @@
             const tablaBody = document.getElementById('tabla-body');
             tablaBody.innerHTML = ''; 
             dias.forEach((dia, index) => {
+                // Fila Principal 1
                 const tr1 = document.createElement('tr');
                 tr1.id = `fila-${index}-1`;
                 tr1.innerHTML = `
-                    <td class="celda-dia" data-label="Día">${dia}</td>
+                    <td class="celda-dia" data-label="Día">
+                        <div style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
+                            <span>${dia}</span>
+                            <button onclick="agregarSalida(${index})" class="btn-add-salida" data-html2canvas-ignore>+</button>
+                        </div>
+                    </td>
                     <td class="celda-fecha" data-label="Fecha"><input type="text" class="in-fecha" id="dia-${index}" readonly style="width: 35px; font-weight: bold; cursor: default;"></td>
                     <td data-label="Hora"><select class="tabla-select sel-horario" id="h-${index}-1" onchange="guardarBorradorLocal()"></select></td>
                     <td data-label="Lugar"><select class="tabla-select sel-lugar" id="l-${index}-1" onchange="guardarBorradorLocal()"></select></td>
@@ -998,17 +1179,25 @@
                 `;
                 tablaBody.appendChild(tr1);
 
-                const tr2 = document.createElement('tr');
-                tr2.id = `fila-${index}-2`;
-                tr2.className = 'fila-extra';
-                tr2.hidden = true;
-                tr2.innerHTML = `
-                    <td data-label="Hora"><select class="tabla-select sel-horario" id="h-${index}-2" onchange="guardarBorradorLocal()"></select></td>
-                    <td data-label="Lugar"><select class="tabla-select sel-lugar" id="l-${index}-2" onchange="guardarBorradorLocal()"></select></td>
-                    <td data-label="Territorio"><select class="tabla-select sel-territorio" id="t-${index}-2" onchange="guardarBorradorLocal()"></select></td>
-                    <td data-label="Conductor"><select class="tabla-select sel-conductor" id="c-${index}-2" onchange="guardarBorradorLocal()"></select></td>
-                `;
-                tablaBody.appendChild(tr2);
+                // Filas Dinámicas extras (hasta 4 por día, inicialmente ocultas)
+                for (let sf = 2; sf <= 4; sf++) {
+                    const trExtra = document.createElement('tr');
+                    trExtra.id = `fila-${index}-${sf}`;
+                    trExtra.className = 'fila-extra';
+                    trExtra.hidden = true;
+                    trExtra.innerHTML = `
+                        <td data-label="Hora"><select class="tabla-select sel-horario" id="h-${index}-${sf}" onchange="guardarBorradorLocal()"></select></td>
+                        <td data-label="Lugar"><select class="tabla-select sel-lugar" id="l-${index}-${sf}" onchange="guardarBorradorLocal()"></select></td>
+                        <td data-label="Territorio"><select class="tabla-select sel-territorio" id="t-${index}-${sf}" onchange="guardarBorradorLocal()"></select></td>
+                        <td data-label="Conductor" style="position:relative;">
+                            <div style="display:flex; align-items:center; width:100%; justify-content:flex-end;">
+                                <select class="tabla-select sel-conductor" id="c-${index}-${sf}" onchange="guardarBorradorLocal()"></select>
+                                <button onclick="quitarSalida(${index}, ${sf})" data-html2canvas-ignore title="Eliminar fila" style="background:none; border:none; color:#ef4444; font-weight:bold; font-size:1.4em; cursor:pointer; margin-left:5px; padding:0;">&times;</button>
+                            </div>
+                        </td>
+                    `;
+                    tablaBody.appendChild(trExtra);
+                }
             });
         }
 
@@ -1040,13 +1229,14 @@
                 const fechaStr = `${yyyy}-${mm}-${d}`;
 
                 const tr1 = document.getElementById(`fila-${i}-1`);
-                const tr2 = document.getElementById(`fila-${i}-2`);
                 const celdasNormales = tr1.querySelectorAll('td:not(.celda-asamblea)');
                 const celdaAsamblea = tr1.querySelector('.celda-asamblea');
                 
                 celdasNormales.forEach(c => c.hidden = false);
                 celdaAsamblea.hidden = true;
-                tr2.hidden = true;
+                
+                // Ocultar las 3 filas extra dinámicas
+                for(let sf=2; sf<=4; sf++){ document.getElementById(`fila-${i}-${sf}`).hidden = true; }
                 tr1.querySelector('.celda-dia').rowSpan = 1;
                 tr1.querySelector('.celda-fecha').rowSpan = 1;
 
@@ -1060,7 +1250,7 @@
                     const visitaGrupoHoy = visitasGrupos.find(v => v.fecha === fechaStr);
                     if (visitaGrupoHoy) {
                         grupoDeServicioVisitado = visitaGrupoHoy.grupo;
-                        tr2.hidden = false;
+                        document.getElementById(`fila-${i}-2`).hidden = false;
                         tr1.querySelector('.celda-dia').rowSpan = 2;
                         tr1.querySelector('.celda-fecha').rowSpan = 2;
                     }
@@ -1083,6 +1273,7 @@
             if (m1 === m2) textoRango = `Desde el ${d1} hasta el ${d2} de ${m1}`;
             document.getElementById('texto-rango').innerText = textoRango;
 
+            // Restablecer valores guardados que pueden mostrar o sobreescribir las filas extra
             cargarBorradorLocal(fechaSeleccionada);
             guardarBorradorLocal(); 
         }
@@ -1091,6 +1282,17 @@
         // INICIO DEL APLICATIVO
         // =========================================================================
         window.addEventListener('DOMContentLoaded', async () => {
+            // Restaurar estado de la vista guardado en localStorage
+            const vistaGuardada = localStorage.getItem('preferencia_vista');
+            if (vistaGuardada === 'movil') {
+                document.body.classList.add('vista-movil-activa');
+                const boton = document.getElementById('btn-toggle-vista');
+                if (boton) {
+                    boton.textContent = '💻';
+                    boton.title = 'Cambiar a vista de escritorio';
+                }
+            }
+
             inicializarTabla();
             actualizarFiltroConductores();
             
