@@ -26,30 +26,54 @@
         .contenedor-lobby {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             width: 100%;
             max-width: 900px;
             min-height: 80vh;
-            gap: 20px;
-            text-align: center;
+            gap: 15px;
+            text-align: left;
             animation: fadeIn 0.5s ease-in-out;
+            padding: 20px;
         }
         
         .titulo-lobby {
-            font-size: 2.8em;
+            font-size: 4em;
             color: #1e293b;
             margin: 0;
             font-weight: 800;
-            letter-spacing: -1px;
+            letter-spacing: -2px;
         }
 
         .subtitulo-lobby {
             color: #64748b;
-            font-size: 1.15em;
+            font-size: 1.3em;
             font-weight: 500;
-            margin-top: -10px;
-            margin-bottom: 20px;
+            margin-top: -15px;
+            margin-bottom: 5px;
+        }
+
+        /* --- MICRO-FICHA ESTADO RÁPIDO --- */
+        .pildora-estado {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            background-color: #e0f2fe;
+            color: #0284c7;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.95em;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #bae6fd;
+            margin-bottom: 15px;
+        }
+
+        .pildora-estado span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .grid-tarjetas {
@@ -57,8 +81,8 @@
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 25px;
             width: 100%;
-            padding: 10px;
-            margin-top: 15px;
+            padding: 10px 0;
+            margin-top: 10px;
         }
 
         .tarjeta-btn {
@@ -71,7 +95,8 @@
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: flex-start;
+            text-align: left;
             gap: 8px;
             position: relative;
             overflow: hidden;
@@ -102,7 +127,7 @@
         .icono-conf { background-color: #f1f5f9; color: #64748b; }
 
         .texto-tarjeta { font-size: 1.25em; font-weight: bold; color: #1e293b; }
-        .desc-tarjeta { font-size: 0.85em; color: #64748b; text-align: center; font-weight: normal; line-height: 1.3; margin-top: 5px; }
+        .desc-tarjeta { font-size: 0.85em; color: #64748b; font-weight: normal; line-height: 1.3; margin-top: 5px; }
 
         /* --- NAVEGACIÓN INTERNA (Estilo App Móvil) --- */
         .barra-superior {
@@ -209,6 +234,17 @@
 
         /* --- ESTILOS MÓVILES (PANTALLAS PEQUEÑAS) --- */
         @media screen and (max-width: 768px) {
+            /* Aumentos de legibilidad para el Lobby en Móvil */
+            .contenedor-lobby { align-items: flex-start !important; text-align: left !important; padding: 15px !important; }
+            .titulo-lobby { font-size: 2.8em !important; }
+            .subtitulo-lobby { font-size: 1.1em !important; margin-top: -10px !important; }
+            .pildora-estado { font-size: 0.85em !important; padding: 6px 12px !important; }
+            .tarjeta-btn { padding: 45px 25px !important; gap: 12px !important; align-items: flex-start !important; text-align: left !important; }
+            .icono-contenedor { width: 90px !important; height: 90px !important; font-size: 3.2em !important; margin-bottom: 10px !important; }
+            .texto-tarjeta { font-size: 1.4em !important; }
+            .desc-tarjeta { font-size: 1.05em !important; text-align: left !important; }
+
+            /* Tarjetas de la Tabla */
             #documento-imagen:not(.modo-exportacion) table { display: block !important; width: 100% !important; min-width: 0 !important; }
             #documento-imagen:not(.modo-exportacion) thead { display: none !important; }
             #documento-imagen:not(.modo-exportacion) tbody { display: flex !important; flex-direction: column !important; gap: 14px !important; width: 100% !important; }
@@ -249,6 +285,15 @@
         }
 
         /* --- ESTILOS MÓVILES (FORZADOS POR BOTÓN) --- */
+        body.vista-movil-activa .contenedor-lobby { align-items: flex-start !important; text-align: left !important; padding: 15px !important; }
+        body.vista-movil-activa .titulo-lobby { font-size: 2.8em !important; }
+        body.vista-movil-activa .subtitulo-lobby { font-size: 1.1em !important; margin-top: -10px !important; }
+        body.vista-movil-activa .pildora-estado { font-size: 0.85em !important; padding: 6px 12px !important; }
+        body.vista-movil-activa .tarjeta-btn { padding: 45px 25px !important; gap: 12px !important; align-items: flex-start !important; text-align: left !important; }
+        body.vista-movil-activa .icono-contenedor { width: 90px !important; height: 90px !important; font-size: 3.2em !important; margin-bottom: 10px !important; }
+        body.vista-movil-activa .texto-tarjeta { font-size: 1.4em !important; }
+        body.vista-movil-activa .desc-tarjeta { font-size: 1.05em !important; text-align: left !important; }
+
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) table { display: block !important; width: 100% !important; min-width: 0 !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) thead { display: none !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody { display: flex !important; flex-direction: column !important; gap: 14px !important; width: 100% !important; }
@@ -388,7 +433,12 @@
     <div id="vista-lobby" class="contenedor-lobby">
         <img src="icono.png" alt="Icono Tito" style="width: 85px; height: 85px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 5px;">
         <h1 class="titulo-lobby">Tito</h1>
-        <p class="subtitulo-lobby">Asistente de Territorios • Congregación Ojo de Agua</p>
+        <p class="subtitulo-lobby">Asistente de Territorios</p>
+        
+        <!-- PÍLDORA DE ESTADO RÁPIDO (DINÁMICA) -->
+        <div id="pildora-estado" class="pildora-estado">
+            <!-- Se inyecta por JS -->
+        </div>
         
         <div class="grid-tarjetas">
             <button class="tarjeta-btn tarjeta-programa" onclick="cambiarVista('programa')">
@@ -436,7 +486,6 @@
 
         <div id="documento-imagen">
             <h1>Programa para la Predicación</h1>
-            <div class="subtitulo">Congregación Ojo de Agua</div>
             <div class="rango-fechas" id="texto-rango">Selecciona una fecha para generar el rango</div>
 
             <select class="mes-select" id="selector-mes" onchange="guardarBorradorLocal()"></select>
@@ -596,6 +645,65 @@
         let registroS13 = JSON.parse(localStorage.getItem('registroS13')) || [];
 
         // =========================================================================
+        // PÍLDORA DE ESTADO RÁPIDO
+        // =========================================================================
+        function actualizarPildoraEstado() {
+            const pill = document.getElementById('pildora-estado');
+            if(!pill) return;
+            
+            // 1. Territorios en curso
+            const countTerritorios = Object.keys(fichasActivas).length;
+            let textoTerritorios = `${countTerritorios} territorios en curso`;
+            if (countTerritorios === 1) textoTerritorios = `1 territorio en curso`;
+            
+            let htmlPill = `<span>🗺️ ${textoTerritorios}</span>`;
+            
+            // 2. Eventos del mes actual
+            const hoy = new Date();
+            const mesActual = hoy.getMonth();
+            const anioActual = hoy.getFullYear();
+            
+            let eventosMes = [];
+            
+            // Asambleas
+            asambleas.forEach(a => {
+                const parts = a.fecha.split('-');
+                if(parts.length === 3) {
+                    if(parseInt(parts[0]) === anioActual && parseInt(parts[1]) - 1 === mesActual) {
+                        eventosMes.push(`🎉 Asamblea: ${parts[2]}/${parts[1]}`);
+                    }
+                }
+            });
+            
+            // Visitas circuito
+            visitas.forEach(v => {
+                const parts = v.split('-');
+                if(parts.length === 3) {
+                    if(parseInt(parts[0]) === anioActual && parseInt(parts[1]) - 1 === mesActual) {
+                        eventosMes.push(`👔 Visita Circuito: ${parts[2]}/${parts[1]}`);
+                    }
+                }
+            });
+            
+            // Visitas grupos
+            visitasGrupos.forEach(vg => {
+                const parts = vg.fecha.split('-');
+                if(parts.length === 3) {
+                    if(parseInt(parts[0]) === anioActual && parseInt(parts[1]) - 1 === mesActual) {
+                        eventosMes.push(`👥 Visita G${vg.grupo}: ${parts[2]}/${parts[1]}`);
+                    }
+                }
+            });
+            
+            if(eventosMes.length > 0) {
+                // Separador y eventos
+                htmlPill += `<span style="color:#94a3b8; margin:0 2px;">|</span> <span>${eventosMes.join(' • ')}</span>`;
+            }
+            
+            pill.innerHTML = htmlPill;
+        }
+
+        // =========================================================================
         // LÓGICA DE NAVEGACIÓN (VISTAS)
         // =========================================================================
         function cambiarVista(vistaDestino) {
@@ -648,7 +756,6 @@
             if (!fechaReferencia) return;
 
             for (let i = 0; i < 7; i++) {
-                // Soportar ahora hasta 4 filas posibles por día para autogenerar
                 for (let sf = 1; sf <= 4; sf++) {
                     procesarSeleccionDeTabla(i, sf, fechaReferencia);
                 }
@@ -657,6 +764,7 @@
             actualizarFiltroConductores();
             renderizarFichas(); 
             renderizarPlanillaS13();
+            actualizarPildoraEstado();
         }
 
         function procesarSeleccionDeTabla(diaIndex, subFila, fechaReferencia) {
@@ -668,9 +776,7 @@
                 const conductor = selConductor.value;
 
                 if (numTerritorio !== "" && conductor !== "") {
-                    // Solo crear si no existe (cumple regla de no sobreescribir)
                     if (!fichasActivas[numTerritorio]) {
-                        // Calcular fecha exacta basada en el lunes + los días correspondientes a esa fila
                         const fechaBase = new Date(fechaReferencia + 'T12:00:00');
                         fechaBase.setDate(fechaBase.getDate() + diaIndex);
                         
@@ -685,12 +791,6 @@
                     }
                 }
             }
-        }
-
-        function formatearFechaParaLectura(fechaISO) {
-            const partes = fechaISO.split('-'); 
-            if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
-            return fechaISO;
         }
         
         function actualizarFiltroConductores() {
@@ -878,15 +978,14 @@
                 actualizarFiltroConductores();
                 renderizarFichas();
                 renderizarPlanillaS13();
+                actualizarPildoraEstado();
             }
         }
 
-        // CORRECCIÓN: Eliminar ficha activa Y limpiar el selector del programa semanal (evita fichas fantasmas)
         function eliminarFichaActiva(numTerritorio) {
             if (confirm(`¿Estás seguro de que deseas eliminar el Territorio ${numTerritorio} de la mesa sin guardarlo en el historial?`)) {
                 delete fichasActivas[numTerritorio];
                 
-                // Limpiar selectores en el programa semanal
                 const selectsTerritorio = document.querySelectorAll('.sel-territorio');
                 selectsTerritorio.forEach(sel => {
                     if (sel.value === numTerritorio) {
@@ -895,11 +994,12 @@
                 });
 
                 localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
-                guardarBorradorLocal(); // Sobrescribe el borrador local sin este territorio
+                guardarBorradorLocal(); 
                 
                 actualizarFiltroConductores();
                 renderizarFichas();
                 renderizarPlanillaS13();
+                actualizarPildoraEstado();
             }
         }
 
@@ -1103,7 +1203,6 @@
                 visitas = datos.visitas || [];
                 visitasGrupos = datos.visitasGrupos || [];
 
-                // Sincronización de S-13 y Fichas Activas desde la nube
                 if (datos.registroS13) {
                     registroS13 = datos.registroS13;
                     localStorage.setItem('registroS13', JSON.stringify(registroS13));
@@ -1117,6 +1216,7 @@
                 actualizarFiltroConductores();
                 renderizarFichas();
                 renderizarPlanillaS13();
+                actualizarPildoraEstado();
             } catch (error) { console.error("Error al cargar de la nube:", error); }
         }
 
@@ -1147,6 +1247,7 @@
                 const p = asam.fecha.split('-');
                 contenedor.innerHTML += `<div style="display:flex; justify-content:space-between; padding:6px 10px; border-bottom:1px solid #cbd5e1;"><span style="font-size:0.95em;"><strong>${p[2]}/${p[1]}/${p[0]}</strong> - ${asam.nombre}</span><button type="button" style="color:red; cursor:pointer; background:none; border:none; font-weight:bold;" onclick="eliminarAsamblea(${index})">X</button></div>`;
             });
+            actualizarPildoraEstado();
         }
         function agregarAsambleaAdmin() { const f = document.getElementById('in-asamblea-fecha').value; const n = document.getElementById('in-asamblea-nombre').value.trim(); if(f && n) { asambleas.push({fecha: f, nombre: n}); renderizarAsambleasAdmin(); } }
         function eliminarAsamblea(index) { asambleas.splice(index, 1); renderizarAsambleasAdmin(); }
@@ -1159,6 +1260,7 @@
                 const p = f.split('-');
                 contenedor.innerHTML += `<div style="display:flex; justify-content:space-between; padding:6px 10px; border-bottom:1px solid #cbd5e1;"><span style="font-size:0.95em; color:#1e3a8a;"><strong>Lunes ${p[2]}/${p[1]}/${p[0]}</strong></span><button type="button" style="color:red; cursor:pointer; background:none; border:none; font-weight:bold;" onclick="eliminarVisita(${index})">X</button></div>`;
             });
+            actualizarPildoraEstado();
         }
         function agregarVisitaAdmin() { const f = document.getElementById('in-visita-fecha').value; if(f && !visitas.includes(f)) { visitas.push(f); renderizarVisitasAdmin(); } }
         function eliminarVisita(index) { visitas.splice(index, 1); renderizarVisitasAdmin(); }
@@ -1171,6 +1273,7 @@
                 const p = v.fecha.split('-');
                 contenedor.innerHTML += `<div style="display:flex; justify-content:space-between; padding:6px 10px; border-bottom:1px solid #cbd5e1;"><span style="font-size:0.95em; color:#047857;"><strong>${p[2]}/${p[1]}/${p[0]}</strong> - Grupo ${v.grupo}</span><button type="button" style="color:red; cursor:pointer; background:none; border:none; font-weight:bold;" onclick="eliminarVisitaGrupo(${index})">X</button></div>`;
             });
+            actualizarPildoraEstado();
         }
         function agregarVisitaGrupoAdmin() { const f = document.getElementById('in-grupo-fecha').value; const g = document.getElementById('in-grupo-num').value; if(f) { visitasGrupos.push({fecha: f, grupo: g}); renderizarVisitasGruposAdmin(); } }
         function eliminarVisitaGrupo(index) { visitasGrupos.splice(index, 1); renderizarVisitasGruposAdmin(); }
@@ -1342,6 +1445,7 @@
 
             inicializarTabla();
             actualizarFiltroConductores();
+            actualizarPildoraEstado();
             
             let savedDate = new Date().toISOString().split('T')[0];
             const guardado = localStorage.getItem('borrador_predicacion');
