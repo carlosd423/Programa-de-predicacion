@@ -36,6 +36,31 @@
             animation: fadeIn 0.5s ease-in-out;
             padding: 20px;
         }
+
+        .lobby-header-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .lobby-logo {
+            width: 85px;
+            height: 85px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .lobby-header-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
         
         .titulo-lobby {
             font-size: 4em;
@@ -43,14 +68,14 @@
             margin: 0;
             font-weight: 800;
             letter-spacing: -2px;
+            line-height: 1.1;
         }
 
         .subtitulo-lobby {
             color: #64748b;
             font-size: 1.3em;
             font-weight: 500;
-            margin-top: -15px;
-            margin-bottom: 5px;
+            margin: 0;
         }
 
         /* --- MICRO-FICHA ESTADO RÁPIDO --- */
@@ -61,13 +86,13 @@
             gap: 8px;
             background-color: #e0f2fe;
             color: #0284c7;
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 9999px;
             font-size: 0.95em;
             font-weight: 600;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             border: 1px solid #bae6fd;
-            margin-bottom: 15px;
+            margin-top: 5px;
         }
 
         .pildora-estado span {
@@ -78,8 +103,8 @@
 
         .grid-tarjetas {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
             width: 100%;
             padding: 10px 0;
             margin-top: 10px;
@@ -89,45 +114,52 @@
             background: #ffffff;
             border: none;
             border-radius: 16px;
-            padding: 35px 20px;
+            padding: 25px 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.04);
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            flex-direction: row;
+            align-items: center;
             text-align: left;
-            gap: 8px;
+            justify-content: flex-start;
+            gap: 15px;
             position: relative;
             overflow: hidden;
         }
         
-        .tarjeta-programa { border-top: 4px solid #0ea5e9; } /* Azul Cian */
-        .tarjeta-s13 { border-top: 4px solid #10b981; } /* Verde Esmeralda */
-        .tarjeta-config { border-top: 4px solid #64748b; } /* Gris Pizarra */
+        .tarjeta-programa { border-left: 5px solid #0ea5e9; border-top: none; } /* Azul Cian */
+        .tarjeta-s13 { border-left: 5px solid #10b981; border-top: none; } /* Verde Esmeralda */
+        .tarjeta-config { border-left: 5px solid #64748b; border-top: none; } /* Gris Pizarra */
 
         .tarjeta-btn:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
         }
 
         .icono-contenedor {
-            width: 68px;
-            height: 68px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.2em;
-            margin-bottom: 5px;
+            font-size: 2em;
+            flex-shrink: 0;
         }
         
         .icono-prog { background-color: #e0f2fe; color: #0ea5e9; }
         .icono-s13 { background-color: #d1fae5; color: #10b981; }
         .icono-conf { background-color: #f1f5f9; color: #64748b; }
 
-        .texto-tarjeta { font-size: 1.25em; font-weight: bold; color: #1e293b; }
-        .desc-tarjeta { font-size: 0.85em; color: #64748b; font-weight: normal; line-height: 1.3; margin-top: 5px; }
+        .tarjeta-text-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .texto-tarjeta { font-size: 1.3em; font-weight: bold; color: #1e293b; margin: 0; }
+        .desc-tarjeta { font-size: 0.9em; color: #64748b; font-weight: normal; line-height: 1.3; margin: 0; }
 
         /* --- NAVEGACIÓN INTERNA (Estilo App Móvil) --- */
         .barra-superior {
@@ -235,14 +267,16 @@
         /* --- ESTILOS MÓVILES (PANTALLAS PEQUEÑAS) --- */
         @media screen and (max-width: 768px) {
             /* Aumentos de legibilidad para el Lobby en Móvil */
-            .contenedor-lobby { align-items: flex-start !important; text-align: left !important; padding: 15px !important; }
-            .titulo-lobby { font-size: 2.8em !important; }
-            .subtitulo-lobby { font-size: 1.1em !important; margin-top: -10px !important; }
-            .pildora-estado { font-size: 0.85em !important; padding: 6px 12px !important; }
-            .tarjeta-btn { padding: 45px 25px !important; gap: 12px !important; align-items: flex-start !important; text-align: left !important; }
-            .icono-contenedor { width: 90px !important; height: 90px !important; font-size: 3.2em !important; margin-bottom: 10px !important; }
-            .texto-tarjeta { font-size: 1.4em !important; }
-            .desc-tarjeta { font-size: 1.05em !important; text-align: left !important; }
+            .contenedor-lobby { padding: 15px !important; }
+            .lobby-header-wrapper { flex-direction: row !important; align-items: center !important; gap: 15px !important; margin-bottom: 15px !important; }
+            .lobby-logo { width: 70px !important; height: 70px !important; border-radius: 16px !important; }
+            .titulo-lobby { font-size: 2.8em !important; letter-spacing: -1px !important; }
+            .subtitulo-lobby { font-size: 1.05em !important; margin-top: 0 !important; }
+            .pildora-estado { font-size: 0.85em !important; padding: 6px 12px !important; margin-top: 0 !important; }
+            .tarjeta-btn { padding: 20px 15px !important; gap: 15px !important; flex-direction: row !important; align-items: center !important; text-align: left !important; }
+            .icono-contenedor { width: 55px !important; height: 55px !important; font-size: 1.8em !important; }
+            .texto-tarjeta { font-size: 1.25em !important; margin: 0 !important; }
+            .desc-tarjeta { font-size: 0.9em !important; margin: 0 !important; }
 
             /* Tarjetas de la Tabla */
             #documento-imagen:not(.modo-exportacion) table { display: block !important; width: 100% !important; min-width: 0 !important; }
@@ -285,14 +319,16 @@
         }
 
         /* --- ESTILOS MÓVILES (FORZADOS POR BOTÓN) --- */
-        body.vista-movil-activa .contenedor-lobby { align-items: flex-start !important; text-align: left !important; padding: 15px !important; }
-        body.vista-movil-activa .titulo-lobby { font-size: 2.8em !important; }
-        body.vista-movil-activa .subtitulo-lobby { font-size: 1.1em !important; margin-top: -10px !important; }
-        body.vista-movil-activa .pildora-estado { font-size: 0.85em !important; padding: 6px 12px !important; }
-        body.vista-movil-activa .tarjeta-btn { padding: 45px 25px !important; gap: 12px !important; align-items: flex-start !important; text-align: left !important; }
-        body.vista-movil-activa .icono-contenedor { width: 90px !important; height: 90px !important; font-size: 3.2em !important; margin-bottom: 10px !important; }
-        body.vista-movil-activa .texto-tarjeta { font-size: 1.4em !important; }
-        body.vista-movil-activa .desc-tarjeta { font-size: 1.05em !important; text-align: left !important; }
+        body.vista-movil-activa .contenedor-lobby { padding: 15px !important; }
+        body.vista-movil-activa .lobby-header-wrapper { flex-direction: row !important; align-items: center !important; gap: 15px !important; margin-bottom: 15px !important; }
+        body.vista-movil-activa .lobby-logo { width: 70px !important; height: 70px !important; border-radius: 16px !important; }
+        body.vista-movil-activa .titulo-lobby { font-size: 2.8em !important; letter-spacing: -1px !important; }
+        body.vista-movil-activa .subtitulo-lobby { font-size: 1.05em !important; margin-top: 0 !important; }
+        body.vista-movil-activa .pildora-estado { font-size: 0.85em !important; padding: 6px 12px !important; margin-top: 0 !important;}
+        body.vista-movil-activa .tarjeta-btn { padding: 20px 15px !important; gap: 15px !important; flex-direction: row !important; align-items: center !important; text-align: left !important; }
+        body.vista-movil-activa .icono-contenedor { width: 55px !important; height: 55px !important; font-size: 1.8em !important; }
+        body.vista-movil-activa .texto-tarjeta { font-size: 1.25em !important; margin: 0 !important; }
+        body.vista-movil-activa .desc-tarjeta { font-size: 0.9em !important; margin: 0 !important; }
 
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) table { display: block !important; width: 100% !important; min-width: 0 !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) thead { display: none !important; }
@@ -384,10 +420,12 @@
         .modo-exportacion thead { display: table-header-group !important; }
         .modo-exportacion tbody { display: table-row-group !important; }
         .modo-exportacion tbody tr { display: table-row !important; border: 0 !important; background: transparent; box-shadow: none !important; margin: 0 !important; padding: 0 !important;}
-        .modo-exportacion tbody tr:nth-child(even):not(.fila-extra) { background-color: #f1f6fe; }
+        .modo-exportacion tbody tr:nth-child(even):not(.fila-extra) { background-color: #f1f6fe !important; }
         .modo-exportacion tbody tr.fila-extra { background-color: #f8fafc; border-top: 0 !important; }
         .modo-exportacion tbody tr.fila-extra::before { content: none !important; }
-        .modo-exportacion th, .modo-exportacion td { display: table-cell !important; padding: 10px !important; border: 1px solid #b3cde0 !important; font-size: 1em !important; text-align: center !important; flex: unset !important; justify-content: unset !important; color: #000 !important; }
+        .modo-exportacion th { background-color: #a1c4fd !important; color: #1e293b !important; border: 1px solid #b3cde0 !important; }
+        .modo-exportacion td { border: 1px solid #b3cde0 !important; color: #000000 !important; }
+        .modo-exportacion th, .modo-exportacion td { display: table-cell !important; padding: 10px !important; font-size: 1em !important; text-align: center !important; flex: unset !important; justify-content: unset !important; }
         .modo-exportacion td::before { content: none !important; }
         .modo-exportacion [hidden] { display: none !important; }
         .modo-exportacion td.celda-dia { display: table-cell !important; border-radius: 0 !important; background: transparent !important;}
@@ -413,10 +451,14 @@
             #zona-impresion tbody { display: table-row-group !important; }
             #zona-impresion tr { display: table-row !important; page-break-inside: avoid; }
             #zona-impresion th, #zona-impresion td { 
-                display: table-cell !important; border: 1px solid #000 !important; padding: 4px !important; text-align: center !important; vertical-align: middle !important;
+                display: table-cell !important; border: 1px solid #b3cde0 !important; padding: 4px !important; text-align: center !important; vertical-align: middle !important;
             }
             #zona-impresion th { 
-                background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact; color-adjust: exact; font-weight: bold;
+                background-color: #a1c4fd !important; -webkit-print-color-adjust: exact; color-adjust: exact; font-weight: bold; color: #1e293b !important;
+            }
+            #zona-impresion td { color: #000000 !important; }
+            #zona-impresion tbody tr:nth-child(even) {
+                background-color: #f1f6fe !important; -webkit-print-color-adjust: exact; color-adjust: exact; 
             }
             #zona-impresion .footer-s13 { 
                 display: flex; justify-content: space-between; font-size: 8pt; margin-top: 10px; font-weight: bold;
@@ -431,32 +473,41 @@
     <!-- LOBBY / DASHBOARD PRINCIPAL                -->
     <!-- ========================================== -->
     <div id="vista-lobby" class="contenedor-lobby">
-        <img src="icono.png" alt="Icono Tito" style="width: 85px; height: 85px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 5px;">
-        <h1 class="titulo-lobby">Tito</h1>
-        <p class="subtitulo-lobby">Asistente de Territorios</p>
-        
-        <!-- PÍLDORA DE ESTADO RÁPIDO (DINÁMICA) -->
-        <div id="pildora-estado" class="pildora-estado">
-            <!-- Se inyecta por JS -->
+        <div class="lobby-header-wrapper">
+            <img src="icono.png" alt="Icono Tito" class="lobby-logo">
+            <div class="lobby-header-text">
+                <h1 class="titulo-lobby">Tito</h1>
+                <p class="subtitulo-lobby">Asistente de Territorios</p>
+                <!-- PÍLDORA DE ESTADO RÁPIDO (DINÁMICA) -->
+                <div id="pildora-estado" class="pildora-estado">
+                    <!-- Se inyecta por JS -->
+                </div>
+            </div>
         </div>
         
         <div class="grid-tarjetas">
             <button class="tarjeta-btn tarjeta-programa" onclick="cambiarVista('programa')">
                 <div class="icono-contenedor icono-prog">📅</div>
-                <div class="texto-tarjeta">Programa de Predicación</div>
-                <span class="desc-tarjeta">Asignaciones, horarios y salidas</span>
+                <div class="tarjeta-text-wrapper">
+                    <div class="texto-tarjeta">Programa de Predicación</div>
+                    <span class="desc-tarjeta">Asignaciones, horarios y salidas</span>
+                </div>
             </button>
             
             <button class="tarjeta-btn tarjeta-s13" onclick="cambiarVista('territorios')">
                 <div class="icono-contenedor icono-s13">🗺️</div>
-                <div class="texto-tarjeta">Registros S-13</div>
-                <span class="desc-tarjeta">Mesa activa, historial y planilla oficial</span>
+                <div class="tarjeta-text-wrapper">
+                    <div class="texto-tarjeta">Registros S-13</div>
+                    <span class="desc-tarjeta">Mesa activa, historial y planilla oficial</span>
+                </div>
             </button>
             
             <button class="tarjeta-btn tarjeta-config" onclick="solicitarAccesoAdmin()">
                 <div class="icono-contenedor icono-conf">⚙️</div>
-                <div class="texto-tarjeta">Configuración Global</div>
-                <span class="desc-tarjeta">Lugares, conductores y parámetros</span>
+                <div class="tarjeta-text-wrapper">
+                    <div class="texto-tarjeta">Configuración Global</div>
+                    <span class="desc-tarjeta">Lugares, conductores y parámetros</span>
+                </div>
             </button>
         </div>
     </div>
@@ -756,6 +807,7 @@
             if (!fechaReferencia) return;
 
             for (let i = 0; i < 7; i++) {
+                // Soportar ahora hasta 4 filas posibles por día para autogenerar
                 for (let sf = 1; sf <= 4; sf++) {
                     procesarSeleccionDeTabla(i, sf, fechaReferencia);
                 }
@@ -776,7 +828,9 @@
                 const conductor = selConductor.value;
 
                 if (numTerritorio !== "" && conductor !== "") {
+                    // Solo crear si no existe (cumple regla de no sobreescribir)
                     if (!fichasActivas[numTerritorio]) {
+                        // Calcular fecha exacta basada en el lunes + los días correspondientes a esa fila
                         const fechaBase = new Date(fechaReferencia + 'T12:00:00');
                         fechaBase.setDate(fechaBase.getDate() + diaIndex);
                         
@@ -791,6 +845,12 @@
                     }
                 }
             }
+        }
+
+        function formatearFechaParaLectura(fechaISO) {
+            const partes = fechaISO.split('-'); 
+            if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            return fechaISO;
         }
         
         function actualizarFiltroConductores() {
@@ -984,8 +1044,10 @@
 
         function eliminarFichaActiva(numTerritorio) {
             if (confirm(`¿Estás seguro de que deseas eliminar el Territorio ${numTerritorio} de la mesa sin guardarlo en el historial?`)) {
+                // 1. Eliminar del objeto
                 delete fichasActivas[numTerritorio];
                 
+                // 2. Limpiar el selector en la tabla
                 const selectsTerritorio = document.querySelectorAll('.sel-territorio');
                 selectsTerritorio.forEach(sel => {
                     if (sel.value === numTerritorio) {
@@ -993,9 +1055,13 @@
                     }
                 });
 
+                // 3. Guardar en localStorage
                 localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
+                
+                // 4. Sobrescribir el borrador
                 guardarBorradorLocal(); 
                 
+                // 5. Actualizar la vista
                 actualizarFiltroConductores();
                 renderizarFichas();
                 renderizarPlanillaS13();
