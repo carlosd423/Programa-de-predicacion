@@ -41,16 +41,16 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
             text-align: left;
             width: 100%;
             margin-bottom: 20px;
         }
 
         .lobby-logo {
-            width: 85px;
-            height: 85px;
-            border-radius: 20px;
+            width: 120px;
+            height: 120px;
+            border-radius: 28px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             flex-shrink: 0;
         }
@@ -123,7 +123,7 @@
             align-items: center;
             text-align: left;
             justify-content: flex-start;
-            gap: 15px;
+            gap: 20px;
             position: relative;
             overflow: hidden;
         }
@@ -138,13 +138,13 @@
         }
 
         .icono-contenedor {
-            width: 60px;
-            height: 60px;
+            width: 85px;
+            height: 85px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2em;
+            font-size: 2.8em;
             flex-shrink: 0;
         }
         
@@ -268,15 +268,15 @@
         @media screen and (max-width: 768px) {
             /* Aumentos de legibilidad para el Lobby en Móvil */
             .contenedor-lobby { padding: 15px !important; }
-            .lobby-header-wrapper { flex-direction: row !important; align-items: center !important; gap: 15px !important; margin-bottom: 15px !important; }
-            .lobby-logo { width: 70px !important; height: 70px !important; border-radius: 16px !important; }
+            .lobby-header-wrapper { flex-direction: row !important; align-items: center !important; gap: 20px !important; margin-bottom: 15px !important; }
+            .lobby-logo { width: 115px !important; height: 115px !important; border-radius: 28px !important; }
             .titulo-lobby { font-size: 2.8em !important; letter-spacing: -1px !important; }
             .subtitulo-lobby { font-size: 1.05em !important; margin-top: 0 !important; }
             .pildora-estado { font-size: 0.85em !important; padding: 6px 12px !important; margin-top: 0 !important; }
-            .tarjeta-btn { padding: 20px 15px !important; gap: 15px !important; flex-direction: row !important; align-items: center !important; text-align: left !important; }
-            .icono-contenedor { width: 55px !important; height: 55px !important; font-size: 1.8em !important; }
-            .texto-tarjeta { font-size: 1.25em !important; margin: 0 !important; }
-            .desc-tarjeta { font-size: 0.9em !important; margin: 0 !important; }
+            .tarjeta-btn { padding: 20px 15px !important; gap: 20px !important; flex-direction: row !important; align-items: center !important; text-align: left !important; }
+            .icono-contenedor { width: 105px !important; height: 105px !important; font-size: 3.8em !important; margin-bottom: 0 !important; }
+            .texto-tarjeta { font-size: 1.4em !important; margin: 0 !important; }
+            .desc-tarjeta { font-size: 1.05em !important; margin: 0 !important; text-align: left !important; }
 
             /* Tarjetas de la Tabla */
             #documento-imagen:not(.modo-exportacion) table { display: block !important; width: 100% !important; min-width: 0 !important; }
@@ -320,15 +320,15 @@
 
         /* --- ESTILOS MÓVILES (FORZADOS POR BOTÓN) --- */
         body.vista-movil-activa .contenedor-lobby { padding: 15px !important; }
-        body.vista-movil-activa .lobby-header-wrapper { flex-direction: row !important; align-items: center !important; gap: 15px !important; margin-bottom: 15px !important; }
-        body.vista-movil-activa .lobby-logo { width: 70px !important; height: 70px !important; border-radius: 16px !important; }
+        body.vista-movil-activa .lobby-header-wrapper { flex-direction: row !important; align-items: center !important; gap: 20px !important; margin-bottom: 15px !important; }
+        body.vista-movil-activa .lobby-logo { width: 115px !important; height: 115px !important; border-radius: 28px !important; }
         body.vista-movil-activa .titulo-lobby { font-size: 2.8em !important; letter-spacing: -1px !important; }
         body.vista-movil-activa .subtitulo-lobby { font-size: 1.05em !important; margin-top: 0 !important; }
         body.vista-movil-activa .pildora-estado { font-size: 0.85em !important; padding: 6px 12px !important; margin-top: 0 !important;}
-        body.vista-movil-activa .tarjeta-btn { padding: 20px 15px !important; gap: 15px !important; flex-direction: row !important; align-items: center !important; text-align: left !important; }
-        body.vista-movil-activa .icono-contenedor { width: 55px !important; height: 55px !important; font-size: 1.8em !important; }
-        body.vista-movil-activa .texto-tarjeta { font-size: 1.25em !important; margin: 0 !important; }
-        body.vista-movil-activa .desc-tarjeta { font-size: 0.9em !important; margin: 0 !important; }
+        body.vista-movil-activa .tarjeta-btn { padding: 20px 15px !important; gap: 20px !important; flex-direction: row !important; align-items: center !important; text-align: left !important; }
+        body.vista-movil-activa .icono-contenedor { width: 105px !important; height: 105px !important; font-size: 3.8em !important; margin-bottom: 0 !important; }
+        body.vista-movil-activa .texto-tarjeta { font-size: 1.4em !important; margin: 0 !important; }
+        body.vista-movil-activa .desc-tarjeta { font-size: 1.05em !important; margin: 0 !important; text-align: left !important; }
 
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) table { display: block !important; width: 100% !important; min-width: 0 !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) thead { display: none !important; }
@@ -807,7 +807,6 @@
             if (!fechaReferencia) return;
 
             for (let i = 0; i < 7; i++) {
-                // Soportar ahora hasta 4 filas posibles por día para autogenerar
                 for (let sf = 1; sf <= 4; sf++) {
                     procesarSeleccionDeTabla(i, sf, fechaReferencia);
                 }
@@ -1044,10 +1043,8 @@
 
         function eliminarFichaActiva(numTerritorio) {
             if (confirm(`¿Estás seguro de que deseas eliminar el Territorio ${numTerritorio} de la mesa sin guardarlo en el historial?`)) {
-                // 1. Eliminar del objeto
                 delete fichasActivas[numTerritorio];
                 
-                // 2. Limpiar el selector en la tabla
                 const selectsTerritorio = document.querySelectorAll('.sel-territorio');
                 selectsTerritorio.forEach(sel => {
                     if (sel.value === numTerritorio) {
@@ -1055,13 +1052,9 @@
                     }
                 });
 
-                // 3. Guardar en localStorage
                 localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
-                
-                // 4. Sobrescribir el borrador
                 guardarBorradorLocal(); 
                 
-                // 5. Actualizar la vista
                 actualizarFiltroConductores();
                 renderizarFichas();
                 renderizarPlanillaS13();
