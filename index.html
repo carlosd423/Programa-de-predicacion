@@ -222,7 +222,7 @@
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody tr { display: flex !important; flex-direction: column !important; width: 100% !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important; border-radius: 10px !important; padding: 0 12px 12px 12px !important; box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important; }
         
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td { display: flex !important; flex-direction: column !important; align-items: flex-start !important; width: 100% !important; padding: 8px 0 !important; border: none !important; gap: 6px !important; }
-        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td::before { content: attr(data-label); font-weight: bold; color: #334155; font-size: 0.9em; width: 100%; text-align: left; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td::before { content: attr(data-label); font-weight: bold; color: #334155; font-size: 0.85em; width: 100%; text-align: left; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td:last-child { border-bottom: none !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr[hidden] { display: none !important; }
         
@@ -850,8 +850,24 @@
 
         function eliminarFichaActiva(numTerritorio) {
             if (confirm(`¿Estás seguro de que deseas eliminar el Territorio ${numTerritorio} de la mesa sin guardarlo en el historial?`)) {
+                // 1. Eliminar del objeto
                 delete fichasActivas[numTerritorio];
+                
+                // 2. Limpiar el selector en la tabla
+                const selectsTerritorio = document.querySelectorAll('.sel-territorio');
+                selectsTerritorio.forEach(sel => {
+                    if (sel.value === numTerritorio) {
+                        sel.value = "";
+                    }
+                });
+
+                // 3. Guardar en localStorage
                 localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
+                
+                // 4. Sobrescribir el borrador (esto también llama a generarFichasAutomaticas de forma segura)
+                guardarBorradorLocal(); 
+                
+                // 5. Actualizar la vista
                 actualizarFiltroConductores();
                 renderizarFichas();
                 renderizarPlanillaS13();
@@ -1063,8 +1079,23 @@
                 visitas = datos.visitas || [];
                 visitasGrupos = datos.visitasGrupos || [];
 
+                // NUEVA LÓGICA S-13 y Fichas Activas
+                if (datos.registroS13) {
+                    registroS13 = datos.registroS13;
+                    localStorage.setItem('registroS13', JSON.stringify(registroS13));
+                }
+                if (datos.fichasActivas) {
+                    fichasActivas = datos.fichasActivas;
+                    localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
+                }
+
                 actualizarListasDesplegables();
                 actualizarFiltroConductores();
+                
+                // Actualizar vista
+                renderizarFichas();
+                renderizarPlanillaS13();
+
             } catch (error) { console.error("Error al cargar de la nube:", error); }
         }
 
@@ -1132,7 +1163,8 @@
             if(conductores[0] !== "") conductores.unshift("");
             if(lugares[0] !== "") lugares.unshift("");
 
-            const nuevosDatos = { horarios, conductores, lugares, asambleas, visitas, visitasGrupos };
+            // INCLUYE registroS13 y fichasActivas
+            const nuevosDatos = { horarios, conductores, lugares, asambleas, visitas, visitasGrupos, registroS13, fichasActivas };
             const estadoNube = document.getElementById('estado-nube');
             estadoNube.innerText = "Guardando...";
 
