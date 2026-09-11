@@ -3,13 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Tito: Asistente de territorios</title>
-    <!-- Icono para pestaña del navegador y Android -->
-    <link rel="icon" type="image/png" sizes="192x192" href="icono.png">
-    <!-- Icono para iPhone / iPad (Safari) -->
-    <link rel="apple-touch-icon" href="icono.png">
-    <!-- Manifiesto de la aplicación -->
-    <link rel="manifest" href="manifest.json">
+    <title>Tito: Asistente de territorios</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * { box-sizing: border-box; }
@@ -18,7 +12,8 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 10px;
-            background-color: #f4f4f9;
+            background-color: #f8fafc; /* Gris Nube */
+            color: #1e293b; /* Azul Pizarra Oscuro */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -27,7 +22,7 @@
 
         .vista-oculta { display: none !important; }
 
-        /* --- LOBBY / DASHBOARD --- */
+        /* --- LOBBY / DASHBOARD REDISEÑADO --- */
         .contenedor-lobby {
             display: flex;
             flex-direction: column;
@@ -36,124 +31,156 @@
             width: 100%;
             max-width: 900px;
             min-height: 80vh;
-            gap: 40px;
+            gap: 20px;
             text-align: center;
             animation: fadeIn 0.5s ease-in-out;
         }
         
         .titulo-lobby {
-            font-size: 2.2em;
+            font-size: 2.8em;
             color: #1e293b;
             margin: 0;
             font-weight: 800;
-            letter-spacing: -0.5px;
+            letter-spacing: -1px;
+        }
+
+        .subtitulo-lobby {
+            color: #64748b;
+            font-size: 1.15em;
+            font-weight: 500;
+            margin-top: -10px;
+            margin-bottom: 20px;
         }
 
         .grid-tarjetas {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 25px;
             width: 100%;
             padding: 10px;
+            margin-top: 15px;
         }
 
         .tarjeta-btn {
-            background: white;
-            border: 2px solid transparent;
+            background: #ffffff;
+            border: none;
             border-radius: 16px;
-            padding: 40px 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            padding: 35px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .tarjeta-programa { border-top: 4px solid #0ea5e9; } /* Azul Cian */
+        .tarjeta-s13 { border-top: 4px solid #10b981; } /* Verde Esmeralda */
+        .tarjeta-config { border-top: 4px solid #64748b; } /* Gris Pizarra */
 
         .tarjeta-btn:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 20px rgba(0,0,0,0.12);
-            border-color: #93c5fd;
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
         }
 
-        .icono-tarjeta { font-size: 3.5em; }
-        .texto-tarjeta { font-size: 1.25em; font-weight: bold; color: #334155; }
+        .icono-contenedor {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+            margin-bottom: 5px;
+        }
+        
+        .icono-prog { background-color: #e0f2fe; color: #0ea5e9; }
+        .icono-s13 { background-color: #d1fae5; color: #10b981; }
+        .icono-conf { background-color: #f1f5f9; color: #64748b; }
 
-        /* --- NAVEGACIÓN INTERNA --- */
+        .texto-tarjeta { font-size: 1.25em; font-weight: bold; color: #1e293b; }
+        .desc-tarjeta { font-size: 0.85em; color: #64748b; text-align: center; font-weight: normal; line-height: 1.3; margin-top: 5px; }
+
+        /* --- NAVEGACIÓN INTERNA (Estilo App Móvil) --- */
         .barra-superior {
             width: 100%;
             max-width: 800px;
             margin-bottom: 20px;
             display: flex;
             justify-content: flex-start;
+            background-color: #1e293b;
+            padding: 10px 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         
         .btn-volver {
-            padding: 10px 20px;
+            padding: 8px 15px;
             font-size: 1.05em;
             font-weight: bold;
-            color: #475569;
-            background-color: #e2e8f0;
+            color: #0ea5e9;
+            background-color: transparent;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            gap: 8px;
         }
         
         .btn-volver:hover {
-            background-color: #cbd5e1;
-            color: #1e293b;
+            background-color: rgba(14, 165, 233, 0.15);
+            color: #38bdf8;
         }
 
         /* --- ESTILOS DEL PROGRAMA (VISTA 1) --- */
         .contenedor-controles { width: 100%; max-width: 800px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .panel-control { background-color: #e2e8f0; padding: 12px 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 10px; }
+        .panel-control { background-color: #ffffff; padding: 12px 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04); flex-wrap: wrap; gap: 10px; border: 1px solid #e2e8f0; }
         .selector-semana { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .selector-semana label { min-height: 48px; padding: 12px 16px; border-radius: 8px; background-color: #334155; color: white; display: inline-flex; align-items: center; font-size: 1.05em; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.16); }
-        #fecha-lunes { min-height: 48px; padding: 10px 12px; border-radius: 8px; border: 2px solid #94a3b8; background-color: white; color: #1e293b; font: inherit; font-size: 1.05em; cursor: pointer; }
-        .selector-semana label:focus-within, #fecha-lunes:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+        .selector-semana label { min-height: 48px; padding: 12px 16px; border-radius: 8px; background-color: #1e293b; color: white; display: inline-flex; align-items: center; font-size: 1.05em; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #fecha-lunes { min-height: 48px; padding: 10px 12px; border-radius: 8px; border: 2px solid #cbd5e1; background-color: white; color: #1e293b; font: inherit; font-size: 1.05em; cursor: pointer; }
+        .selector-semana label:focus-within, #fecha-lunes:focus-visible { outline: 3px solid #0ea5e9; outline-offset: 2px; }
         
-        .btn-accion { padding: 8px 15px; font-size: 0.95em; color: white; background-color: #10b981; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; }
-        .btn-accion:hover { background-color: #059669; }
-        .btn-imprimir { padding: 8px 15px; font-size: 1em; color: white; background-color: #4a90e2; border: none; border-radius: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: background-color 0.3s; }
-        .btn-imprimir:hover { background-color: #357abd; }
-        .btn-compartir { padding: 8px 15px; font-size: 1em; color: white; background-color: #25d366; border: none; border-radius: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: background-color 0.3s; }
+        .btn-accion { padding: 8px 15px; font-size: 0.95em; color: white; background-color: #0ea5e9; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; font-weight: bold; }
+        .btn-accion:hover { background-color: #0284c7; }
+        .btn-imprimir { padding: 8px 15px; font-size: 1em; color: white; background-color: #0ea5e9; border: none; border-radius: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background-color 0.3s; font-weight: bold; }
+        .btn-imprimir:hover { background-color: #0284c7; }
+        .btn-compartir { padding: 8px 15px; font-size: 1em; color: white; background-color: #25d366; border: none; border-radius: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background-color 0.3s; font-weight: bold; }
         .btn-compartir:hover { background-color: #128c7e; }
         .asamblea-activa { background-color: #fef08a !important; color: #854d0e; font-weight: bold; font-size: 1.05em; letter-spacing: 1px; }
 
-        #documento-imagen { background-color: white; padding: 20px; width: 100%; max-width: 800px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 6px; }
-        h1 { text-align: center; margin-top: 5px; margin-bottom: 5px; color: #000; font-size: 1.6em; }
-        .subtitulo { text-align: center; font-size: 1.2em; color: #333; margin-bottom: 5px; }
-        .rango-fechas { text-align: center; font-size: 1.05em; color: #555; margin-bottom: 15px; font-style: italic; }
-        .mes-select { font-size: 1.8em; font-weight: bold; color: #6a2c70; border: none; border-left: 4px solid #4a90e2; padding: 4px 8px; line-height: normal; margin-bottom: 10px; outline: none; width: auto; background-color: transparent; font-family: inherit; cursor: pointer; appearance: none; display: inline-block; }
-        .mes-select:hover { border-bottom: 1px dashed #ccc; }
-        .campana-input { font-size: 1em; color: #8b3a62; font-style: italic; font-weight: bold; border: none; outline: none; width: 100%; margin-bottom: 15px; padding-bottom: 2px; font-family: inherit; }
-        .campana-input:hover { border-bottom: 1px dashed #ccc; }
+        #documento-imagen { background-color: white; padding: 20px; width: 100%; max-width: 800px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-radius: 8px; }
+        h1 { text-align: center; margin-top: 5px; margin-bottom: 5px; color: #1e293b; font-size: 1.6em; }
+        .subtitulo { text-align: center; font-size: 1.2em; color: #334155; margin-bottom: 5px; }
+        .rango-fechas { text-align: center; font-size: 1.05em; color: #64748b; margin-bottom: 15px; font-style: italic; }
+        .mes-select { font-size: 1.8em; font-weight: bold; color: #1e293b; border: none; border-left: 4px solid #0ea5e9; padding: 4px 8px; line-height: normal; margin-bottom: 10px; outline: none; width: auto; background-color: transparent; font-family: inherit; cursor: pointer; appearance: none; display: inline-block; }
+        .mes-select:hover { border-bottom: 1px dashed #cbd5e1; }
+        .campana-input { font-size: 1em; color: #0284c7; font-style: italic; font-weight: bold; border: none; outline: none; width: 100%; margin-bottom: 15px; padding-bottom: 2px; font-family: inherit; }
+        .campana-input:hover { border-bottom: 1px dashed #cbd5e1; }
         
         .tabla-contenedor { width: 100%; overflow-x: auto; margin-bottom: 15px; }
         table { width: 100%; min-width: 550px; border-collapse: collapse; text-align: center; }
-        th, td { border: 1px solid #b3cde0; padding: 8px 6px; font-size: 0.95em; vertical-align: middle; }
-        th { background-color: #a1c4fd; color: #000; font-weight: bold; }
-        tbody tr:nth-child(even):not(.fila-extra) { background-color: #f1f6fe; }
-        .fila-extra { background-color: #f8fafc; }
-        td.celda-dia { font-weight: bold; }
-        input[type="text"].in-fecha, select.tabla-select { width: 100%; padding: 4px; border: 1px solid transparent; background-color: transparent; font-family: inherit; font-size: 0.95em; text-align: center; outline: none; appearance: none; cursor: pointer; }
-        input[type="text"].in-fecha:hover, select.tabla-select:hover { border-bottom: 1px dashed #ccc; }
+        th, td { border: 1px solid #cbd5e1; padding: 8px 6px; font-size: 0.95em; vertical-align: middle; }
+        th { background-color: #1e293b; color: #ffffff; font-weight: bold; border-color: #334155; }
+        tbody tr:nth-child(even):not(.fila-extra) { background-color: #f8fafc; }
+        .fila-extra { background-color: #ffffff; }
+        td.celda-dia { font-weight: bold; color: #1e293b; }
+        input[type="text"].in-fecha, select.tabla-select { width: 100%; padding: 4px; border: 1px solid transparent; background-color: transparent; font-family: inherit; font-size: 0.95em; text-align: center; outline: none; appearance: none; cursor: pointer; color: #1e293b; }
+        input[type="text"].in-fecha:hover, select.tabla-select:hover { border-bottom: 1px dashed #94a3b8; }
         [hidden] { display: none !important; }
         
         /* BOTÓN DINÁMICO DE AÑADIR SALIDA */
         .btn-add-salida {
-            background: #3b82f6; color: white; border: none; border-radius: 50%;
+            background: #0ea5e9; color: white; border: none; border-radius: 50%;
             width: 26px; height: 26px; font-weight: bold; font-size: 1.2em;
             cursor: pointer; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: background 0.3s; padding: 0; line-height: 1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: background 0.3s; padding: 0; line-height: 1;
         }
-        .btn-add-salida:hover { background: #2563eb; }
+        .btn-add-salida:hover { background: #0284c7; }
 
         /* --- BOTÓN FLOTANTE VISTA --- */
         .btn-flotante-vista {
@@ -188,14 +215,14 @@
             #documento-imagen:not(.modo-exportacion) tbody tr { display: flex !important; flex-direction: column !important; width: 100% !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important; border-radius: 10px !important; padding: 0 12px 12px 12px !important; box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important; }
             
             #documento-imagen:not(.modo-exportacion) tbody td { display: flex !important; flex-direction: column !important; align-items: flex-start !important; width: 100% !important; padding: 8px 0 !important; border: none !important; gap: 6px !important; }
-            #documento-imagen:not(.modo-exportacion) tbody td::before { content: attr(data-label); font-weight: bold; color: #334155; font-size: 0.85em; width: 100%; text-align: left; }
+            #documento-imagen:not(.modo-exportacion) tbody td::before { content: attr(data-label); font-weight: bold; color: #334155; font-size: 0.85em; width: 100%; text-align: left; text-transform: uppercase; }
             #documento-imagen:not(.modo-exportacion) td:last-child { border-bottom: none !important; }
             #documento-imagen:not(.modo-exportacion) tr[hidden] { display: none !important; }
             
             /* Estilización de los campos */
             #documento-imagen:not(.modo-exportacion) select.tabla-select,
             #documento-imagen:not(.modo-exportacion) input[type="text"].in-fecha {
-                width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; text-align: left; text-align-last: left; outline: none; font-size: 1em !important; color: #1e293b !important;
+                width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; text-align: left; text-align-last: left; outline: none; font-size: 1em !important; color: #1e293b !important; min-height: 42px !important;
             }
             
             #documento-imagen:not(.modo-exportacion) tbody td > div { width: 100% !important; justify-content: flex-start !important; gap: 8px !important;}
@@ -228,13 +255,13 @@
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody tr { display: flex !important; flex-direction: column !important; width: 100% !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important; border-radius: 10px !important; padding: 0 12px 12px 12px !important; box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important; }
         
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td { display: flex !important; flex-direction: column !important; align-items: flex-start !important; width: 100% !important; padding: 8px 0 !important; border: none !important; gap: 6px !important; }
-        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td::before { content: attr(data-label); font-weight: bold; color: #334155; font-size: 0.85em; width: 100%; text-align: left; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td::before { content: attr(data-label); font-weight: bold; color: #334155; font-size: 0.85em; width: 100%; text-align: left; text-transform: uppercase; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td:last-child { border-bottom: none !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr[hidden] { display: none !important; }
         
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) select.tabla-select,
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) input[type="text"].in-fecha {
-            width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; text-align: left; text-align-last: left; outline: none; font-size: 1em !important; color: #1e293b !important;
+            width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; text-align: left; text-align-last: left; outline: none; font-size: 1em !important; color: #1e293b !important; min-height: 42px !important;
         }
         
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td > div { width: 100% !important; justify-content: flex-start !important; gap: 8px !important;}
@@ -261,46 +288,46 @@
         /* --- ESTILOS DE TERRITORIOS Y S-13 (VISTA 2) --- */
         .contenedor-territorios { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 20px; }
         .titulo-seccion { color: #1e293b; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px; margin-top: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
-        .mesa-fichas { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 15px; background-color: #e2e8f0; padding: 20px; border-radius: 10px; min-height: 150px; }
-        .ficha { background-color: white; border-top: 4px solid #3b82f6; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .ficha h3 { margin: 0 0 10px 0; color: #1d4ed8; }
+        .mesa-fichas { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 15px; background-color: #ffffff; padding: 20px; border-radius: 12px; min-height: 150px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        .ficha { background-color: #f8fafc; border-top: 4px solid #0ea5e9; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .ficha h3 { margin: 0 0 10px 0; color: #1e293b; }
         .ficha p { margin: 5px 0; font-size: 0.9em; color: #475569; }
         
-        .btn-terminar { width: 100%; padding: 8px; margin-top: 10px; background-color: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background-color 0.3s; }
+        .btn-terminar { width: 100%; padding: 8px; margin-top: 10px; background-color: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background-color 0.3s; }
         .btn-terminar:hover { background-color: #059669; }
         
-        .btn-eliminar { width: 100%; padding: 8px; margin-top: 6px; background-color: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background-color 0.3s; }
+        .btn-eliminar { width: 100%; padding: 8px; margin-top: 6px; background-color: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background-color 0.3s; }
         .btn-eliminar:hover { background-color: #dc2626; }
         
         /* FILTROS Y CONTROLES S-13 */
-        .controles-filtro { background-color: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-wrap: wrap; gap: 15px; align-items: center; border: 1px solid #e2e8f0; margin-bottom: -5px; }
+        .controles-filtro { background-color: #ffffff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.03); display: flex; flex-wrap: wrap; gap: 15px; align-items: center; border: 1px solid #e2e8f0; margin-bottom: -5px; }
         .grupo-filtro { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 150px; }
         .grupo-filtro label { font-size: 0.85em; font-weight: bold; color: #475569; }
-        .grupo-filtro select { padding: 8px; border-radius: 4px; border: 1px solid #cbd5e1; outline: none; font-family: inherit; font-size: 0.95em; cursor: pointer; }
+        .grupo-filtro select { padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; outline: none; font-family: inherit; font-size: 0.95em; cursor: pointer; background-color: #f8fafc; color: #1e293b; }
         .grupo-filtro select:hover { border-color: #94a3b8; }
 
         /* CARPETAS S-13 (ACORDEÓN) */
-        .contenedor-carpetas-s13 { display: flex; flex-direction: column; gap: 10px; }
-        .carpeta-territorio { border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .carpeta-cabecera { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background-color: #f8fafc; transition: background 0.3s; }
-        .carpeta-cabecera:hover { background-color: #f1f5f9; }
+        .contenedor-carpetas-s13 { display: flex; flex-direction: column; gap: 12px; }
+        .carpeta-territorio { border: 1px solid #cbd5e1; border-radius: 10px; overflow: hidden; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+        .carpeta-cabecera { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; transition: background 0.3s; }
+        .carpeta-cabecera:hover { background-color: #f8fafc; }
         .carpeta-info { display: flex; align-items: center; gap: 15px; }
         .carpeta-num { font-weight: bold; font-size: 1.1em; color: #1e293b; }
-        .estado-disponible { background-color: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold; }
-        .estado-en-curso { background-color: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; font-weight: bold; }
-        .carpeta-fecha { color: #475569; font-size: 0.9em; display: flex; align-items: center; gap: 10px; }
+        .estado-disponible { background-color: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 6px; font-size: 0.85em; font-weight: bold; }
+        .estado-en-curso { background-color: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 6px; font-size: 0.85em; font-weight: bold; }
+        .carpeta-fecha { color: #64748b; font-size: 0.9em; display: flex; align-items: center; gap: 10px; }
         
-        .carpeta-detalle { padding: 0; display: none; border-top: 1px solid #cbd5e1; background-color: #fff; }
+        .carpeta-detalle { padding: 0; display: none; border-top: 1px solid #e2e8f0; background-color: #f8fafc; }
         .carpeta-detalle.activa { display: block; padding: 15px; }
-        .historial-tabla { width: 100%; border-collapse: collapse; text-align: center; }
-        .historial-tabla th { background-color: #f1f5f9; color: #334155; padding: 8px; border-bottom: 2px solid #cbd5e1; font-size: 0.95em; }
-        .historial-tabla td { padding: 8px; border-bottom: 1px solid #e2e8f0; font-size: 0.9em; color: #1e293b; }
+        .historial-tabla { width: 100%; border-collapse: collapse; text-align: center; background: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .historial-tabla th { background-color: #1e293b; color: #0ea5e9; padding: 10px; border-bottom: 2px solid #0284c7; font-size: 0.95em; }
+        .historial-tabla td { padding: 10px; border-bottom: 1px solid #f1f5f9; font-size: 0.9em; color: #334155; }
 
         /* --- ESTILOS DE CONFIGURACIÓN GLOBAL (VISTA 3) --- */
-        .panel-admin { background-color: white; padding: 25px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 800px; margin-bottom: 15px; }
+        .panel-admin { background-color: white; padding: 25px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 800px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
         .panel-admin h3 { margin: 0 0 10px 0; color: #1e293b; font-size: 1.4em; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
         .panel-admin label { font-weight: bold; font-size: 0.9em; color: #334155; display: block; margin-bottom: 5px; }
-        .panel-admin textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-family: inherit; resize: vertical; font-size: 1em; }
+        .panel-admin textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: inherit; resize: vertical; font-size: 1em; background-color: #f8fafc; }
         .admin-seccion { border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 5px; }
 
         /* --- AJUSTES DE EXPORTACIÓN (html2canvas) --- */
@@ -315,11 +342,11 @@
         .modo-exportacion tbody tr:nth-child(even):not(.fila-extra) { background-color: #f1f6fe; }
         .modo-exportacion tbody tr.fila-extra { background-color: #f8fafc; border-top: 0 !important; }
         .modo-exportacion tbody tr.fila-extra::before { content: none !important; }
-        .modo-exportacion th, .modo-exportacion td { display: table-cell !important; padding: 10px !important; border: 1px solid #b3cde0 !important; font-size: 1em !important; text-align: center !important; flex: unset !important; justify-content: unset !important;}
+        .modo-exportacion th, .modo-exportacion td { display: table-cell !important; padding: 10px !important; border: 1px solid #b3cde0 !important; font-size: 1em !important; text-align: center !important; flex: unset !important; justify-content: unset !important; color: #000 !important; }
         .modo-exportacion td::before { content: none !important; }
         .modo-exportacion [hidden] { display: none !important; }
-        .modo-exportacion td.celda-dia { display: table-cell !important; border-radius: 0 !important; }
-        .modo-exportacion td.celda-fecha { display: table-cell !important; }
+        .modo-exportacion td.celda-dia { display: table-cell !important; border-radius: 0 !important; background: transparent !important;}
+        .modo-exportacion td.celda-fecha { display: table-cell !important; background: transparent !important; }
 
         /* --- ESTILOS DE IMPRESIÓN (NATIVO S-13-S 1/22) --- */
         @media screen { #zona-impresion { display: none !important; } }
@@ -359,22 +386,27 @@
     <!-- LOBBY / DASHBOARD PRINCIPAL                -->
     <!-- ========================================== -->
     <div id="vista-lobby" class="contenedor-lobby">
-        <h1 class="titulo-lobby">Gestión de Predicación y Territorios</h1>
+        <img src="icono.png" alt="Icono Tito" style="width: 85px; height: 85px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 5px;">
+        <h1 class="titulo-lobby">Tito</h1>
+        <p class="subtitulo-lobby">Asistente de Territorios • Congregación Ojo de Agua</p>
         
         <div class="grid-tarjetas">
-            <button class="tarjeta-btn" onclick="cambiarVista('programa')">
-                <span class="icono-tarjeta">📅</span>
-                <span class="texto-tarjeta">Programa de Predicación</span>
+            <button class="tarjeta-btn tarjeta-programa" onclick="cambiarVista('programa')">
+                <div class="icono-contenedor icono-prog">📅</div>
+                <div class="texto-tarjeta">Programa de Predicación</div>
+                <span class="desc-tarjeta">Asignaciones, horarios y salidas</span>
             </button>
             
-            <button class="tarjeta-btn" onclick="cambiarVista('territorios')">
-                <span class="icono-tarjeta">🗺️</span>
-                <span class="texto-tarjeta">Registros S-13</span>
+            <button class="tarjeta-btn tarjeta-s13" onclick="cambiarVista('territorios')">
+                <div class="icono-contenedor icono-s13">🗺️</div>
+                <div class="texto-tarjeta">Registros S-13</div>
+                <span class="desc-tarjeta">Mesa activa, historial y planilla oficial</span>
             </button>
             
-            <button class="tarjeta-btn" onclick="solicitarAccesoAdmin()">
-                <span class="icono-tarjeta">⚙️</span>
-                <span class="texto-tarjeta">Configuración Global</span>
+            <button class="tarjeta-btn tarjeta-config" onclick="solicitarAccesoAdmin()">
+                <div class="icono-contenedor icono-conf">⚙️</div>
+                <div class="texto-tarjeta">Configuración Global</div>
+                <span class="desc-tarjeta">Lugares, conductores y parámetros</span>
             </button>
         </div>
     </div>
@@ -435,7 +467,7 @@
         </div>
 
         <h2 class="titulo-seccion">📌 Territorios Abiertos</h2>
-        <p style="font-size: 0.9em; color: #475569; margin-top: -10px;">Estas fichas se crean automáticamente cuando asignas un territorio en el programa semanal.</p>
+        <p style="font-size: 0.95em; color: #475569; margin-top: -10px;">Estas fichas se crean automáticamente cuando asignas un territorio en el programa semanal.</p>
         <div class="mesa-fichas" id="contenedor-fichas">
             <!-- Fichas generadas por JS -->
         </div>
@@ -470,7 +502,7 @@
                     <!-- Llenado dinámicamente -->
                 </select>
             </div>
-            <button class="btn-imprimir" style="margin-left:auto; background-color: #3b82f6;" onclick="imprimirS13()">🖨️ Imprimir Registros S-13</button>
+            <button class="btn-imprimir" style="margin-left:auto; background-color: #0ea5e9;" onclick="imprimirS13()">🖨️ Imprimir S-13</button>
         </div>
 
         <div id="contenedor-carpetas-s13" class="contenedor-carpetas-s13">
@@ -494,39 +526,39 @@
             <div><label>Horarios (separados por coma):</label><textarea id="admin-horarios" rows="2"></textarea></div>
             
             <div class="admin-seccion">
-                <label style="color:#047857;">👥 Visita del Sup. de Servicio a Grupos (Días con 2 salidas):</label>
+                <label style="color:#0ea5e9;">👥 Visita del Sup. de Servicio a Grupos (Días con 2 salidas):</label>
                 <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap: wrap;">
-                    <input type="date" id="in-grupo-fecha" style="padding:8px; border-radius:4px; border:1px solid #ccc; flex:1;">
-                    <select id="in-grupo-num" style="padding:8px; border-radius:4px; border:1px solid #ccc; flex:1;">
+                    <input type="date" id="in-grupo-fecha" style="padding:8px; border-radius:6px; border:1px solid #cbd5e1; flex:1;">
+                    <select id="in-grupo-num" style="padding:8px; border-radius:6px; border:1px solid #cbd5e1; flex:1;">
                         <option value="1">Grupo 1</option><option value="2">Grupo 2</option><option value="3">Grupo 3</option>
                     </select>
-                    <button class="btn-accion" style="background-color: #059669;" onclick="agregarVisitaGrupoAdmin()">Añadir</button>
+                    <button class="btn-accion" style="background-color: #0ea5e9;" onclick="agregarVisitaGrupoAdmin()">Añadir</button>
                 </div>
-                <div id="lista-grupos-ui" style="max-height: 120px; overflow-y: auto; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;"></div>
+                <div id="lista-grupos-ui" style="max-height: 120px; overflow-y: auto; background: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
             </div>
 
             <div class="admin-seccion">
-                <label style="color:#6a2c70;">📅 Fechas de Asambleas:</label>
+                <label style="color:#64748b;">📅 Fechas de Asambleas:</label>
                 <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap: wrap;">
-                    <input type="date" id="in-asamblea-fecha" style="padding:8px; border-radius:4px; border:1px solid #ccc; flex:1;">
-                    <input type="text" id="in-asamblea-nombre" placeholder="Ej. Asamblea Regional" style="padding:8px; border-radius:4px; border:1px solid #ccc; flex:2;">
-                    <button class="btn-accion" onclick="agregarAsambleaAdmin()">Añadir</button>
+                    <input type="date" id="in-asamblea-fecha" style="padding:8px; border-radius:6px; border:1px solid #cbd5e1; flex:1;">
+                    <input type="text" id="in-asamblea-nombre" placeholder="Ej. Asamblea Regional" style="padding:8px; border-radius:6px; border:1px solid #cbd5e1; flex:2;">
+                    <button class="btn-accion" style="background-color: #1e293b;" onclick="agregarAsambleaAdmin()">Añadir</button>
                 </div>
-                <div id="lista-asambleas-ui" style="max-height: 120px; overflow-y: auto; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;"></div>
+                <div id="lista-asambleas-ui" style="max-height: 120px; overflow-y: auto; background: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
             </div>
 
             <div class="admin-seccion">
-                <label style="color:#1e3a8a;">👔 Lunes de Visita del Viajante:</label>
+                <label style="color:#1e293b;">👔 Lunes de Visita del Viajante:</label>
                 <div style="display:flex; gap:8px; margin-bottom:8px;">
-                    <input type="date" id="in-visita-fecha" style="padding:8px; border-radius:4px; border:1px solid #ccc; flex:1;">
-                    <button class="btn-accion" onclick="agregarVisitaAdmin()">Añadir</button>
+                    <input type="date" id="in-visita-fecha" style="padding:8px; border-radius:6px; border:1px solid #cbd5e1; flex:1;">
+                    <button class="btn-accion" style="background-color: #1e293b;" onclick="agregarVisitaAdmin()">Añadir</button>
                 </div>
-                <div id="lista-visitas-ui" style="max-height: 120px; overflow-y: auto; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;"></div>
+                <div id="lista-visitas-ui" style="max-height: 120px; overflow-y: auto; background: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 2px solid #e2e8f0; padding-top: 15px;">
-                <button class="btn-accion" style="background-color: #2563eb; font-size: 1.05em; padding: 10px 20px;" onclick="guardarEnLaNube()">💾 Guardar en la Nube Global</button>
-                <span id="estado-nube" style="font-size: 1em; font-weight: bold; color: #059669;"></span>
+                <button class="btn-accion" style="background-color: #0ea5e9; font-size: 1.05em; padding: 10px 20px;" onclick="guardarEnLaNube()">💾 Guardar en la Nube Global</button>
+                <span id="estado-nube" style="font-size: 1em; font-weight: bold; color: #10b981;"></span>
             </div>
         </div>
     </div>
@@ -559,7 +591,7 @@
         const territorios = [""].concat(Array.from({length: 18}, (_, i) => (i + 1).toString()));
         const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
-        // Variables de Territorios
+        // Variables de Territorios y S-13 (con persistencia local)
         let fichasActivas = JSON.parse(localStorage.getItem('fichasActivas')) || {};
         let registroS13 = JSON.parse(localStorage.getItem('registroS13')) || [];
 
@@ -714,7 +746,6 @@
             const estado = document.getElementById('filtro-estado').value;
             const cond = document.getElementById('filtro-conductor').value;
 
-            // 1. Preparar datos base
             let datosTerritorios = [];
             for (let i = 1; i <= 18; i++) {
                 const num = i.toString();
@@ -729,7 +760,6 @@
                     ultimaFechaObj = parseFechaDDMMYYYY(ultimaFecha);
                 }
 
-                // Evaluar si coincide con el filtro del conductor
                 let involucraConductor = false;
                 if (cond === 'all') {
                     involucraConductor = true;
@@ -741,12 +771,10 @@
                 datosTerritorios.push({ num, estaActiva, historial, ultimaFecha, ultimaFechaObj, involucraConductor });
             }
 
-            // 2. Filtrado
             if (estado === 'active') datosTerritorios = datosTerritorios.filter(d => d.estaActiva);
             if (estado === 'available') datosTerritorios = datosTerritorios.filter(d => !d.estaActiva);
             datosTerritorios = datosTerritorios.filter(d => d.involucraConductor);
 
-            // 3. Ordenamiento
             datosTerritorios.sort((a, b) => {
                 if (orden === 'num-asc') return parseInt(a.num) - parseInt(b.num);
                 if (orden === 'num-desc') return parseInt(b.num) - parseInt(a.num);
@@ -755,7 +783,6 @@
                 return 0;
             });
 
-            // 4. Renderización
             contenedor.innerHTML = '';
             
             if(datosTerritorios.length === 0) {
@@ -854,12 +881,12 @@
             }
         }
 
+        // CORRECCIÓN: Eliminar ficha activa Y limpiar el selector del programa semanal (evita fichas fantasmas)
         function eliminarFichaActiva(numTerritorio) {
             if (confirm(`¿Estás seguro de que deseas eliminar el Territorio ${numTerritorio} de la mesa sin guardarlo en el historial?`)) {
-                // 1. Eliminar del objeto
                 delete fichasActivas[numTerritorio];
                 
-                // 2. Limpiar el selector en la tabla
+                // Limpiar selectores en el programa semanal
                 const selectsTerritorio = document.querySelectorAll('.sel-territorio');
                 selectsTerritorio.forEach(sel => {
                     if (sel.value === numTerritorio) {
@@ -867,13 +894,9 @@
                     }
                 });
 
-                // 3. Guardar en localStorage
                 localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
+                guardarBorradorLocal(); // Sobrescribe el borrador local sin este territorio
                 
-                // 4. Sobrescribir el borrador (esto también llama a generarFichasAutomaticas de forma segura)
-                guardarBorradorLocal(); 
-                
-                // 5. Actualizar la vista
                 actualizarFiltroConductores();
                 renderizarFichas();
                 renderizarPlanillaS13();
@@ -969,7 +992,6 @@
             let celdaDia = tr1.querySelector('.celda-dia');
             let celdaFecha = tr1.querySelector('.celda-fecha');
             
-            // Busca la siguiente fila disponible para mostrarla
             for (let sf = 2; sf <= 4; sf++) {
                 let trExtra = document.getElementById(`fila-${diaIndex}-${sf}`);
                 if (trExtra.hidden) {
@@ -987,7 +1009,6 @@
             let trExtra = document.getElementById(`fila-${diaIndex}-${sf}`);
             trExtra.hidden = true;
             
-            // Limpiar valores para que el guardado no las reviva
             document.getElementById(`h-${diaIndex}-${sf}`).value = "";
             document.getElementById(`l-${diaIndex}-${sf}`).value = "";
             document.getElementById(`t-${diaIndex}-${sf}`).value = "";
@@ -1039,13 +1060,11 @@
                         document.getElementById('selector-mes').value = borrador.mes;
                         document.getElementById('input-campana').value = borrador.notas;
                         
-                        // Restablecer valores primero
                         for(const [id, val] of Object.entries(borrador.valores)) {
                             const el = document.getElementById(id);
                             if(el) el.value = val;
                         }
 
-                        // Ajustar dinámicamente las filas visibles (1 hasta 4) dependiendo de si tienen valor guardado
                         for (let i = 0; i < 7; i++) {
                             let span = 1;
                             for (let sf = 2; sf <= 4; sf++) {
@@ -1055,7 +1074,6 @@
                                 let t = document.getElementById(`t-${i}-${sf}`).value;
                                 let c = document.getElementById(`c-${i}-${sf}`).value;
                                 
-                                // Si tiene algún dato seleccionado O si el sistema la necesita abierta (ej. por grupo), mantener visible
                                 if (h || l || t || c || !trExtra.hidden) {
                                     trExtra.hidden = false;
                                     span++;
@@ -1085,7 +1103,7 @@
                 visitas = datos.visitas || [];
                 visitasGrupos = datos.visitasGrupos || [];
 
-                // NUEVA LÓGICA S-13 y Fichas Activas
+                // Sincronización de S-13 y Fichas Activas desde la nube
                 if (datos.registroS13) {
                     registroS13 = datos.registroS13;
                     localStorage.setItem('registroS13', JSON.stringify(registroS13));
@@ -1097,11 +1115,8 @@
 
                 actualizarListasDesplegables();
                 actualizarFiltroConductores();
-                
-                // Actualizar vista
                 renderizarFichas();
                 renderizarPlanillaS13();
-
             } catch (error) { console.error("Error al cargar de la nube:", error); }
         }
 
@@ -1169,7 +1184,6 @@
             if(conductores[0] !== "") conductores.unshift("");
             if(lugares[0] !== "") lugares.unshift("");
 
-            // INCLUYE registroS13 y fichasActivas
             const nuevosDatos = { horarios, conductores, lugares, asambleas, visitas, visitasGrupos, registroS13, fichasActivas };
             const estadoNube = document.getElementById('estado-nube');
             estadoNube.innerText = "Guardando...";
@@ -1198,7 +1212,6 @@
             const tablaBody = document.getElementById('tabla-body');
             tablaBody.innerHTML = ''; 
             dias.forEach((dia, index) => {
-                // Fila Principal 1
                 const tr1 = document.createElement('tr');
                 tr1.id = `fila-${index}-1`;
                 tr1.innerHTML = `
@@ -1217,7 +1230,6 @@
                 `;
                 tablaBody.appendChild(tr1);
 
-                // Filas Dinámicas extras (hasta 4 por día, inicialmente ocultas)
                 for (let sf = 2; sf <= 4; sf++) {
                     const trExtra = document.createElement('tr');
                     trExtra.id = `fila-${index}-${sf}`;
@@ -1273,7 +1285,6 @@
                 celdasNormales.forEach(c => c.hidden = false);
                 celdaAsamblea.hidden = true;
                 
-                // Ocultar las 3 filas extra dinámicas
                 for(let sf=2; sf<=4; sf++){ document.getElementById(`fila-${i}-${sf}`).hidden = true; }
                 tr1.querySelector('.celda-dia').rowSpan = 1;
                 tr1.querySelector('.celda-fecha').rowSpan = 1;
@@ -1311,7 +1322,6 @@
             if (m1 === m2) textoRango = `Desde el ${d1} hasta el ${d2} de ${m1}`;
             document.getElementById('texto-rango').innerText = textoRango;
 
-            // Restablecer valores guardados que pueden mostrar o sobreescribir las filas extra
             cargarBorradorLocal(fechaSeleccionada);
             guardarBorradorLocal(); 
         }
@@ -1320,7 +1330,6 @@
         // INICIO DEL APLICATIVO
         // =========================================================================
         window.addEventListener('DOMContentLoaded', async () => {
-            // Restaurar estado de la vista guardado en localStorage
             const vistaGuardada = localStorage.getItem('preferencia_vista');
             if (vistaGuardada === 'movil') {
                 document.body.classList.add('vista-movil-activa');
