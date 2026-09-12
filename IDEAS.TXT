@@ -1,0 +1,2 @@
+integrar funcion "camapañas" a los eventos. no debe chocar con los eventos semanales. la idea es que se pueda señalar cuando inicia la campaña 
+de conmemoracion, invitacion a asamblea y otros
