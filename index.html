@@ -138,13 +138,13 @@
         }
 
         .icono-contenedor {
-            width: 85px;
-            height: 85px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.8em;
+            font-size: 1.8em;
             flex-shrink: 0;
         }
         
@@ -274,7 +274,7 @@
             .subtitulo-lobby { font-size: 1.05em !important; margin-top: 0 !important; }
             .pildora-estado { font-size: 0.85em !important; padding: 6px 12px !important; margin-top: 0 !important; }
             .tarjeta-btn { padding: 20px 15px !important; gap: 20px !important; flex-direction: row !important; align-items: center !important; text-align: left !important; }
-            .icono-contenedor { width: 105px !important; height: 105px !important; font-size: 3.8em !important; margin-bottom: 0 !important; }
+            .icono-contenedor { width: 65px !important; height: 65px !important; font-size: 2.2em !important; margin-bottom: 0 !important; }
             .texto-tarjeta { font-size: 1.4em !important; margin: 0 !important; }
             .desc-tarjeta { font-size: 1.05em !important; margin: 0 !important; text-align: left !important; }
 
@@ -326,7 +326,7 @@
         body.vista-movil-activa .subtitulo-lobby { font-size: 1.05em !important; margin-top: 0 !important; }
         body.vista-movil-activa .pildora-estado { font-size: 0.85em !important; padding: 6px 12px !important; margin-top: 0 !important;}
         body.vista-movil-activa .tarjeta-btn { padding: 20px 15px !important; gap: 20px !important; flex-direction: row !important; align-items: center !important; text-align: left !important; }
-        body.vista-movil-activa .icono-contenedor { width: 105px !important; height: 105px !important; font-size: 3.8em !important; margin-bottom: 0 !important; }
+        body.vista-movil-activa .icono-contenedor { width: 65px !important; height: 65px !important; font-size: 2.2em !important; margin-bottom: 0 !important; }
         body.vista-movil-activa .texto-tarjeta { font-size: 1.4em !important; margin: 0 !important; }
         body.vista-movil-activa .desc-tarjeta { font-size: 1.05em !important; margin: 0 !important; text-align: left !important; }
 
@@ -1043,8 +1043,10 @@
 
         function eliminarFichaActiva(numTerritorio) {
             if (confirm(`¿Estás seguro de que deseas eliminar el Territorio ${numTerritorio} de la mesa sin guardarlo en el historial?`)) {
+                // 1. Eliminar del objeto
                 delete fichasActivas[numTerritorio];
                 
+                // 2. Limpiar el selector en la tabla
                 const selectsTerritorio = document.querySelectorAll('.sel-territorio');
                 selectsTerritorio.forEach(sel => {
                     if (sel.value === numTerritorio) {
@@ -1052,9 +1054,13 @@
                     }
                 });
 
+                // 3. Guardar en localStorage
                 localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
+                
+                // 4. Sobrescribir el borrador
                 guardarBorradorLocal(); 
                 
+                // 5. Actualizar la vista
                 actualizarFiltroConductores();
                 renderizarFichas();
                 renderizarPlanillaS13();
