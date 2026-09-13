@@ -128,9 +128,9 @@
             overflow: hidden;
         }
         
-        .tarjeta-programa { border-left: 5px solid #0ea5e9; border-top: none; } /* Azul Cian */
-        .tarjeta-s13 { border-left: 5px solid #10b981; border-top: none; } /* Verde Esmeralda */
-        .tarjeta-config { border-left: 5px solid #64748b; border-top: none; } /* Gris Pizarra */
+        .tarjeta-programa { border-left: 5px solid #0ea5e9; border-top: none; }
+        .tarjeta-s13 { border-left: 5px solid #10b981; border-top: none; }
+        .tarjeta-config { border-left: 5px solid #64748b; border-top: none; }
 
         .tarjeta-btn:hover {
             transform: translateY(-4px);
@@ -161,7 +161,7 @@
         .texto-tarjeta { font-size: 1.3em; font-weight: bold; color: #1e293b; margin: 0; }
         .desc-tarjeta { font-size: 0.9em; color: #64748b; font-weight: normal; line-height: 1.3; margin: 0; }
 
-        /* --- NAVEGACIÓN INTERNA (Estilo App Móvil) --- */
+        /* --- NAVEGACIÓN INTERNA --- */
         .barra-superior {
             width: 100%;
             max-width: 800px;
@@ -293,7 +293,6 @@
             #documento-imagen:not(.modo-exportacion) td:last-child { border-bottom: none !important; }
             #documento-imagen:not(.modo-exportacion) tr[hidden] { display: none !important; }
             
-            /* Estilización de los campos */
             #documento-imagen:not(.modo-exportacion) select.tabla-select,
             #documento-imagen:not(.modo-exportacion) input[type="text"].in-fecha {
                 width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; text-align: left; text-align-last: left; outline: none; font-size: 1em !important; color: #1e293b !important; min-height: 42px !important;
@@ -302,21 +301,21 @@
             #documento-imagen:not(.modo-exportacion) tbody td > div { width: 100% !important; justify-content: flex-start !important; gap: 8px !important;}
             #documento-imagen:not(.modo-exportacion) tbody td > div select { width: 100% !important; }
             
-            /* Cabecera unificada (Día y Fecha Móvil) */
             #documento-imagen:not(.modo-exportacion) td.celda-dia { 
                 background-color: #1e293b !important; color: white !important; border-radius: 10px 10px 0 0 !important; padding: 12px !important; margin: 0 -12px !important; width: calc(100% + 24px) !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important;
             }
             #documento-imagen:not(.modo-exportacion) td.celda-dia .dia-content { width: 100% !important; display: flex !important; justify-content: space-between !important; align-items: center !important; }
             #documento-imagen:not(.modo-exportacion) td.celda-dia .mobile-fecha-display { display: inline-block !important; color: #bae6fd !important; margin-left: 5px; }
-            
-            /* Ocultar la celda de fecha original en móvil para evitar filas vacías */
             #documento-imagen:not(.modo-exportacion) td.celda-fecha { display: none !important; }
-            
             #documento-imagen:not(.modo-exportacion) td.celda-dia::before { display: none !important; }
             #documento-imagen:not(.modo-exportacion) td.celda-asamblea { padding: 15px !important; text-align: center !important; justify-content: center !important; background-color: #fef08a !important; color: #854d0e !important; }
             #documento-imagen:not(.modo-exportacion) tr.fila-extra { margin-top: -10px !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border-top: 3px dashed #cbd5e1 !important; padding-top: 15px !important; }
 
-            /* Excepción para la tabla S-13 (Mantener formato de cuadrícula) */
+            /* DÍA COLAPSADO (Modo Acordeón) */
+            #documento-imagen:not(.modo-exportacion) tr.dia-colapsado { padding-bottom: 0 !important; }
+            #documento-imagen:not(.modo-exportacion) tr.dia-colapsado td:not(.celda-dia):not(.celda-fecha) { display: none !important; }
+            #documento-imagen:not(.modo-exportacion) tr.dia-colapsado td.celda-dia { border-bottom: none !important; border-radius: 10px !important; }
+
             .historial-tabla { display: table !important; width: 100% !important; }
             .historial-tabla thead { display: table-header-group !important; }
             .historial-tabla tbody { display: table-row-group !important; flex-direction: unset !important; }
@@ -366,7 +365,11 @@
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-asamblea { padding: 15px !important; text-align: center !important; justify-content: center !important; background-color: #fef08a !important; color: #854d0e !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr.fila-extra { margin-top: -10px !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border-top: 3px dashed #cbd5e1 !important; padding-top: 15px !important; }
 
-        /* Excepción para la tabla S-13 forzada (Mantener formato de cuadrícula) */
+        /* DÍA COLAPSADO (Modo Acordeón) */
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr.dia-colapsado { padding-bottom: 0 !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr.dia-colapsado td:not(.celda-dia):not(.celda-fecha) { display: none !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr.dia-colapsado td.celda-dia { border-bottom: none !important; border-radius: 10px !important; }
+
         body.vista-movil-activa .historial-tabla { display: table !important; width: 100% !important; }
         body.vista-movil-activa .historial-tabla thead { display: table-header-group !important; }
         body.vista-movil-activa .historial-tabla tbody { display: table-row-group !important; flex-direction: unset !important; }
@@ -801,6 +804,57 @@
             return new Date(0);
         }
 
+        function evaluarColapsoDias() {
+            const fechaReferencia = document.getElementById('fecha-lunes').value;
+            if(!fechaReferencia) return;
+            const fechaBase = new Date(fechaReferencia + 'T12:00:00');
+
+            for (let i = 0; i < 7; i++) {
+                const tr1 = document.getElementById(`fila-${i}-1`);
+                if (!tr1) continue;
+
+                const celdaAsamblea = tr1.querySelector('.celda-asamblea');
+                if (celdaAsamblea && !celdaAsamblea.hidden) {
+                    tr1.classList.remove('dia-colapsado');
+                    continue;
+                }
+
+                const fechaDia = new Date(fechaBase);
+                fechaDia.setDate(fechaBase.getDate() + i);
+                const yyyy = fechaDia.getFullYear();
+                const mm = String(fechaDia.getMonth() + 1).padStart(2, '0');
+                const d = String(fechaDia.getDate()).padStart(2, '0');
+                const fechaStr = `${yyyy}-${mm}-${d}`;
+                const esVisitaGrupo = visitasGrupos.some(v => v.fecha === fechaStr);
+
+                let tieneDatos = false;
+                for (let sf = 1; sf <= 4; sf++) {
+                    const h = document.getElementById(`h-${i}-${sf}`);
+                    const l = document.getElementById(`l-${i}-${sf}`);
+                    const t = document.getElementById(`t-${i}-${sf}`);
+                    const c = document.getElementById(`c-${i}-${sf}`);
+                    if ((h && h.value) || (l && l.value) || (t && t.value) || (c && c.value)) {
+                        tieneDatos = true;
+                        break;
+                    }
+                }
+
+                if (!tieneDatos && !esVisitaGrupo) {
+                    tr1.classList.add('dia-colapsado');
+                    for(let sf=2; sf<=4; sf++){ 
+                        let extra = document.getElementById(`fila-${i}-${sf}`);
+                        if(extra) extra.hidden = true;
+                    }
+                    let celdaDiaEl = tr1.querySelector('.celda-dia');
+                    let celdaFechaEl = tr1.querySelector('.celda-fecha');
+                    if(celdaDiaEl) celdaDiaEl.rowSpan = 1;
+                    if(celdaFechaEl) celdaFechaEl.rowSpan = 1;
+                } else {
+                    tr1.classList.remove('dia-colapsado');
+                }
+            }
+        }
+
         function generarFichasAutomaticas() {
             const fechaReferencia = document.getElementById('fecha-lunes').value;
             if (!fechaReferencia) return;
@@ -1163,6 +1217,12 @@
             let celdaDia = tr1.querySelector('.celda-dia');
             let celdaFecha = tr1.querySelector('.celda-fecha');
             
+            // Si está colapsado, simplemente lo abrimos
+            if (tr1.classList.contains('dia-colapsado')) {
+                tr1.classList.remove('dia-colapsado');
+                return;
+            }
+
             for (let sf = 2; sf <= 4; sf++) {
                 let trExtra = document.getElementById(`fila-${diaIndex}-${sf}`);
                 if (trExtra.hidden) {
@@ -1247,6 +1307,9 @@
                 clearTimeout(window.timeoutGuardado);
                 window.timeoutGuardado = setTimeout(() => { indicador.style.opacity = '0'; }, 1500);
             }
+            
+            evaluarColapsoDias();
+            generarFichasAutomaticas();
         }
 
         async function guardarYCompartir() {
@@ -1622,6 +1685,10 @@
             const clon = elemento.cloneNode(true);
             const controlesOriginales = elemento.querySelectorAll('select, input, textarea');
             const controlesClonados = clon.querySelectorAll('select, input, textarea');
+
+            // Remover clase dia-colapsado del clon
+            const colapsados = clon.querySelectorAll('.dia-colapsado');
+            colapsados.forEach(el => el.classList.remove('dia-colapsado'));
 
             controlesClonados.forEach((control, index) => {
                 const original = controlesOriginales[index];
