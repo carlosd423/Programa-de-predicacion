@@ -202,12 +202,17 @@
         #fecha-lunes { min-height: 48px; padding: 10px 12px; border-radius: 8px; border: 2px solid #cbd5e1; background-color: white; color: #1e293b; font: inherit; font-size: 1.05em; cursor: pointer; }
         .selector-semana label:focus-within, #fecha-lunes:focus-visible { outline: 3px solid #0ea5e9; outline-offset: 2px; }
         
+        .acciones-wrapper { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: space-between; }
+        
         .btn-accion { padding: 8px 15px; font-size: 0.95em; color: white; background-color: #0ea5e9; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; font-weight: bold; }
         .btn-accion:hover { background-color: #0284c7; }
-        .btn-imprimir { padding: 8px 15px; font-size: 1em; color: white; background-color: #0ea5e9; border: none; border-radius: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background-color 0.3s; font-weight: bold; }
-        .btn-imprimir:hover { background-color: #0284c7; }
-        .btn-compartir { padding: 8px 15px; font-size: 1em; color: white; background-color: #25d366; border: none; border-radius: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background-color 0.3s; font-weight: bold; }
-        .btn-compartir:hover { background-color: #128c7e; }
+        
+        .btn-limpiar { padding: 8px 15px; font-size: 1em; color: #ef4444; background-color: transparent; border: 1px solid #ef4444; border-radius: 5px; cursor: pointer; transition: all 0.3s; font-weight: bold; }
+        .btn-limpiar:hover { background-color: #fef2f2; }
+        
+        .btn-compartir { padding: 8px 15px; font-size: 1em; color: white; background-color: #10b981; border: none; border-radius: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background-color 0.3s; font-weight: bold; }
+        .btn-compartir:hover { background-color: #059669; }
+        
         .asamblea-activa { background-color: #fef08a !important; color: #854d0e; font-weight: bold; font-size: 1.05em; letter-spacing: 1px; }
 
         #documento-imagen { background-color: white; padding: 20px; width: 100%; max-width: 800px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-radius: 8px; }
@@ -266,7 +271,6 @@
 
         /* --- ESTILOS MÓVILES (PANTALLAS PEQUEÑAS) --- */
         @media screen and (max-width: 768px) {
-            /* Aumentos de legibilidad para el Lobby en Móvil */
             .contenedor-lobby { padding: 15px !important; }
             .lobby-header-wrapper { flex-direction: row !important; align-items: center !important; gap: 20px !important; margin-bottom: 15px !important; }
             .lobby-logo { width: 115px !important; height: 115px !important; border-radius: 28px !important; }
@@ -298,24 +302,28 @@
             #documento-imagen:not(.modo-exportacion) tbody td > div { width: 100% !important; justify-content: flex-start !important; gap: 8px !important;}
             #documento-imagen:not(.modo-exportacion) tbody td > div select { width: 100% !important; }
             
-            /* Cabecera unificada (Día y Fecha) */
+            /* Cabecera unificada (Día y Fecha Móvil) */
             #documento-imagen:not(.modo-exportacion) td.celda-dia { 
-                background-color: #1e293b !important; color: white !important; border-radius: 10px 10px 0 0 !important; text-align: center !important; padding: 12px !important; margin: 0 -12px !important; width: calc(100% + 24px) !important; flex-direction: row !important; align-items: center !important; justify-content: center !important;
+                background-color: #1e293b !important; color: white !important; border-radius: 10px 10px 0 0 !important; padding: 12px !important; margin: 0 -12px !important; width: calc(100% + 24px) !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important;
             }
-            #documento-imagen:not(.modo-exportacion) td.celda-dia > div { justify-content: center !important; position: relative; }
-            #documento-imagen:not(.modo-exportacion) td.celda-dia > div span { text-align: center; width: 100%; }
-            #documento-imagen:not(.modo-exportacion) td.celda-dia > div button { position: absolute; right: 0; }
-
-            #documento-imagen:not(.modo-exportacion) td.celda-fecha { 
-                background-color: #334155 !important; color: white !important; justify-content: center !important; align-items: center !important; text-align: center !important; border: none !important; padding: 10px !important; margin: 0 -12px 10px -12px !important; width: calc(100% + 24px) !important;
-            }
-            #documento-imagen:not(.modo-exportacion) td.celda-fecha input.in-fecha { 
-                background-color: transparent !important; border: none !important; color: white !important; text-align: center !important; text-align-last: center !important; font-size: 1.1em !important; padding: 0 !important; margin: 0 !important; width: 100% !important;
-            }
+            #documento-imagen:not(.modo-exportacion) td.celda-dia .dia-content { width: 100% !important; display: flex !important; justify-content: space-between !important; align-items: center !important; }
+            #documento-imagen:not(.modo-exportacion) td.celda-dia .mobile-fecha-display { display: inline-block !important; color: #bae6fd !important; margin-left: 5px; }
             
-            #documento-imagen:not(.modo-exportacion) td.celda-dia::before, #documento-imagen:not(.modo-exportacion) td.celda-fecha::before { display: none !important; }
+            /* Ocultar la celda de fecha original en móvil para evitar filas vacías */
+            #documento-imagen:not(.modo-exportacion) td.celda-fecha { display: none !important; }
+            
+            #documento-imagen:not(.modo-exportacion) td.celda-dia::before { display: none !important; }
             #documento-imagen:not(.modo-exportacion) td.celda-asamblea { padding: 15px !important; text-align: center !important; justify-content: center !important; background-color: #fef08a !important; color: #854d0e !important; }
             #documento-imagen:not(.modo-exportacion) tr.fila-extra { margin-top: -10px !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border-top: 3px dashed #cbd5e1 !important; padding-top: 15px !important; }
+
+            /* Excepción para la tabla S-13 (Mantener formato de cuadrícula) */
+            .historial-tabla { display: table !important; width: 100% !important; }
+            .historial-tabla thead { display: table-header-group !important; }
+            .historial-tabla tbody { display: table-row-group !important; flex-direction: unset !important; }
+            .historial-tabla tr { display: table-row !important; flex-direction: unset !important; box-shadow: none !important; border: none !important; padding: 0 !important; background: transparent !important; }
+            .historial-tabla th, .historial-tabla td { display: table-cell !important; flex-direction: unset !important; align-items: center !important; width: auto !important; padding: 10px !important; border-bottom: 1px solid #e2e8f0 !important; text-align: center !important; }
+            .historial-tabla td::before { display: none !important; }
+            .carpeta-detalle { overflow-x: auto !important; }
         }
 
         /* --- ESTILOS MÓVILES (FORZADOS POR BOTÓN) --- */
@@ -349,22 +357,23 @@
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td > div select { width: 100% !important; }
         
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia { 
-            background-color: #1e293b !important; color: white !important; border-radius: 10px 10px 0 0 !important; text-align: center !important; padding: 12px !important; margin: 0 -12px !important; width: calc(100% + 24px) !important; flex-direction: row !important; align-items: center !important; justify-content: center !important;
+            background-color: #1e293b !important; color: white !important; border-radius: 10px 10px 0 0 !important; text-align: center !important; padding: 12px !important; margin: 0 -12px !important; width: calc(100% + 24px) !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important;
         }
-        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia > div { justify-content: center !important; position: relative; }
-        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia > div span { text-align: center; width: 100%; }
-        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia > div button { position: absolute; right: 0; }
-
-        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-fecha { 
-            background-color: #334155 !important; color: white !important; justify-content: center !important; align-items: center !important; text-align: center !important; border: none !important; padding: 10px !important; margin: 0 -12px 10px -12px !important; width: calc(100% + 24px) !important;
-        }
-        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-fecha input.in-fecha { 
-            background-color: transparent !important; border: none !important; color: white !important; text-align: center !important; text-align-last: center !important; font-size: 1.1em !important; padding: 0 !important; margin: 0 !important; width: 100% !important;
-        }
-        
-        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia::before, body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-fecha::before { display: none !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia .dia-content { width: 100% !important; display: flex !important; justify-content: space-between !important; align-items: center !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia .mobile-fecha-display { display: inline-block !important; color: #bae6fd !important; margin-left: 5px; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-fecha { display: none !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia::before { display: none !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-asamblea { padding: 15px !important; text-align: center !important; justify-content: center !important; background-color: #fef08a !important; color: #854d0e !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr.fila-extra { margin-top: -10px !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border-top: 3px dashed #cbd5e1 !important; padding-top: 15px !important; }
+
+        /* Excepción para la tabla S-13 forzada (Mantener formato de cuadrícula) */
+        body.vista-movil-activa .historial-tabla { display: table !important; width: 100% !important; }
+        body.vista-movil-activa .historial-tabla thead { display: table-header-group !important; }
+        body.vista-movil-activa .historial-tabla tbody { display: table-row-group !important; flex-direction: unset !important; }
+        body.vista-movil-activa .historial-tabla tr { display: table-row !important; flex-direction: unset !important; box-shadow: none !important; border: none !important; padding: 0 !important; background: transparent !important; }
+        body.vista-movil-activa .historial-tabla th, body.vista-movil-activa .historial-tabla td { display: table-cell !important; flex-direction: unset !important; align-items: center !important; width: auto !important; padding: 10px !important; border-bottom: 1px solid #e2e8f0 !important; text-align: center !important; }
+        body.vista-movil-activa .historial-tabla td::before { display: none !important; }
+        body.vista-movil-activa .carpeta-detalle { overflow-x: auto !important; }
 
         /* --- ESTILOS DE TERRITORIOS Y S-13 (VISTA 2) --- */
         .contenedor-territorios { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 20px; }
@@ -398,7 +407,7 @@
         .estado-en-curso { background-color: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 6px; font-size: 0.85em; font-weight: bold; }
         .carpeta-fecha { color: #64748b; font-size: 0.9em; display: flex; align-items: center; gap: 10px; }
         
-        .carpeta-detalle { padding: 0; display: none; border-top: 1px solid #e2e8f0; background-color: #f8fafc; }
+        .carpeta-detalle { padding: 0; display: none; border-top: 1px solid #e2e8f0; background-color: #f8fafc; overflow-x: auto; }
         .carpeta-detalle.activa { display: block; padding: 15px; }
         .historial-tabla { width: 100%; border-collapse: collapse; text-align: center; background: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
         .historial-tabla th { background-color: #1e293b; color: #0ea5e9; padding: 10px; border-bottom: 2px solid #0284c7; font-size: 0.95em; }
@@ -425,7 +434,7 @@
         .modo-exportacion tbody tr.fila-extra::before { content: none !important; }
         .modo-exportacion th { background-color: #a1c4fd !important; color: #1e293b !important; border: 1px solid #b3cde0 !important; }
         .modo-exportacion td { border: 1px solid #b3cde0 !important; color: #000000 !important; }
-        .modo-exportacion th, .modo-exportacion td { display: table-cell !important; padding: 10px !important; font-size: 1em !important; text-align: center !important; flex: unset !important; justify-content: unset !important; }
+        .modo-exportacion th, .modo-exportacion td { display: table-cell !important; padding: 10px !important; font-size: 1em !important; text-align: center !important; flex: unset !important; justify-content: unset !important; color: #000 !important; }
         .modo-exportacion td::before { content: none !important; }
         .modo-exportacion [hidden] { display: none !important; }
         .modo-exportacion td.celda-dia { display: table-cell !important; border-radius: 0 !important; background: transparent !important;}
@@ -441,27 +450,17 @@
             #zona-impresion { 
                 display: block !important; width: 100%; font-family: Arial, Helvetica, sans-serif; color: #000;
             }
-            #zona-impresion .header-s13 { 
-                font-size: 14pt; font-weight: bold; text-align: center; margin-bottom: 10px; letter-spacing: 1px;
-            }
             #zona-impresion table { 
-                display: table !important; width: 100% !important; border-collapse: collapse !important; font-size: 9pt; 
+                display: table !important; width: 100% !important; border-collapse: collapse !important; font-size: 9pt !important; 
             }
             #zona-impresion thead { display: table-header-group !important; }
             #zona-impresion tbody { display: table-row-group !important; }
             #zona-impresion tr { display: table-row !important; page-break-inside: avoid; }
             #zona-impresion th, #zona-impresion td { 
-                display: table-cell !important; border: 1px solid #b3cde0 !important; padding: 4px !important; text-align: center !important; vertical-align: middle !important;
+                display: table-cell !important; border: 1px solid #000 !important; padding: 4px !important; text-align: center !important; vertical-align: middle !important; background-color: transparent !important; color: #000 !important;
             }
             #zona-impresion th { 
-                background-color: #a1c4fd !important; -webkit-print-color-adjust: exact; color-adjust: exact; font-weight: bold; color: #1e293b !important;
-            }
-            #zona-impresion td { color: #000000 !important; }
-            #zona-impresion tbody tr:nth-child(even) {
-                background-color: #f1f6fe !important; -webkit-print-color-adjust: exact; color-adjust: exact; 
-            }
-            #zona-impresion .footer-s13 { 
-                display: flex; justify-content: space-between; font-size: 8pt; margin-top: 10px; font-weight: bold;
+                font-weight: bold;
             }
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -527,10 +526,10 @@
                     <label for="fecha-lunes">Lunes de la semana:</label>
                     <input type="date" id="fecha-lunes">
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="acciones-wrapper">
                     <span id="indicador-guardado" style="color: #64748b; font-size: 0.8em; font-style: italic; opacity: 0; transition: opacity 0.5s;">Guardado</span>
-                    <button class="btn-compartir" id="btn-compartir" onclick="compartirImagen()" title="Enviar por WhatsApp">📲 Compartir</button>
-                    <button class="btn-imprimir" id="btn-descargar" onclick="exportarJPG()" title="Descargar imagen">⬇️</button>
+                    <button class="btn-limpiar" onclick="limpiarSemana()">🗑️ Limpiar Semana</button>
+                    <button class="btn-compartir" id="btn-compartir" onclick="guardarYCompartir()" title="Enviar por WhatsApp">📲 Guardar y Compartir</button>
                 </div>
             </div>
         </div>
@@ -961,17 +960,21 @@
                         <table class="historial-tabla">
                             <thead>
                                 <tr>
-                                    <th>Empezado el</th>
-                                    <th>Conductor</th>
-                                    <th>Completado el</th>
+                                    <th colspan="2">Asignado a</th>
+                                </tr>
+                                <tr>
+                                    <th style="border-top: none;">Fecha en que se asignó</th>
+                                    <th style="border-top: none;">Fecha en que se completó</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${d.historial.map(r => `
                                     <tr>
-                                        <td>${r.fechaAsignacion}</td>
-                                        <td>${r.conductor}</td>
-                                        <td><strong>${r.fechaCompletado}</strong></td>
+                                        <td colspan="2" style="background-color: #f1f5f9; font-weight: bold; color: #1e293b; border-bottom: 1px solid #cbd5e1; padding: 8px;">${r.conductor}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-bottom: 2px solid #e2e8f0; padding: 8px;">${r.fechaAsignacion}</td>
+                                        <td style="border-bottom: 2px solid #e2e8f0; padding: 8px;"><strong>${r.fechaCompletado}</strong></td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -1095,52 +1098,55 @@
                 chunks.forEach((chunk, index) => {
                     let uFecha = index === 0 ? '' : (chunks[index-1][3]?.f || ''); 
                     
-                    let row = `<tr>
-                        <td><strong>${num}</strong></td>
-                        <td>${uFecha}</td>`;
+                    let row1 = `<tr>
+                        <td rowspan="2" style="font-weight:bold; font-size:11pt;">${num}</td>
+                        <td rowspan="2">${uFecha}</td>`;
+                        
+                    let row2 = `<tr>`;
                         
                     for(let k=0; k<4; k++) {
                         if (chunk[k]) {
-                            row += `<td>${chunk[k].c}</td><td>${chunk[k].a}</td><td>${chunk[k].f}</td>`;
+                            row1 += `<td colspan="2" style="border-bottom: 1px dotted #000;"><strong>${chunk[k].c}</strong></td>`;
+                            row2 += `<td>${chunk[k].a}</td><td>${chunk[k].f}</td>`;
                         } else {
-                            row += `<td></td><td></td><td></td>`;
+                            row1 += `<td colspan="2" style="border-bottom: 1px dotted #000;"></td>`;
+                            row2 += `<td></td><td></td>`;
                         }
                     }
-                    row += `</tr>`;
-                    rowsHTML += row;
+                    row1 += `</tr>`;
+                    row2 += `</tr>`;
+                    rowsHTML += row1 + row2;
                 });
             }
 
             zona.innerHTML = `
-                <div class="header-s13">REGISTRO DE ASIGNACIÓN DE TERRITORIO</div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px;">
+                    <div style="font-size: 11pt; font-weight: bold; width: 33%; text-align: left;">Año de servicio: _________________</div>
+                    <div style="font-size: 13pt; font-weight: bold; letter-spacing: 1px; width: 34%; text-align: center;">REGISTRO DE ASIGNACIÓN DE TERRITORIO</div>
+                    <div style="width: 33%;"></div>
+                </div>
                 <table class="tabla-impresion-s13">
                     <thead>
                         <tr>
-                            <th>Núm.<br>de terr.</th>
-                            <th>Última fecha<br>en que se<br>completó*</th>
-                            
-                            <th>Asignado a</th>
-                            <th>Fecha en que<br>se empezó</th>
-                            <th>Fecha en que<br>se completó</th>
-                            
-                            <th>Asignado a</th>
-                            <th>Fecha en que<br>se empezó</th>
-                            <th>Fecha en que<br>se completó</th>
-                            
-                            <th>Asignado a</th>
-                            <th>Fecha en que<br>se empezó</th>
-                            <th>Fecha en que<br>se completó</th>
-                            
-                            <th>Asignado a</th>
-                            <th>Fecha en que<br>se empezó</th>
-                            <th>Fecha en que<br>se completó</th>
+                            <th rowspan="2" style="width: 4%;">Núm.<br>de terr.</th>
+                            <th rowspan="2" style="width: 8%;">Última fecha<br>en que se<br>completó*</th>
+                            <th colspan="2">Asignado a</th>
+                            <th colspan="2">Asignado a</th>
+                            <th colspan="2">Asignado a</th>
+                            <th colspan="2">Asignado a</th>
+                        </tr>
+                        <tr>
+                            <th>Fecha en que<br>se asignó</th><th>Fecha en que<br>se completó</th>
+                            <th>Fecha en que<br>se asignó</th><th>Fecha en que<br>se completó</th>
+                            <th>Fecha en que<br>se asignó</th><th>Fecha en que<br>se completó</th>
+                            <th>Fecha en que<br>se asignó</th><th>Fecha en que<br>se completó</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${rowsHTML}
                     </tbody>
                 </table>
-                <div class="footer-s13">
+                <div class="footer-s13" style="display: flex; justify-content: space-between; font-size: 8pt; margin-top: 8px; font-weight: bold;">
                     <span>*Cuando comience una nueva página, anote en esta columna la última fecha en que los territorios se completaron.</span>
                     <span>S-13-S 1/22</span>
                 </div>
@@ -1191,6 +1197,34 @@
             guardarBorradorLocal();
         }
 
+        function limpiarSemana() {
+            if (confirm("¿Seguro que deseas vaciar todos los campos de esta semana?")) {
+                for (let i = 0; i < 7; i++) {
+                    for (let sf = 1; sf <= 4; sf++) {
+                        const l = document.getElementById(`l-${i}-${sf}`);
+                        const t = document.getElementById(`t-${i}-${sf}`);
+                        const c = document.getElementById(`c-${i}-${sf}`);
+                        
+                        // Solo limpia lugar, territorio y conductor. Preserva la hora.
+                        if(l) l.value = "";
+                        if(t) t.value = "";
+                        if(c) c.value = "";
+                        
+                        if (sf > 1) {
+                            const trExtra = document.getElementById(`fila-${i}-${sf}`);
+                            if(trExtra) trExtra.hidden = true;
+                        }
+                    }
+                    const tr1 = document.getElementById(`fila-${i}-1`);
+                    if(tr1) {
+                        tr1.querySelector('.celda-dia').rowSpan = 1;
+                        tr1.querySelector('.celda-fecha').rowSpan = 1;
+                    }
+                }
+                guardarBorradorLocal();
+            }
+        }
+
         function guardarBorradorLocal() {
             const fechaLunes = document.getElementById('fecha-lunes').value;
             if(!fechaLunes) return;
@@ -1213,7 +1247,37 @@
                 clearTimeout(window.timeoutGuardado);
                 window.timeoutGuardado = setTimeout(() => { indicador.style.opacity = '0'; }, 1500);
             }
+        }
+
+        async function guardarYCompartir() {
+            const boton = document.getElementById('btn-compartir');
+            boton.disabled = true; 
+            boton.textContent = 'Preparando...';
+            
             generarFichasAutomaticas();
+            guardarBorradorLocal();
+            
+            try {
+                const canvas = await generarCanvasExportacion();
+                canvas.toBlob(async (blob) => {
+                    if (!blob) throw new Error("Error generando imagen");
+                    const archivo = new File([blob], 'Programa_Predicacion.jpg', { type: 'image/jpeg' });
+                    if (navigator.canShare && navigator.canShare({ files: [archivo] })) { 
+                        await navigator.share({ title: 'Programa', files: [archivo] }); 
+                    } else { 
+                        alert("Tu navegador no soporta compartir directamente. Se descargará el archivo."); 
+                        const link = document.createElement('a');
+                        link.download = 'Programa_Predicacion.jpg'; 
+                        link.href = URL.createObjectURL(blob); 
+                        link.click();
+                    }
+                }, 'image/jpeg', 0.98);
+            } catch (error) { 
+                alert('Error al generar o compartir la imagen.'); 
+            } finally { 
+                boton.disabled = false; 
+                boton.textContent = '📲 Guardar y Compartir'; 
+            }
         }
 
         function cargarBorradorLocal(fechaLunesActual) {
@@ -1384,8 +1448,11 @@
                 tr1.id = `fila-${index}-1`;
                 tr1.innerHTML = `
                     <td class="celda-dia" data-label="Día">
-                        <div style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
-                            <span>${dia}</span>
+                        <div class="dia-content" style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
+                            <div class="dia-texto-fecha" style="display:inline-flex; align-items:center; gap:8px; font-weight:bold;">
+                                <span>${dia}</span>
+                                <span class="mobile-fecha-display" id="mobile-fecha-${index}" style="display:none; color: #bae6fd;"></span>
+                            </div>
                             <button onclick="agregarSalida(${index})" class="btn-add-salida" data-html2canvas-ignore>+</button>
                         </div>
                     </td>
@@ -1440,6 +1507,9 @@
                 let diaNum = fechaDia.getDate();
                 diaNum = diaNum < 10 ? '0' + diaNum : diaNum; 
                 document.getElementById(`dia-${i}`).value = diaNum;
+                
+                const mobFecha = document.getElementById(`mobile-fecha-${i}`);
+                if(mobFecha) mobFecha.innerText = diaNum;
 
                 const yyyy = fechaDia.getFullYear();
                 const mm = String(fechaDia.getMonth() + 1).padStart(2, '0');
@@ -1586,32 +1656,6 @@
             });
             contenedorTemporal.remove();
             return canvas;
-        }
-
-        async function compartirImagen() {
-            const boton = document.getElementById('btn-compartir');
-            boton.disabled = true; boton.textContent = 'Preparando...';
-            try {
-                const canvas = await generarCanvasExportacion();
-                canvas.toBlob(async (blob) => {
-                    if (!blob) throw new Error("Error generando imagen");
-                    const archivo = new File([blob], 'Programa_Predicacion.jpg', { type: 'image/jpeg' });
-                    if (navigator.canShare && navigator.canShare({ files: [archivo] })) { await navigator.share({ title: 'Programa', files: [archivo] }); } 
-                    else { alert("Tu teléfono no soporta compartir directamente. Usa el botón de descarga."); }
-                }, 'image/jpeg', 0.98);
-            } catch (error) { alert('Error. Usa el botón de descarga.'); } 
-            finally { boton.disabled = false; boton.textContent = '📲 Compartir'; }
-        }
-
-        async function exportarJPG() {
-            const boton = document.getElementById('btn-descargar');
-            boton.disabled = true;
-            try {
-                const canvas = await generarCanvasExportacion();
-                const link = document.createElement('a');
-                link.download = 'Programa_Predicacion.jpg'; link.href = canvas.toDataURL('image/jpeg', 0.98); link.click();
-            } catch (error) { alert('Error al descargar.'); } 
-            finally { boton.disabled = false; }
         }
     </script>
 </body>
