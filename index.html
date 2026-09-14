@@ -293,6 +293,7 @@
             #documento-imagen:not(.modo-exportacion) td:last-child { border-bottom: none !important; }
             #documento-imagen:not(.modo-exportacion) tr[hidden] { display: none !important; }
             
+            /* Estilización de los campos */
             #documento-imagen:not(.modo-exportacion) select.tabla-select,
             #documento-imagen:not(.modo-exportacion) input[type="text"].in-fecha {
                 width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; text-align: left; text-align-last: left; outline: none; font-size: 1em !important; color: #1e293b !important; min-height: 42px !important;
@@ -301,11 +302,13 @@
             #documento-imagen:not(.modo-exportacion) tbody td > div { width: 100% !important; justify-content: flex-start !important; gap: 8px !important;}
             #documento-imagen:not(.modo-exportacion) tbody td > div select { width: 100% !important; }
             
+            /* Cabecera unificada (Día y Fecha Móvil) */
             #documento-imagen:not(.modo-exportacion) td.celda-dia { 
                 background-color: #1e293b !important; color: white !important; border-radius: 10px 10px 0 0 !important; padding: 12px !important; margin: 0 -12px !important; width: calc(100% + 24px) !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important;
             }
             #documento-imagen:not(.modo-exportacion) td.celda-dia .dia-content { width: 100% !important; display: flex !important; justify-content: space-between !important; align-items: center !important; }
             #documento-imagen:not(.modo-exportacion) td.celda-dia .mobile-fecha-display { display: inline-block !important; color: #bae6fd !important; margin-left: 5px; }
+            
             #documento-imagen:not(.modo-exportacion) td.celda-fecha { display: none !important; }
             #documento-imagen:not(.modo-exportacion) td.celda-dia::before { display: none !important; }
             #documento-imagen:not(.modo-exportacion) td.celda-asamblea { padding: 15px !important; text-align: center !important; justify-content: center !important; background-color: #fef08a !important; color: #854d0e !important; }
@@ -718,7 +721,6 @@
             
             let eventosMes = [];
             
-            // Asambleas
             asambleas.forEach(a => {
                 const parts = a.fecha.split('-');
                 if(parts.length === 3) {
@@ -728,7 +730,6 @@
                 }
             });
             
-            // Visitas circuito
             visitas.forEach(v => {
                 const parts = v.split('-');
                 if(parts.length === 3) {
@@ -738,7 +739,6 @@
                 }
             });
             
-            // Visitas grupos
             visitasGrupos.forEach(vg => {
                 const parts = vg.fecha.split('-');
                 if(parts.length === 3) {
@@ -749,7 +749,6 @@
             });
             
             if(eventosMes.length > 0) {
-                // Separador y eventos
                 htmlPill += `<span style="color:#94a3b8; margin:0 2px;">|</span> <span>${eventosMes.join(' • ')}</span>`;
             }
             
@@ -869,6 +868,7 @@
             renderizarFichas(); 
             renderizarPlanillaS13();
             actualizarPildoraEstado();
+            guardarEnLaNube(true); // Sync silently
         }
 
         function procesarSeleccionDeTabla(diaIndex, subFila, fechaReferencia) {
@@ -880,9 +880,7 @@
                 const conductor = selConductor.value;
 
                 if (numTerritorio !== "" && conductor !== "") {
-                    // Solo crear si no existe (cumple regla de no sobreescribir)
                     if (!fichasActivas[numTerritorio]) {
-                        // Calcular fecha exacta basada en el lunes + los días correspondientes a esa fila
                         const fechaBase = new Date(fechaReferencia + 'T12:00:00');
                         fechaBase.setDate(fechaBase.getDate() + diaIndex);
                         
@@ -905,6 +903,31 @@
             return fechaISO;
         }
         
+        function purgarRegistrosAntiguosS13() {
+            const fechaLimite = new Date();
+            fechaLimite.setFullYear(fechaLimite.getFullYear() - 3);
+            fechaLimite.setHours(0, 0, 0, 0);
+
+            const longitudOriginal = registroS13.length;
+            registroS13 = registroS13.filter(registro => {
+                const partes = registro.fechaCompletado.split('/');
+                if (partes.length === 3) {
+                    const fechaRegistro = new Date(partes[2], partes[1] - 1, partes[0]);
+                    return fechaRegistro >= fechaLimite;
+                }
+                const partesAsig = registro.fechaAsignacion.split('/');
+                if (partesAsig.length === 3) {
+                    const fechaAsig = new Date(partesAsig[2], partesAsig[1] - 1, partesAsig[0]);
+                    return fechaAsig >= fechaLimite;
+                }
+                return true; 
+            });
+
+            if (registroS13.length !== longitudOriginal) {
+                localStorage.setItem('registroS13', JSON.stringify(registroS13));
+            }
+        }
+
         function actualizarFiltroConductores() {
             const select = document.getElementById('filtro-conductor');
             if (!select) return;
@@ -1085,6 +1108,7 @@
                     fechaCompletado: fechaFin
                 };
 
+                purgarRegistrosAntiguosS13();
                 registroS13.push(nuevoRegistro);
                 delete fichasActivas[numTerritorio];
 
@@ -1095,15 +1119,14 @@
                 renderizarFichas();
                 renderizarPlanillaS13();
                 actualizarPildoraEstado();
+                guardarEnLaNube(true); // Sync silently
             }
         }
 
         function eliminarFichaActiva(numTerritorio) {
             if (confirm(`¿Estás seguro de que deseas eliminar el Territorio ${numTerritorio} de la mesa sin guardarlo en el historial?`)) {
-                // 1. Eliminar del objeto
                 delete fichasActivas[numTerritorio];
                 
-                // 2. Limpiar el selector en la tabla
                 const selectsTerritorio = document.querySelectorAll('.sel-territorio');
                 selectsTerritorio.forEach(sel => {
                     if (sel.value === numTerritorio) {
@@ -1111,17 +1134,14 @@
                     }
                 });
 
-                // 3. Guardar en localStorage
                 localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
-                
-                // 4. Sobrescribir el borrador
                 guardarBorradorLocal(); 
                 
-                // 5. Actualizar la vista
                 actualizarFiltroConductores();
                 renderizarFichas();
                 renderizarPlanillaS13();
                 actualizarPildoraEstado();
+                guardarEnLaNube(true); // Sync silently
             }
         }
 
@@ -1217,7 +1237,6 @@
             let celdaDia = tr1.querySelector('.celda-dia');
             let celdaFecha = tr1.querySelector('.celda-fecha');
             
-            // Si está colapsado, simplemente lo abrimos
             if (tr1.classList.contains('dia-colapsado')) {
                 tr1.classList.remove('dia-colapsado');
                 return;
@@ -1265,7 +1284,6 @@
                         const t = document.getElementById(`t-${i}-${sf}`);
                         const c = document.getElementById(`c-${i}-${sf}`);
                         
-                        // Solo limpia lugar, territorio y conductor. Preserva la hora.
                         if(l) l.value = "";
                         if(t) t.value = "";
                         if(c) c.value = "";
@@ -1317,7 +1335,7 @@
             boton.disabled = true; 
             boton.textContent = 'Preparando...';
             
-            generarFichasAutomaticas();
+            generarFichasAutomaticas(); // This already triggers a silent save due to logic
             guardarBorradorLocal();
             
             try {
@@ -1397,6 +1415,7 @@
 
                 if (datos.registroS13) {
                     registroS13 = datos.registroS13;
+                    purgarRegistrosAntiguosS13();
                     localStorage.setItem('registroS13', JSON.stringify(registroS13));
                 }
                 if (datos.fichasActivas) {
@@ -1470,32 +1489,51 @@
         function agregarVisitaGrupoAdmin() { const f = document.getElementById('in-grupo-fecha').value; const g = document.getElementById('in-grupo-num').value; if(f) { visitasGrupos.push({fecha: f, grupo: g}); renderizarVisitasGruposAdmin(); } }
         function eliminarVisitaGrupo(index) { visitasGrupos.splice(index, 1); renderizarVisitasGruposAdmin(); }
 
-        async function guardarEnLaNube() {
-            horarios = document.getElementById('admin-horarios').value.split(',').map(s => s.trim()).filter(s => s !== "");
-            conductores = document.getElementById('admin-conductores').value.split(',').map(s => s.trim()).filter(s => s !== "");
-            lugares = document.getElementById('admin-lugares').value.split(',').map(s => s.trim()).filter(s => s !== "");
+        // Mapeo con sistema "debounce" para no saturar JSONBin
+        let timeoutNube;
+        async function guardarEnLaNube(silencioso = false) {
+            if (silencioso) {
+                clearTimeout(timeoutNube);
+                timeoutNube = setTimeout(() => procesarGuardadoNube(true), 3000);
+            } else {
+                procesarGuardadoNube(false);
+            }
+        }
 
-            if(horarios[0] !== "") horarios.unshift("");
-            if(conductores[0] !== "") conductores.unshift("");
-            if(lugares[0] !== "") lugares.unshift("");
+        async function procesarGuardadoNube(silencioso) {
+            if (!silencioso) {
+                horarios = document.getElementById('admin-horarios').value.split(',').map(s => s.trim()).filter(s => s !== "");
+                conductores = document.getElementById('admin-conductores').value.split(',').map(s => s.trim()).filter(s => s !== "");
+                lugares = document.getElementById('admin-lugares').value.split(',').map(s => s.trim()).filter(s => s !== "");
+
+                if(horarios[0] !== "") horarios.unshift("");
+                if(conductores[0] !== "") conductores.unshift("");
+                if(lugares[0] !== "") lugares.unshift("");
+            }
 
             const nuevosDatos = { horarios, conductores, lugares, asambleas, visitas, visitasGrupos, registroS13, fichasActivas };
             const estadoNube = document.getElementById('estado-nube');
-            estadoNube.innerText = "Guardando...";
+            if (!silencioso) estadoNube.innerText = "Guardando...";
 
             try {
                 const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY }, body: JSON.stringify(nuevosDatos) });
                 if(response.ok) { 
-                    estadoNube.innerText = "¡Guardado con éxito!"; 
-                    actualizarListasDesplegables();
-                    actualizarFiltroConductores();
-                    setTimeout(() => { 
-                        estadoNube.innerText = ""; 
-                        cambiarVista('lobby'); 
-                    }, 1500); 
+                    if (!silencioso) {
+                        estadoNube.innerText = "¡Guardado con éxito!"; 
+                        actualizarListasDesplegables();
+                        actualizarFiltroConductores();
+                        setTimeout(() => { 
+                            estadoNube.innerText = ""; 
+                            cambiarVista('lobby'); 
+                        }, 1500); 
+                    }
                 } 
-                else { estadoNube.innerText = "Error al guardar."; }
-            } catch (error) { estadoNube.innerText = "Error de conexión."; }
+                else { 
+                    if (!silencioso) estadoNube.innerText = "Error al guardar."; 
+                }
+            } catch (error) { 
+                if (!silencioso) estadoNube.innerText = "Error de conexión."; 
+            }
         }
 
         function crearOpciones(arrayDatos) { return arrayDatos.map(dato => `<option value="${dato}">${dato}</option>`).join(''); }
@@ -1686,7 +1724,6 @@
             const controlesOriginales = elemento.querySelectorAll('select, input, textarea');
             const controlesClonados = clon.querySelectorAll('select, input, textarea');
 
-            // Remover clase dia-colapsado del clon
             const colapsados = clon.querySelectorAll('.dia-colapsado');
             colapsados.forEach(el => el.classList.remove('dia-colapsado'));
 
