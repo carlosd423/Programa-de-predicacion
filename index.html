@@ -235,7 +235,14 @@
         input[type="text"].in-fecha:hover, select.tabla-select:hover { border-bottom: 1px dashed #94a3b8; }
         [hidden] { display: none !important; }
         
-        /* BOTÓN DINÁMICO DE AÑADIR SALIDA */
+        /* WRAPPERS DE CELDAS DINÁMICAS (Para alojar botones adjuntos) */
+        .wrapper-celda { display: flex; align-items: center; width: 100%; justify-content: space-between; }
+        .wrapper-celda select { flex: 1; width: 100%; }
+        .btn-inline-action { background: none; border: none; font-size: 1.2em; cursor: pointer; padding: 0 0 0 5px; color: #475569; flex-shrink: 0; line-height: 1; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+        .btn-inline-action:hover { transform: scale(1.15); }
+        .btn-inline-action.rojo { color: #ef4444; font-weight: bold; font-size: 1.4em; }
+
+        /* BOTONES DINÁMICOS DE CABECERA DE DÍA (+ y x) */
         .btn-add-salida {
             background: #0ea5e9; color: white; border: none; border-radius: 50%;
             width: 26px; height: 26px; font-weight: bold; font-size: 1.2em;
@@ -243,6 +250,14 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: background 0.3s; padding: 0; line-height: 1;
         }
         .btn-add-salida:hover { background: #0284c7; }
+
+        .btn-remove-salida {
+            background: #ef4444; color: white; border: none; border-radius: 50%;
+            width: 26px; height: 26px; font-weight: bold; font-size: 1.2em;
+            cursor: pointer; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: background 0.3s; padding: 0; line-height: 1;
+        }
+        .btn-remove-salida:hover { background: #dc2626; }
 
         /* --- BOTÓN FLOTANTE VISTA --- */
         .btn-flotante-vista {
@@ -299,8 +314,8 @@
                 width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; text-align: left; text-align-last: left; outline: none; font-size: 1em !important; color: #1e293b !important; min-height: 42px !important;
             }
             
-            #documento-imagen:not(.modo-exportacion) tbody td > div { width: 100% !important; justify-content: flex-start !important; gap: 8px !important;}
-            #documento-imagen:not(.modo-exportacion) tbody td > div select { width: 100% !important; }
+            #documento-imagen:not(.modo-exportacion) tbody td > div.wrapper-celda { width: 100% !important; justify-content: flex-start !important; gap: 8px !important;}
+            #documento-imagen:not(.modo-exportacion) tbody td > div.wrapper-celda select { width: 100% !important; }
             
             /* Cabecera unificada (Día y Fecha Móvil) */
             #documento-imagen:not(.modo-exportacion) td.celda-dia { 
@@ -357,8 +372,8 @@
             width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; text-align: left; text-align-last: left; outline: none; font-size: 1em !important; color: #1e293b !important; min-height: 42px !important;
         }
         
-        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td > div { width: 100% !important; justify-content: flex-start !important; gap: 8px !important;}
-        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td > div select { width: 100% !important; }
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td > div.wrapper-celda { width: 100% !important; justify-content: flex-start !important; gap: 8px !important;}
+        body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tbody td > div.wrapper-celda select { width: 100% !important; }
         
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-dia { 
             background-color: #1e293b !important; color: white !important; border-radius: 10px 10px 0 0 !important; text-align: center !important; padding: 12px !important; margin: 0 -12px !important; width: calc(100% + 24px) !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important;
@@ -454,6 +469,7 @@
         .modo-exportacion [hidden] { display: none !important; }
         .modo-exportacion td.celda-dia { display: table-cell !important; border-radius: 0 !important; background: transparent !important;}
         .modo-exportacion td.celda-fecha { display: table-cell !important; background: transparent !important; }
+        .modo-exportacion .wrapper-celda { display: block !important; text-align: center !important; }
 
         /* --- ESTILOS DE IMPRESIÓN (NATIVO S-13-S 1/22) --- */
         @media screen { #zona-impresion { display: none !important; } }
@@ -488,7 +504,7 @@
     <!-- ========================================== -->
     <div id="vista-lobby" class="contenedor-lobby">
         <div class="lobby-header-wrapper">
-            <img src="icono.png" alt="Icono Tito" class="lobby-logo">
+            <img src="icono.png" alt="Icono Tito" class="lobby-logo" onerror="this.style.display='none'">
             <div class="lobby-header-text">
                 <h1 class="titulo-lobby">Tito</h1>
                 <p class="subtitulo-lobby">Asistente de Territorios</p>
@@ -616,7 +632,7 @@
                     <!-- Llenado dinámicamente -->
                 </select>
             </div>
-            <button class="btn-imprimir" style="margin-left:auto; background-color: #0ea5e9;" onclick="imprimirS13()">🖨️ Imprimir S-13</button>
+            <button class="btn-imprimir" style="margin-left:auto; background-color: #0ea5e9; padding: 8px 15px; border-radius: 5px; color: white; border: none; font-weight: bold; cursor: pointer;" onclick="imprimirS13()">🖨️ Imprimir S-13</button>
         </div>
 
         <div id="contenedor-carpetas-s13" class="contenedor-carpetas-s13">
@@ -706,7 +722,6 @@
         // =========================================================================
         // 🔑 CREDENCIALES
         // =========================================================================
-        const PASSWORD_SECRETA = "1234"; 
         const BIN_ID = "6a774d7af5f4af5e29fbc635";
         const MASTER_KEY = "$2a$10$7LrQ800nwrfdapwko0WbP.4jtdfH0GatKcaGLl2xfa.d0td6Xdnve";
 
@@ -1290,7 +1305,13 @@
             trExtra.hidden = true;
             
             document.getElementById(`h-${diaIndex}-${sf}`).value = "";
-            document.getElementById(`l-${diaIndex}-${sf}`).value = "";
+            
+            let celdaLugar = document.getElementById(`l-${diaIndex}-${sf}`);
+            if (celdaLugar) {
+                celdaLugar.value = "";
+                celdaLugar.removeAttribute('data-grupo');
+            }
+
             document.getElementById(`t-${diaIndex}-${sf}`).value = "";
             document.getElementById(`c-${diaIndex}-${sf}`).value = "";
 
@@ -1306,15 +1327,62 @@
             guardarBorradorLocal();
         }
 
+        function quitarUltimaSalida(diaIndex) {
+            let tr1 = document.getElementById(`fila-${diaIndex}-1`);
+            if (tr1.classList.contains('dia-colapsado')) {
+                return; // Ya está colapsado
+            }
+
+            // Si hay filas extras visibles, busca la última y ocúltala
+            for (let sf = 4; sf >= 2; sf--) {
+                let trExtra = document.getElementById(`fila-${diaIndex}-${sf}`);
+                if (trExtra && !trExtra.hidden) {
+                    quitarSalida(diaIndex, sf);
+                    return; 
+                }
+            }
+            
+            // Si llegamos aquí, solo queda la fila principal. Limpiamos valores y colapsamos.
+            const idsSelects = [`h-${diaIndex}-1`, `l-${diaIndex}-1`, `t-${diaIndex}-1`, `c-${diaIndex}-1`];
+            idsSelects.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.value = "";
+                    if (el.classList.contains('sel-lugar')) el.removeAttribute('data-grupo');
+                }
+            });
+
+            evaluarColapsoDias();
+            guardarBorradorLocal();
+        }
+
+        function asignarGrupo(selectId) {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            const grupoActual = select.getAttribute('data-grupo') || "";
+            const nuevoGrupo = prompt("¿Qué grupo(s) asiste a este lugar? (Ej. G1, Grupos 2 y 3)", grupoActual);
+            
+            if (nuevoGrupo !== null) {
+                if (nuevoGrupo.trim() === "") {
+                    select.removeAttribute('data-grupo');
+                } else {
+                    select.setAttribute('data-grupo', nuevoGrupo.trim());
+                }
+                guardarBorradorLocal();
+            }
+        }
+
         function limpiarSemana() {
             if (confirm("¿Seguro que deseas vaciar todos los campos de esta semana?")) {
                 for (let i = 0; i < 7; i++) {
                     for (let sf = 1; sf <= 4; sf++) {
+                        const h = document.getElementById(`h-${i}-${sf}`);
                         const l = document.getElementById(`l-${i}-${sf}`);
                         const t = document.getElementById(`t-${i}-${sf}`);
                         const c = document.getElementById(`c-${i}-${sf}`);
                         
-                        if(l) l.value = "";
+                        if(h) h.value = "";
+                        if(l) { l.value = ""; l.removeAttribute('data-grupo'); }
                         if(t) t.value = "";
                         if(c) c.value = "";
                         
@@ -1339,13 +1407,22 @@
 
             const selects = document.querySelectorAll('.tabla-select');
             let valores = {};
-            selects.forEach(s => { if(s.id) valores[s.id] = s.value; });
+            let grupos = {};
+            selects.forEach(s => { 
+                if(s.id) {
+                    valores[s.id] = s.value; 
+                    if (s.classList.contains('sel-lugar') && s.getAttribute('data-grupo')) {
+                        grupos[s.id] = s.getAttribute('data-grupo');
+                    }
+                }
+            });
 
             const borrador = {
                 fechaLunes: fechaLunes,
                 mes: document.getElementById('selector-mes').value,
                 notas: document.getElementById('input-campana').value,
-                valores: valores
+                valores: valores,
+                grupos: grupos
             };
             localStorage.setItem('borrador_predicacion', JSON.stringify(borrador));
 
@@ -1403,6 +1480,15 @@
                         for(const [id, val] of Object.entries(borrador.valores)) {
                             const el = document.getElementById(id);
                             if(el) el.value = val;
+                        }
+
+                        document.querySelectorAll('.sel-lugar').forEach(sel => sel.removeAttribute('data-grupo'));
+                        
+                        if (borrador.grupos) {
+                            for(const [id, grp] of Object.entries(borrador.grupos)) {
+                                const el = document.getElementById(id);
+                                if(el) el.setAttribute('data-grupo', grp);
+                            }
                         }
 
                         for (let i = 0; i < 7; i++) {
@@ -1648,12 +1734,20 @@
                                 <span>${dia}</span>
                                 <span class="mobile-fecha-display" id="mobile-fecha-${index}" style="display:none; color: #bae6fd;"></span>
                             </div>
-                            <button onclick="agregarSalida(${index})" class="btn-add-salida" data-html2canvas-ignore>+</button>
+                            <div style="display:flex; gap: 8px; align-items:center;">
+                                <button onclick="quitarUltimaSalida(${index})" class="btn-remove-salida" data-html2canvas-ignore title="Reducir fila">&times;</button>
+                                <button onclick="agregarSalida(${index})" class="btn-add-salida" data-html2canvas-ignore title="Añadir fila">+</button>
+                            </div>
                         </div>
                     </td>
                     <td class="celda-fecha" data-label="Fecha"><input type="text" class="in-fecha" id="dia-${index}" readonly style="width: 35px; font-weight: bold; cursor: default;"></td>
                     <td data-label="Hora"><select class="tabla-select sel-horario" id="h-${index}-1" onchange="guardarBorradorLocal()"></select></td>
-                    <td data-label="Lugar"><select class="tabla-select sel-lugar" id="l-${index}-1" onchange="guardarBorradorLocal()"></select></td>
+                    <td data-label="Lugar">
+                        <div class="wrapper-celda">
+                            <select class="tabla-select sel-lugar" id="l-${index}-1" onchange="guardarBorradorLocal()"></select>
+                            <button onclick="asignarGrupo('l-${index}-1')" class="btn-inline-action" data-html2canvas-ignore title="Asignar Grupo">👥</button>
+                        </div>
+                    </td>
                     <td data-label="Territorio"><select class="tabla-select sel-territorio" id="t-${index}-1" onchange="guardarBorradorLocal()"></select></td>
                     <td data-label="Conductor"><select class="tabla-select sel-conductor" id="c-${index}-1" onchange="guardarBorradorLocal()"></select></td>
                     <td class="celda-asamblea" colspan="4" hidden></td>
@@ -1667,12 +1761,17 @@
                     trExtra.hidden = true;
                     trExtra.innerHTML = `
                         <td data-label="Hora"><select class="tabla-select sel-horario" id="h-${index}-${sf}" onchange="guardarBorradorLocal()"></select></td>
-                        <td data-label="Lugar"><select class="tabla-select sel-lugar" id="l-${index}-${sf}" onchange="guardarBorradorLocal()"></select></td>
+                        <td data-label="Lugar">
+                            <div class="wrapper-celda">
+                                <select class="tabla-select sel-lugar" id="l-${index}-${sf}" onchange="guardarBorradorLocal()"></select>
+                                <button onclick="asignarGrupo('l-${index}-${sf}')" class="btn-inline-action" data-html2canvas-ignore title="Asignar Grupo">👥</button>
+                            </div>
+                        </td>
                         <td data-label="Territorio"><select class="tabla-select sel-territorio" id="t-${index}-${sf}" onchange="guardarBorradorLocal()"></select></td>
-                        <td data-label="Conductor" style="position:relative;">
-                            <div style="display:flex; align-items:center; width:100%; justify-content:flex-end;">
+                        <td data-label="Conductor">
+                            <div class="wrapper-celda">
                                 <select class="tabla-select sel-conductor" id="c-${index}-${sf}" onchange="guardarBorradorLocal()"></select>
-                                <button onclick="quitarSalida(${index}, ${sf})" data-html2canvas-ignore title="Eliminar fila" style="background:none; border:none; color:#ef4444; font-weight:bold; font-size:1.4em; cursor:pointer; margin-left:5px; padding:0;">&times;</button>
+                                <button onclick="quitarSalida(${index}, ${sf})" class="btn-inline-action rojo" data-html2canvas-ignore title="Eliminar fila">&times;</button>
                             </div>
                         </td>
                     `;
@@ -1823,7 +1922,16 @@
 
             controlesClonados.forEach((control, index) => {
                 const original = controlesOriginales[index];
-                const valor = original.tagName === 'SELECT' ? (original.selectedOptions[0]?.textContent || original.value) : original.value;
+                let valor = original.tagName === 'SELECT' ? (original.selectedOptions[0]?.textContent || original.value) : original.value;
+                
+                // Lógica de fusión de los grupos al exportar
+                if (original.tagName === 'SELECT' && original.classList.contains('sel-lugar')) {
+                    const grupo = original.getAttribute('data-grupo');
+                    if (grupo) {
+                        valor += ` (${grupo})`;
+                    }
+                }
+
                 const texto = document.createElement(control.id === 'input-campana' ? 'div' : 'span');
                 texto.className = `${control.className} valor-exportacion`.trim();
                 texto.textContent = valor;
