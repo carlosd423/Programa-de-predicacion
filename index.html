@@ -495,14 +495,14 @@
             }
         }
         
-        /* --- INDICADOR DE CONEXIÓN Y SINCRONIZACIÓN --- */
+        /* --- INDICADOR DE RED (UI) --- */
         .contenedor-indicador-red {
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 10000;
         }
-        
+
         .pildora-conexion {
             display: flex;
             align-items: center;
@@ -520,36 +520,36 @@
             max-width: 300px;
         }
 
-        .pildora-conexion.offline { background-color: #ef4444; } /* Rojo */
-        .pildora-conexion.syncing { background-color: #0ea5e9; } /* Azul Cian */
-        .pildora-conexion.online { background-color: #10b981; } /* Verde Esmeralda */
-        
+        .pildora-conexion.offline { background-color: #ef4444; } /* Rojo suave */
+        .pildora-conexion.syncing { background-color: #0ea5e9; } /* Azul cian */
+        .pildora-conexion.online { background-color: #10b981; }  /* Verde esmeralda */
+
+        /* Estado contraído para no estorbar en la pantalla */
         .pildora-conexion.idle { 
             background-color: #f8fafc; 
             color: #64748b; 
             border: 1px solid #cbd5e1;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            padding: 8px; /* Se reduce a un círculo discreto */
+            padding: 8px;
             max-width: 38px;
         }
 
         .pildora-conexion.idle .texto-conexion { display: none; }
-        
-        /* Expansión interactiva (Tap-to-expand) */
+
+        /* Expansión al tocar (Tap-to-expand) */
         .pildora-conexion.idle.expandido {
             max-width: 300px;
             padding: 8px 16px;
             border-radius: 9999px;
         }
         .pildora-conexion.idle.expandido .texto-conexion { display: inline-block; }
-        
+
         .icono-rotatorio { 
             display: inline-block;
             animation: rotar 1s linear infinite; 
         }
-        
-        @keyframes rotar { 100% { transform: rotate(360deg); } }
 
+        @keyframes rotar { 100% { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
@@ -561,7 +561,7 @@
     <div class="contenedor-indicador-red" data-html2canvas-ignore>
         <div id="pildora-conexion" class="pildora-conexion idle" onclick="toggleDetalleConexion()">
             <span id="icono-conexion">☁️</span>
-            <span id="texto-conexion" class="texto-conexion">Calculando estado...</span>
+            <span id="texto-conexion" class="texto-conexion">Iniciando...</span>
         </div>
     </div>
 
@@ -1583,19 +1583,25 @@
         }
 
         // =========================================================================
-        // NUEVA LÓGICA DE SINCRONIZACIÓN (THREE-WAY MERGE) Y ESTADO DE RED
+        // MOTOR OFFLINE-FIRST: THREE-WAY MERGE & ANTI-WIPE
         // =========================================================================
         
+        // Candado de seguridad global: Evita subidas accidentales de arrays vacíos
+        let appListaParaGuardar = false;
         let ultimaSyncHora = "No sincronizado";
         let timeoutNube;
 
-        // Función utilitaria para comparar los estados locales y base
-        function sonIguales(obj1, obj2) {
-            return JSON.stringify(obj1) === JSON.stringify(obj2);
+        // --- UTILIDADES BÁSICAS ---
+        function clonarProfundo(obj) {
+            return JSON.parse(JSON.stringify(obj || {}));
         }
 
-        // Obtiene una fotografía exacta de todos los datos en memoria en este momento
-        function obtenerEstadoLocal() {
+        function sonIguales(obj1, obj2) {
+            return JSON.stringify(obj1 || {}) === JSON.stringify(obj2 || {});
+        }
+
+        // --- GESTIÓN DEL ESTADO LOCAL ---
+        function obtenerEstadoMemoria() {
             return {
                 horarios: [...horarios],
                 conductores: [...conductores],
@@ -1603,12 +1609,23 @@
                 asambleas: [...asambleas],
                 visitas: [...visitas],
                 visitasGrupos: [...visitasGrupos],
-                registroS13: JSON.parse(JSON.stringify(registroS13)),
-                fichasActivas: JSON.parse(JSON.stringify(fichasActivas))
+                registroS13: clonarProfundo(registroS13),
+                fichasActivas: clonarProfundo(fichasActivas)
             };
         }
 
-        // --- CONTROL DE UI (PÍLDORA) ---
+        function volcarEstadoAMemoria(estado) {
+            if (estado.horarios) horarios = estado.horarios;
+            if (estado.conductores) conductores = estado.conductores;
+            if (estado.lugares) lugares = estado.lugares;
+            if (estado.asambleas) asambleas = estado.asambleas;
+            if (estado.visitas) visitas = estado.visitas;
+            if (estado.visitasGrupos) visitasGrupos = estado.visitasGrupos;
+            if (estado.registroS13) registroS13 = estado.registroS13;
+            if (estado.fichasActivas) fichasActivas = estado.fichasActivas;
+        }
+
+        // --- CONTROL DE UI (INTERFAZ DE RED) ---
         function actualizarUIConexion(estado) {
             const pildora = document.getElementById('pildora-conexion');
             const icono = document.getElementById('icono-conexion');
@@ -1619,7 +1636,7 @@
 
             if (estado === 'offline') {
                 icono.innerHTML = "☁️ 🚫";
-                texto.innerHTML = "Trabajando sin conexión";
+                texto.innerHTML = "Sin conexión";
             } else if (estado === 'syncing') {
                 icono.innerHTML = "<span class='icono-rotatorio'>🔄</span>";
                 texto.innerHTML = "Sincronizando...";
@@ -1627,7 +1644,7 @@
                 icono.innerHTML = "☁️ ✅";
                 texto.innerHTML = "Actualizado";
                 
-                // Transición automática al estado discreto 'idle' tras 3 segundos de éxito
+                // Colapso automático a diseño discreto
                 setTimeout(() => {
                     if (navigator.onLine && pildora.classList.contains('online')) {
                         pildora.className = 'pildora-conexion idle';
@@ -1645,54 +1662,69 @@
             }
         }
 
-        // --- EVENTOS NATIVOS DEL NAVEGADOR ---
-        window.addEventListener('online', sincronizarConNube);
+        // Listeners Nativos del Navegador
+        window.addEventListener('online', iniciarSincronizacion);
         window.addEventListener('offline', () => actualizarUIConexion('offline'));
 
-        // --- MOTOR DE FUSIÓN (THREE-WAY MERGE) ---
-        async function sincronizarConNube() {
+        // --- PROTECCIÓN ANTI-WIPE ---
+        function esBorradoAccidental(arrayLocal, arrayNube) {
+            const localInvalido = !arrayLocal || arrayLocal.length === 0 || (arrayLocal.length === 1 && arrayLocal[0] === "");
+            const nubeValida = arrayNube && arrayNube.length > 1;
+            return localInvalido && nubeValida;
+        }
+
+        // --- NÚCLEO: THREE-WAY MERGE ---
+        async function iniciarSincronizacion() {
             if (!navigator.onLine) return;
+            
+            // Candado de seguridad: No subimos nada si la app no hidrató bien
+            if (!appListaParaGuardar) return; 
+
             actualizarUIConexion('syncing');
 
-            const estadoLocal = obtenerEstadoLocal();
-            const estadoBaseString = localStorage.getItem('tito_estado_base');
-            // Si es la primera vez, version 0 y base vacía
-            const estadoBase = estadoBaseString ? JSON.parse(estadoBaseString) : { version: 0 };
+            const estadoLocalActual = obtenerEstadoMemoria();
+            const strBase = localStorage.getItem('tito_estado_base');
+            const estadoBase = strBase ? JSON.parse(strBase) : { version: 0 };
 
             try {
-                // 1. OBTENER ESTADO NUBE (GET)
+                // 1. Descargar Estado de la Nube (GET)
                 const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { 
                     headers: { 'X-Master-Key': MASTER_KEY } 
                 });
                 const resultado = await response.json();
-                let estadoNube = resultado.record;
+                let estadoNube = resultado.record || {};
                 if (!estadoNube.version) estadoNube.version = 0;
 
                 let cambiosParaSubir = false;
-                const propiedades = ['horarios', 'conductores', 'lugares', 'asambleas', 'visitas', 'visitasGrupos', 'registroS13', 'fichasActivas'];
+                const clavesDeDatos = ['horarios', 'conductores', 'lugares', 'asambleas', 'visitas', 'visitasGrupos', 'registroS13', 'fichasActivas'];
                 
-                // 2. COMPARAR (DIFFING) E INTEGRAR (MERGE)
-                propiedades.forEach(key => {
-                    const localVal = estadoLocal[key] || (Array.isArray(estadoLocal[key]) ? [] : {});
-                    const baseVal = estadoBase[key] || (Array.isArray(estadoBase[key]) ? [] : {});
-                    const nubeVal = estadoNube[key] || (Array.isArray(estadoNube[key]) ? [] : {});
+                // 2. Comparar (Diffing) y Fusionar (Merge)
+                clavesDeDatos.forEach(key => {
+                    const valLocal = estadoLocalActual[key] || (Array.isArray(estadoLocalActual[key]) ? [""] : {});
+                    const valBase = estadoBase[key] || (Array.isArray(estadoBase[key]) ? [""] : {});
+                    const valNube = estadoNube[key] || (Array.isArray(estadoNube[key]) ? [""] : {});
 
-                    const cambiadoLocalmente = !sonIguales(localVal, baseVal);
-                    const cambiadoEnNube = !sonIguales(nubeVal, baseVal);
+                    const cambiadoLocalmente = !sonIguales(valLocal, valBase);
+                    const cambiadoEnNube = !sonIguales(valNube, valBase);
 
-                    if (cambiadoLocalmente && !cambiadoEnNube) {
-                        // Nosotros hicimos cambios y nadie más tocó este campo en la nube.
-                        estadoNube[key] = localVal;
+                    // EVALUACIÓN ANTI-WIPE
+                    if (esBorradoAccidental(valLocal, valNube)) {
+                        // Salvavidas activado: Forzamos la retención de los datos de la nube
+                        estadoLocalActual[key] = valNube;
+                    } 
+                    // FUSIÓN A TRES BANDAS
+                    else if (cambiadoLocalmente && !cambiadoEnNube) {
+                        // Modificación local limpia
+                        estadoNube[key] = valLocal;
                         cambiosParaSubir = true;
-                    } else if (cambiadoEnNube) {
-                        // Conflicto (Ambos cambiaron) o Solo Nube Cambió: 
-                        // Regla estricta: La nube tiene prioridad.
-                        estadoLocal[key] = nubeVal;
-                        actualizarVariableGlobal(key, nubeVal);
+                    } 
+                    else if (cambiadoEnNube) {
+                        // Conflicto directo o solo cambio externo: La nube siempre gana
+                        estadoLocalActual[key] = valNube;
                     }
                 });
 
-                // 3. SUBIR MODIFICACIONES (Si las hay)
+                // 3. Subir modificaciones a la nube (Si las hay) (PUT)
                 if (cambiosParaSubir) {
                     estadoNube.version += 1;
                     await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, { 
@@ -1702,74 +1734,68 @@
                     });
                 }
 
-                // 4. ACTUALIZAR BASE LOCAL Y UI
+                // 4. Actualizar Memoria y UI
+                volcarEstadoAMemoria(estadoLocalActual);
+                localStorage.setItem('tito_estado_local', JSON.stringify(estadoLocalActual));
                 localStorage.setItem('tito_estado_base', JSON.stringify(estadoNube));
                 
                 const ahora = new Date();
                 ultimaSyncHora = ahora.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
                 actualizarUIConexion('online');
                 
-                // Forzar repintado de datos descargados en la pantalla
+                // Refrescar las vistas de la aplicación
                 actualizarListasDesplegables();
                 actualizarFiltroConductores();
-                renderizarFichas();
-                renderizarPlanillaS13();
+                if(typeof renderizarFichas === "function") renderizarFichas();
+                if(typeof renderizarPlanillaS13 === "function") renderizarPlanillaS13();
                 actualizarPildoraEstado();
                 
-                // Si la vista de configuración está abierta, repintar los chips
                 if(document.getElementById('vista-configuracion') && !document.getElementById('vista-configuracion').classList.contains('vista-oculta')) {
                     cargarDatosEnPanel();
                 }
 
             } catch (error) {
-                console.error("Error en sincronización Three-Way:", error);
+                console.error("Error en sincronización:", error);
                 actualizarUIConexion('offline'); 
             }
         }
 
-        // Aplica un valor desde la nube directo a la memoria viva de la app
-        function actualizarVariableGlobal(key, value) {
-            switch(key) {
-                case 'horarios': horarios = value; break;
-                case 'conductores': conductores = value; break;
-                case 'lugares': lugares = value; break;
-                case 'asambleas': asambleas = value; break;
-                case 'visitas': visitas = value; break;
-                case 'visitasGrupos': visitasGrupos = value; break;
-                case 'registroS13': 
-                    registroS13 = value; 
-                    localStorage.setItem('registroS13', JSON.stringify(registroS13));
-                    break;
-                case 'fichasActivas': 
-                    fichasActivas = value; 
-                    localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
-                    break;
+        // --- HIDRATACIÓN INICIAL SEGURA ---
+        async function inicializarAppSegura() {
+            // 1. Intentar cargar desde el LocalStorage primero
+            const strLocal = localStorage.getItem('tito_estado_local');
+            if (strLocal) {
+                volcarEstadoAMemoria(JSON.parse(strLocal));
+                actualizarListasDesplegables();
+            }
+            
+            // 2. Desbloquear la app para permitir guardados (Candado liberado)
+            appListaParaGuardar = true; 
+
+            // 3. Ejecutar sincronización
+            if(navigator.onLine) {
+                await iniciarSincronizacion();
+            } else {
+                actualizarUIConexion('offline');
             }
         }
 
-        // Intercepta los guardados del usuario. En vez de sobreescribir ciegamente, dispara la Fusión.
         function guardarEnLaNube() {
+            if (!appListaParaGuardar) return; // Validación del candado
+            
+            // Guarda localmente de inmediato
+            const estadoActual = obtenerEstadoMemoria();
+            localStorage.setItem('tito_estado_local', JSON.stringify(estadoActual));
+
+            // Debounce para la sincronización con la nube
             clearTimeout(timeoutNube);
             timeoutNube = setTimeout(() => {
                 if(navigator.onLine) {
-                    sincronizarConNube();
+                    iniciarSincronizacion();
                 } else {
                     actualizarUIConexion('offline');
                 }
             }, 2500); 
-        }
-
-        // Llamado al iniciar la aplicación en el DOMContentLoaded
-        async function cargarDatosDesdeLaNube() {
-            if(!localStorage.getItem('tito_estado_base')) {
-               localStorage.setItem('tito_estado_base', JSON.stringify(obtenerEstadoLocal())); 
-            }
-            
-            if(navigator.onLine) {
-                await sincronizarConNube();
-            } else {
-                actualizarUIConexion('offline');
-            }
         }
 
         function solicitarAccesoAdmin() {
@@ -2085,7 +2111,7 @@
             }
             document.getElementById('fecha-lunes').value = savedDate;
             
-            await cargarDatosDesdeLaNube();
+            await inicializarAppSegura(); // Hidratación segura con Anti-Wipe
             autocompletarFechas(document.getElementById('fecha-lunes').value);
             
             document.getElementById('fecha-lunes').addEventListener('change', (e) => {
