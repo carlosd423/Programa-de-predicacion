@@ -494,76 +494,10 @@
                 font-weight: bold;
             }
         }
-        
-        /* --- INDICADOR DE RED (UI) --- */
-        .contenedor-indicador-red {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-        }
-
-        .pildora-conexion {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 9999px;
-            font-size: 0.9em;
-            font-weight: bold;
-            color: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            overflow: hidden;
-            white-space: nowrap;
-            max-width: 300px;
-        }
-
-        .pildora-conexion.offline { background-color: #ef4444; } /* Rojo suave */
-        .pildora-conexion.syncing { background-color: #0ea5e9; } /* Azul cian */
-        .pildora-conexion.online { background-color: #10b981; }  /* Verde esmeralda */
-
-        /* Estado contraído para no estorbar en la pantalla */
-        .pildora-conexion.idle { 
-            background-color: #f8fafc; 
-            color: #64748b; 
-            border: 1px solid #cbd5e1;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            padding: 8px;
-            max-width: 38px;
-        }
-
-        .pildora-conexion.idle .texto-conexion { display: none; }
-
-        /* Expansión al tocar (Tap-to-expand) */
-        .pildora-conexion.idle.expandido {
-            max-width: 300px;
-            padding: 8px 16px;
-            border-radius: 9999px;
-        }
-        .pildora-conexion.idle.expandido .texto-conexion { display: inline-block; }
-
-        .icono-rotatorio { 
-            display: inline-block;
-            animation: rotar 1s linear infinite; 
-        }
-
-        @keyframes rotar { 100% { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
-
-    <!-- ========================================== -->
-    <!-- INDICADOR VISUAL DE CONEXIÓN               -->
-    <!-- ========================================== -->
-    <div class="contenedor-indicador-red" data-html2canvas-ignore>
-        <div id="pildora-conexion" class="pildora-conexion idle" onclick="toggleDetalleConexion()">
-            <span id="icono-conexion">☁️</span>
-            <span id="texto-conexion" class="texto-conexion">Iniciando...</span>
-        </div>
-    </div>
 
     <!-- ========================================== -->
     <!-- LOBBY / DASHBOARD PRINCIPAL                -->
@@ -805,9 +739,156 @@
         const territorios = [""].concat(Array.from({length: 18}, (_, i) => (i + 1).toString()));
         const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
-        // Variables de Territorios y S-13 (con persistencia local)
-        let fichasActivas = JSON.parse(localStorage.getItem('fichasActivas')) || {};
-        let registroS13 = JSON.parse(localStorage.getItem('registroS13')) || [];
+        // Variables de Territorios y S-13 (con persistencia local inicial)
+        let fichasActivas = {};
+        let registroS13 = [];
+
+        // =========================================================================
+        // LÓGICA DE SINCRONIZACIÓN Y RESPALDO (ANTI-WIPE)
+        // =========================================================================
+        
+        // Candado global de seguridad
+        let nubeCargadaCorrectamente = false;
+        let timeoutNube;
+
+        // 1. Persistencia Unificada (Respaldo Local)
+        function respaldarLocalmente() {
+            const estadoActual = {
+                horarios: horarios,
+                conductores: conductores,
+                lugares: lugares,
+                asambleas: asambleas,
+                visitas: visitas,
+                visitasGrupos: visitasGrupos,
+                registroS13: registroS13,
+                fichasActivas: fichasActivas
+            };
+            localStorage.setItem('tito_backup', JSON.stringify(estadoActual));
+        }
+
+        function recuperarLocalmente() {
+            const backup = localStorage.getItem('tito_backup');
+            if (backup) {
+                try {
+                    const datos = JSON.parse(backup);
+                    if (datos.horarios) horarios = datos.horarios;
+                    if (datos.conductores) conductores = datos.conductores;
+                    if (datos.lugares) lugares = datos.lugares;
+                    if (datos.asambleas) asambleas = datos.asambleas;
+                    if (datos.visitas) visitas = datos.visitas;
+                    if (datos.visitasGrupos) visitasGrupos = datos.visitasGrupos;
+                    if (datos.registroS13) registroS13 = datos.registroS13;
+                    if (datos.fichasActivas) fichasActivas = datos.fichasActivas;
+                    
+                    // Refrescar las listas en la interfaz
+                    if (typeof actualizarListasDesplegables === 'function') actualizarListasDesplegables();
+                    if (typeof actualizarFiltroConductores === 'function') actualizarFiltroConductores();
+                } catch (e) {
+                    console.error("Error al recuperar el respaldo local:", e);
+                }
+            } else {
+                // Fallback de seguridad en caso de ser la primera vez que se migra
+                fichasActivas = JSON.parse(localStorage.getItem('fichasActivas')) || {};
+                registroS13 = JSON.parse(localStorage.getItem('registroS13')) || [];
+            }
+        }
+
+        // 2. Flujo de Inicialización Seguro
+        async function cargarDatosDesdeLaNube() {
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { 
+                    headers: { 'X-Master-Key': MASTER_KEY } 
+                });
+                
+                if (!response.ok) throw new Error("Fallo en la respuesta del servidor");
+                
+                const resultado = await response.json();
+                const datos = resultado.record;
+
+                // Validación estricta: Asegurarnos de que la nube nos entregó datos reales y no está vacía
+                if (datos && datos.conductores && datos.conductores.length > 0) {
+                    horarios = datos.horarios || horarios;
+                    conductores = datos.conductores || conductores;
+                    lugares = datos.lugares || lugares;
+                    asambleas = datos.asambleas || [];
+                    visitas = datos.visitas || [];
+                    visitasGrupos = datos.visitasGrupos || [];
+
+                    if (datos.registroS13) {
+                        registroS13 = datos.registroS13;
+                        if (typeof purgarRegistrosAntiguosS13 === 'function') purgarRegistrosAntiguosS13();
+                    }
+                    if (datos.fichasActivas) {
+                        fichasActivas = datos.fichasActivas;
+                    }
+
+                    // Crear el primer respaldo local actualizado y ABRIR el candado
+                    respaldarLocalmente();
+                    nubeCargadaCorrectamente = true;
+                    
+                    // Refrescar la interfaz con los nuevos datos
+                    if (typeof actualizarListasDesplegables === 'function') actualizarListasDesplegables();
+                    if (typeof actualizarFiltroConductores === 'function') actualizarFiltroConductores();
+                    if (typeof renderizarFichas === 'function') renderizarFichas();
+                    if (typeof renderizarPlanillaS13 === 'function') renderizarPlanillaS13();
+                    if (typeof actualizarPildoraEstado === 'function') actualizarPildoraEstado();
+                    
+                } else {
+                    throw new Error("Los datos descargados están vacíos o corruptos.");
+                }
+
+            } catch (error) {
+                console.warn("Trabajando en modo local (Offline/Error):", error);
+                recuperarLocalmente();
+                nubeCargadaCorrectamente = false; // Mantenemos el candado cerrado para proteger la nube
+            }
+        }
+
+        // 3. Flujo de Modificación Constante
+        function guardarEnLaNube() {
+            // Siempre guardamos en el dispositivo del usuario primero
+            respaldarLocalmente();
+
+            // Programamos la subida con un pequeño retraso para no saturar la red (Debounce)
+            clearTimeout(timeoutNube);
+            timeoutNube = setTimeout(() => {
+                procesarGuardadoNube();
+            }, 2500); 
+        }
+
+        async function procesarGuardadoNube() {
+            // VALIDACIÓN ESTRICTA: Si la nube falló al inicio, prohibimos subir datos.
+            if (!nubeCargadaCorrectamente) {
+                console.log("Candado activado: Subida bloqueada para evitar pérdida de datos en la nube.");
+                return;
+            }
+
+            // Asegurar que los arrays mantengan su estructura base antes de subir
+            if(horarios[0] !== "") horarios.unshift("");
+            if(conductores[0] !== "") conductores.unshift("");
+            if(lugares[0] !== "") lugares.unshift("");
+
+            const nuevosDatos = { horarios, conductores, lugares, asambleas, visitas, visitasGrupos, registroS13, fichasActivas };
+
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, { 
+                    method: 'PUT', 
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY }, 
+                    body: JSON.stringify(nuevosDatos) 
+                });
+                console.log("Datos guardados en la nube con éxito.");
+            } catch (error) { 
+                console.error("Error al subir a la nube:", error); 
+            }
+        }
+
+        // 4. Reconexión Automática
+        window.addEventListener('online', () => {
+            // Si recuperamos el internet, intentamos descargar para poder abrir el candado
+            if (!nubeCargadaCorrectamente) {
+                cargarDatosDesdeLaNube();
+            }
+        });
 
         // =========================================================================
         // PÍLDORA DE ESTADO RÁPIDO
@@ -972,12 +1053,12 @@
                     procesarSeleccionDeTabla(i, sf, fechaReferencia);
                 }
             }
-            localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
+            
             actualizarFiltroConductores();
             renderizarFichas(); 
             renderizarPlanillaS13();
             actualizarPildoraEstado();
-            guardarEnLaNube(); // Sync
+            guardarEnLaNube(); // Activa el Sync Lock Flow
         }
 
         function procesarSeleccionDeTabla(diaIndex, subFila, fechaReferencia) {
@@ -1035,7 +1116,7 @@
             });
 
             if (registroS13.length !== longitudOriginal) {
-                localStorage.setItem('registroS13', JSON.stringify(registroS13));
+                respaldarLocalmente();
             }
         }
         
@@ -1223,14 +1304,11 @@
                 registroS13.push(nuevoRegistro);
                 delete fichasActivas[numTerritorio];
 
-                localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
-                localStorage.setItem('registroS13', JSON.stringify(registroS13));
-
                 actualizarFiltroConductores();
                 renderizarFichas();
                 renderizarPlanillaS13();
                 actualizarPildoraEstado();
-                guardarEnLaNube(); // Sync
+                guardarEnLaNube(); // Activa el Sync Lock Flow
             }
         }
 
@@ -1245,14 +1323,13 @@
                     }
                 });
 
-                localStorage.setItem('fichasActivas', JSON.stringify(fichasActivas));
                 guardarBorradorLocal(); 
                 
                 actualizarFiltroConductores();
                 renderizarFichas();
                 renderizarPlanillaS13();
                 actualizarPildoraEstado();
-                guardarEnLaNube(); // Sync
+                guardarEnLaNube(); // Activa el Sync Lock Flow
             }
         }
 
@@ -1582,222 +1659,6 @@
             }
         }
 
-        // =========================================================================
-        // MOTOR OFFLINE-FIRST: THREE-WAY MERGE & ANTI-WIPE
-        // =========================================================================
-        
-        // Candado de seguridad global: Evita subidas accidentales de arrays vacíos
-        let appListaParaGuardar = false;
-        let ultimaSyncHora = "No sincronizado";
-        let timeoutNube;
-
-        // --- UTILIDADES BÁSICAS ---
-        function clonarProfundo(obj) {
-            return JSON.parse(JSON.stringify(obj || {}));
-        }
-
-        function sonIguales(obj1, obj2) {
-            return JSON.stringify(obj1 || {}) === JSON.stringify(obj2 || {});
-        }
-
-        // --- GESTIÓN DEL ESTADO LOCAL ---
-        function obtenerEstadoMemoria() {
-            return {
-                horarios: [...horarios],
-                conductores: [...conductores],
-                lugares: [...lugares],
-                asambleas: [...asambleas],
-                visitas: [...visitas],
-                visitasGrupos: [...visitasGrupos],
-                registroS13: clonarProfundo(registroS13),
-                fichasActivas: clonarProfundo(fichasActivas)
-            };
-        }
-
-        function volcarEstadoAMemoria(estado) {
-            if (estado.horarios) horarios = estado.horarios;
-            if (estado.conductores) conductores = estado.conductores;
-            if (estado.lugares) lugares = estado.lugares;
-            if (estado.asambleas) asambleas = estado.asambleas;
-            if (estado.visitas) visitas = estado.visitas;
-            if (estado.visitasGrupos) visitasGrupos = estado.visitasGrupos;
-            if (estado.registroS13) registroS13 = estado.registroS13;
-            if (estado.fichasActivas) fichasActivas = estado.fichasActivas;
-        }
-
-        // --- CONTROL DE UI (INTERFAZ DE RED) ---
-        function actualizarUIConexion(estado) {
-            const pildora = document.getElementById('pildora-conexion');
-            const icono = document.getElementById('icono-conexion');
-            const texto = document.getElementById('texto-conexion');
-            
-            pildora.className = 'pildora-conexion ' + estado;
-            pildora.classList.remove('expandido');
-
-            if (estado === 'offline') {
-                icono.innerHTML = "☁️ 🚫";
-                texto.innerHTML = "Sin conexión";
-            } else if (estado === 'syncing') {
-                icono.innerHTML = "<span class='icono-rotatorio'>🔄</span>";
-                texto.innerHTML = "Sincronizando...";
-            } else if (estado === 'online') {
-                icono.innerHTML = "☁️ ✅";
-                texto.innerHTML = "Actualizado";
-                
-                // Colapso automático a diseño discreto
-                setTimeout(() => {
-                    if (navigator.onLine && pildora.classList.contains('online')) {
-                        pildora.className = 'pildora-conexion idle';
-                        icono.innerHTML = "☁️";
-                        texto.innerHTML = `Última sincronización: ${ultimaSyncHora}`;
-                    }
-                }, 3000);
-            }
-        }
-
-        function toggleDetalleConexion() {
-            const pildora = document.getElementById('pildora-conexion');
-            if (pildora.classList.contains('idle')) {
-                pildora.classList.toggle('expandido');
-            }
-        }
-
-        // Listeners Nativos del Navegador
-        window.addEventListener('online', iniciarSincronizacion);
-        window.addEventListener('offline', () => actualizarUIConexion('offline'));
-
-        // --- PROTECCIÓN ANTI-WIPE ---
-        function esBorradoAccidental(arrayLocal, arrayNube) {
-            const localInvalido = !arrayLocal || arrayLocal.length === 0 || (arrayLocal.length === 1 && arrayLocal[0] === "");
-            const nubeValida = arrayNube && arrayNube.length > 1;
-            return localInvalido && nubeValida;
-        }
-
-        // --- NÚCLEO: THREE-WAY MERGE ---
-        async function iniciarSincronizacion() {
-            if (!navigator.onLine) return;
-            
-            // Candado de seguridad: No subimos nada si la app no hidrató bien
-            if (!appListaParaGuardar) return; 
-
-            actualizarUIConexion('syncing');
-
-            const estadoLocalActual = obtenerEstadoMemoria();
-            const strBase = localStorage.getItem('tito_estado_base');
-            const estadoBase = strBase ? JSON.parse(strBase) : { version: 0 };
-
-            try {
-                // 1. Descargar Estado de la Nube (GET)
-                const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { 
-                    headers: { 'X-Master-Key': MASTER_KEY } 
-                });
-                const resultado = await response.json();
-                let estadoNube = resultado.record || {};
-                if (!estadoNube.version) estadoNube.version = 0;
-
-                let cambiosParaSubir = false;
-                const clavesDeDatos = ['horarios', 'conductores', 'lugares', 'asambleas', 'visitas', 'visitasGrupos', 'registroS13', 'fichasActivas'];
-                
-                // 2. Comparar (Diffing) y Fusionar (Merge)
-                clavesDeDatos.forEach(key => {
-                    const valLocal = estadoLocalActual[key] || (Array.isArray(estadoLocalActual[key]) ? [""] : {});
-                    const valBase = estadoBase[key] || (Array.isArray(estadoBase[key]) ? [""] : {});
-                    const valNube = estadoNube[key] || (Array.isArray(estadoNube[key]) ? [""] : {});
-
-                    const cambiadoLocalmente = !sonIguales(valLocal, valBase);
-                    const cambiadoEnNube = !sonIguales(valNube, valBase);
-
-                    // EVALUACIÓN ANTI-WIPE
-                    if (esBorradoAccidental(valLocal, valNube)) {
-                        // Salvavidas activado: Forzamos la retención de los datos de la nube
-                        estadoLocalActual[key] = valNube;
-                    } 
-                    // FUSIÓN A TRES BANDAS
-                    else if (cambiadoLocalmente && !cambiadoEnNube) {
-                        // Modificación local limpia
-                        estadoNube[key] = valLocal;
-                        cambiosParaSubir = true;
-                    } 
-                    else if (cambiadoEnNube) {
-                        // Conflicto directo o solo cambio externo: La nube siempre gana
-                        estadoLocalActual[key] = valNube;
-                    }
-                });
-
-                // 3. Subir modificaciones a la nube (Si las hay) (PUT)
-                if (cambiosParaSubir) {
-                    estadoNube.version += 1;
-                    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, { 
-                        method: 'PUT', 
-                        headers: { 'Content-Type': 'application/json', 'X-Master-Key': MASTER_KEY }, 
-                        body: JSON.stringify(estadoNube) 
-                    });
-                }
-
-                // 4. Actualizar Memoria y UI
-                volcarEstadoAMemoria(estadoLocalActual);
-                localStorage.setItem('tito_estado_local', JSON.stringify(estadoLocalActual));
-                localStorage.setItem('tito_estado_base', JSON.stringify(estadoNube));
-                
-                const ahora = new Date();
-                ultimaSyncHora = ahora.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
-                actualizarUIConexion('online');
-                
-                // Refrescar las vistas de la aplicación
-                actualizarListasDesplegables();
-                actualizarFiltroConductores();
-                if(typeof renderizarFichas === "function") renderizarFichas();
-                if(typeof renderizarPlanillaS13 === "function") renderizarPlanillaS13();
-                actualizarPildoraEstado();
-                
-                if(document.getElementById('vista-configuracion') && !document.getElementById('vista-configuracion').classList.contains('vista-oculta')) {
-                    cargarDatosEnPanel();
-                }
-
-            } catch (error) {
-                console.error("Error en sincronización:", error);
-                actualizarUIConexion('offline'); 
-            }
-        }
-
-        // --- HIDRATACIÓN INICIAL SEGURA ---
-        async function inicializarAppSegura() {
-            // 1. Intentar cargar desde el LocalStorage primero
-            const strLocal = localStorage.getItem('tito_estado_local');
-            if (strLocal) {
-                volcarEstadoAMemoria(JSON.parse(strLocal));
-                actualizarListasDesplegables();
-            }
-            
-            // 2. Desbloquear la app para permitir guardados (Candado liberado)
-            appListaParaGuardar = true; 
-
-            // 3. Ejecutar sincronización
-            if(navigator.onLine) {
-                await iniciarSincronizacion();
-            } else {
-                actualizarUIConexion('offline');
-            }
-        }
-
-        function guardarEnLaNube() {
-            if (!appListaParaGuardar) return; // Validación del candado
-            
-            // Guarda localmente de inmediato
-            const estadoActual = obtenerEstadoMemoria();
-            localStorage.setItem('tito_estado_local', JSON.stringify(estadoActual));
-
-            // Debounce para la sincronización con la nube
-            clearTimeout(timeoutNube);
-            timeoutNube = setTimeout(() => {
-                if(navigator.onLine) {
-                    iniciarSincronizacion();
-                } else {
-                    actualizarUIConexion('offline');
-                }
-            }, 2500); 
-        }
-
         function solicitarAccesoAdmin() {
             cargarDatosEnPanel();
             cambiarVista('configuracion');
@@ -1812,7 +1673,7 @@
             renderizarVisitasGruposAdmin();
         }
 
-        // --- LÓGICA DE CHIPS ---
+        // --- LÓGICA DE CHIPS Y EVENTOS GLOBALES ---
         function renderizarChipsConductores() {
             const contenedor = document.getElementById('lista-chips-conductores');
             contenedor.innerHTML = '';
@@ -1898,7 +1759,6 @@
             guardarEnLaNube();
         }
 
-        // --- LÓGICA DE EVENTOS ADMIN ---
         function renderizarAsambleasAdmin() {
             const contenedor = document.getElementById('lista-asambleas-ui');
             contenedor.innerHTML = '';
@@ -2096,8 +1956,6 @@
             }
 
             inicializarTabla();
-            actualizarFiltroConductores();
-            actualizarPildoraEstado();
             
             let savedDate = new Date().toISOString().split('T')[0];
             const guardado = localStorage.getItem('borrador_predicacion');
@@ -2111,7 +1969,8 @@
             }
             document.getElementById('fecha-lunes').value = savedDate;
             
-            await inicializarAppSegura(); // Hidratación segura con Anti-Wipe
+            // Iniciar de forma segura
+            await cargarDatosDesdeLaNube();
             autocompletarFechas(document.getElementById('fecha-lunes').value);
             
             document.getElementById('fecha-lunes').addEventListener('change', (e) => {
