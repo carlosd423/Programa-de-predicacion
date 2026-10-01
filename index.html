@@ -1177,7 +1177,12 @@
             for (let i = 1; i <= 18; i++) {
                 const num = i.toString();
                 const estaActiva = !!fichasActivas[num];
-                const historial = registroS13.filter(r => r.numTerritorio === num);
+                
+                // Mapeo modificado para recordar el índice original y poder eliminarlo correctamente
+                const historial = registroS13
+                    .map((r, index) => ({ ...r, indexOriginal: index }))
+                    .filter(r => r.numTerritorio === num);
+                
                 historial.sort((a, b) => parseFechaDDMMYYYY(b.fechaCompletado) - parseFechaDDMMYYYY(a.fechaCompletado));
 
                 let ultimaFecha = 'Nunca';
@@ -1239,7 +1244,12 @@
                             <tbody>
                                 ${d.historial.map(r => `
                                     <tr>
-                                        <td colspan="2" style="background-color: #f1f5f9; font-weight: bold; color: #1e293b; border-bottom: 1px solid #cbd5e1; padding: 8px;">${r.conductor}</td>
+                                        <td colspan="2" style="background-color: #f1f5f9; font-weight: bold; color: #1e293b; border-bottom: 1px solid #cbd5e1; padding: 8px;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                <span>${r.conductor}</span>
+                                                <button type="button" onclick="eliminarRegistroS13(${r.indexOriginal})" style="background: none; border: none; cursor: pointer; color: #ef4444; font-size: 1.1em; padding: 0;" title="Eliminar registro permanentemente">🗑️</button>
+                                            </div>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td style="border-bottom: 2px solid #e2e8f0; padding: 8px;">${r.fechaAsignacion}</td>
@@ -1330,6 +1340,15 @@
                 renderizarPlanillaS13();
                 actualizarPildoraEstado();
                 guardarEnLaNube(); // Activa el Sync Lock Flow
+            }
+        }
+
+        // Nueva función para eliminar un registro definitivo del array S-13
+        function eliminarRegistroS13(index) {
+            if (confirm("¿Estás seguro de que deseas eliminar permanentemente este registro del historial?")) {
+                registroS13.splice(index, 1);
+                guardarEnLaNube(); // Aseguramos los cambios
+                renderizarPlanillaS13(); // Refrescamos la vista instantáneamente
             }
         }
 
