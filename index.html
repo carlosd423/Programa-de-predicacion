@@ -739,9 +739,10 @@
         const territorios = [""].concat(Array.from({length: 18}, (_, i) => (i + 1).toString()));
         const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
-        // Variables de Territorios y S-13 (con persistencia local inicial)
+        // Variables de Territorios, S-13 y Programa Semanal unificado
         let fichasActivas = {};
         let registroS13 = [];
+        let programaSemanal = null; // NUEVO: Mantiene el programa semanal activo en memoria para subir a la nube
 
         // =========================================================================
         // LÓGICA DE SINCRONIZACIÓN Y RESPALDO (ANTI-WIPE)
@@ -761,7 +762,8 @@
                 visitas: visitas,
                 visitasGrupos: visitasGrupos,
                 registroS13: registroS13,
-                fichasActivas: fichasActivas
+                fichasActivas: fichasActivas,
+                programaSemanal: programaSemanal // Empaquetamos el programa semanal
             };
             localStorage.setItem('tito_backup', JSON.stringify(estadoActual));
         }
@@ -779,6 +781,7 @@
                     if (datos.visitasGrupos) visitasGrupos = datos.visitasGrupos;
                     if (datos.registroS13) registroS13 = datos.registroS13;
                     if (datos.fichasActivas) fichasActivas = datos.fichasActivas;
+                    if (datos.programaSemanal) programaSemanal = datos.programaSemanal;
                     
                     // Refrescar las listas en la interfaz
                     if (typeof actualizarListasDesplegables === 'function') actualizarListasDesplegables();
@@ -821,6 +824,9 @@
                     if (datos.fichasActivas) {
                         fichasActivas = datos.fichasActivas;
                     }
+                    if (datos.programaSemanal) {
+                        programaSemanal = datos.programaSemanal;
+                    }
 
                     // Crear el primer respaldo local actualizado y ABRIR el candado
                     respaldarLocalmente();
@@ -832,6 +838,15 @@
                     if (typeof renderizarFichas === 'function') renderizarFichas();
                     if (typeof renderizarPlanillaS13 === 'function') renderizarPlanillaS13();
                     if (typeof actualizarPildoraEstado === 'function') actualizarPildoraEstado();
+                    
+                    // Llenar el programa con los datos descargados si existen
+                    if (programaSemanal && programaSemanal.fechaLunes) {
+                        const selectorLunes = document.getElementById('fecha-lunes');
+                        if (selectorLunes) {
+                            selectorLunes.value = programaSemanal.fechaLunes;
+                            if (typeof autocompletarFechas === 'function') autocompletarFechas(programaSemanal.fechaLunes);
+                        }
+                    }
                     
                 } else {
                     throw new Error("Los datos descargados están vacíos o corruptos.");
@@ -868,7 +883,8 @@
             if(conductores[0] !== "") conductores.unshift("");
             if(lugares[0] !== "") lugares.unshift("");
 
-            const nuevosDatos = { horarios, conductores, lugares, asambleas, visitas, visitasGrupos, registroS13, fichasActivas };
+            // Incluimos programaSemanal en el paquete hacia la nube
+            const nuevosDatos = { horarios, conductores, lugares, asambleas, visitas, visitasGrupos, registroS13, fichasActivas, programaSemanal };
 
             try {
                 await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, { 
@@ -1058,7 +1074,6 @@
             renderizarFichas(); 
             renderizarPlanillaS13();
             actualizarPildoraEstado();
-            guardarEnLaNube(); // Activa el Sync Lock Flow
         }
 
         function procesarSeleccionDeTabla(diaIndex, subFila, fechaReferencia) {
@@ -1314,11 +1329,24 @@
                 registroS13.push(nuevoRegistro);
                 delete fichasActivas[numTerritorio];
 
+                // NUEVO CÓDIGO: Buscar y borrar este territorio en el programa semanal
+                const selectsTerritorio = document.querySelectorAll('.sel-territorio');
+                selectsTerritorio.forEach(sel => {
+                    if (sel.value === numTerritorio) {
+                        sel.value = ""; // Vaciamos el territorio
+                        
+                        // También limpiamos al conductor de esa misma fila para que quede limpia
+                        let idParts = sel.id.split('-'); // ej: t-0-1
+                        let cSelect = document.getElementById(`c-${idParts[1]}-${idParts[2]}`);
+                        if(cSelect) cSelect.value = "";
+                    }
+                });
+                guardarBorradorLocal(); // Guardamos el programa semanal actualizado
+
                 actualizarFiltroConductores();
                 renderizarFichas();
                 renderizarPlanillaS13();
                 actualizarPildoraEstado();
-                guardarEnLaNube(); // Activa el Sync Lock Flow
             }
         }
 
@@ -1339,7 +1367,6 @@
                 renderizarFichas();
                 renderizarPlanillaS13();
                 actualizarPildoraEstado();
-                guardarEnLaNube(); // Activa el Sync Lock Flow
             }
         }
 
@@ -1586,6 +1613,11 @@
                 valores: valores,
                 grupos: grupos
             };
+            
+            // Asignamos el estado al empaquetado global
+            programaSemanal = borrador;
+            
+            // Mantenemos el guardado local como fallback
             localStorage.setItem('borrador_predicacion', JSON.stringify(borrador));
 
             const indicador = document.getElementById('indicador-guardado');
@@ -1596,7 +1628,10 @@
             }
             
             evaluarColapsoDias();
-            generarFichasAutomaticas(); // triggers debounce sync
+            generarFichasAutomaticas();
+            
+            // Activa el flujo de sincronización hacia la nube tras cualquier modificación
+            guardarEnLaNube();
         }
 
         async function guardarYCompartir() {
@@ -1631,50 +1666,56 @@
         }
 
         function cargarBorradorLocal(fechaLunesActual) {
-            const guardado = localStorage.getItem('borrador_predicacion');
-            if(guardado) {
-                try {
-                    const borrador = JSON.parse(guardado);
-                    if(borrador.fechaLunes === fechaLunesActual) {
-                        document.getElementById('selector-mes').value = borrador.mes;
-                        document.getElementById('input-campana').value = borrador.notas;
-                        
-                        for(const [id, val] of Object.entries(borrador.valores)) {
-                            const el = document.getElementById(id);
-                            if(el) el.value = val;
-                        }
+            let borrador = programaSemanal;
 
-                        document.querySelectorAll('.sel-lugar').forEach(sel => sel.removeAttribute('data-grupo'));
-                        
-                        if (borrador.grupos) {
-                            for(const [id, grp] of Object.entries(borrador.grupos)) {
-                                const el = document.getElementById(id);
-                                if(el) el.setAttribute('data-grupo', grp);
-                            }
-                        }
+            // Si aún no hay datos en la variable global, intentamos recuperarlo del almacenamiento local
+            if (!borrador) {
+                const guardado = localStorage.getItem('borrador_predicacion');
+                if(guardado) {
+                    try {
+                        borrador = JSON.parse(guardado);
+                    } catch(e){}
+                }
+            }
 
-                        for (let i = 0; i < 7; i++) {
-                            let span = 1;
-                            for (let sf = 2; sf <= 4; sf++) {
-                                let trExtra = document.getElementById(`fila-${i}-${sf}`);
-                                let h = document.getElementById(`h-${i}-${sf}`).value;
-                                let l = document.getElementById(`l-${i}-${sf}`).value;
-                                let t = document.getElementById(`t-${i}-${sf}`).value;
-                                let c = document.getElementById(`c-${i}-${sf}`).value;
-                                
-                                if (h || l || t || c || !trExtra.hidden) {
-                                    trExtra.hidden = false;
-                                    span++;
-                                } else {
-                                    trExtra.hidden = true;
-                                }
-                            }
-                            let tr1 = document.getElementById(`fila-${i}-1`);
-                            tr1.querySelector('.celda-dia').rowSpan = span;
-                            tr1.querySelector('.celda-fecha').rowSpan = span;
+            if(borrador && borrador.fechaLunes === fechaLunesActual) {
+                document.getElementById('selector-mes').value = borrador.mes || meses[0];
+                document.getElementById('input-campana').value = borrador.notas || "";
+                
+                for(const [id, val] of Object.entries(borrador.valores || {})) {
+                    const el = document.getElementById(id);
+                    if(el) el.value = val;
+                }
+
+                document.querySelectorAll('.sel-lugar').forEach(sel => sel.removeAttribute('data-grupo'));
+                
+                if (borrador.grupos) {
+                    for(const [id, grp] of Object.entries(borrador.grupos)) {
+                        const el = document.getElementById(id);
+                        if(el) el.setAttribute('data-grupo', grp);
+                    }
+                }
+
+                for (let i = 0; i < 7; i++) {
+                    let span = 1;
+                    for (let sf = 2; sf <= 4; sf++) {
+                        let trExtra = document.getElementById(`fila-${i}-${sf}`);
+                        let h = document.getElementById(`h-${i}-${sf}`).value;
+                        let l = document.getElementById(`l-${i}-${sf}`).value;
+                        let t = document.getElementById(`t-${i}-${sf}`).value;
+                        let c = document.getElementById(`c-${i}-${sf}`).value;
+                        
+                        if (h || l || t || c || !trExtra.hidden) {
+                            trExtra.hidden = false;
+                            span++;
+                        } else {
+                            trExtra.hidden = true;
                         }
                     }
-                } catch(e){}
+                    let tr1 = document.getElementById(`fila-${i}-1`);
+                    tr1.querySelector('.celda-dia').rowSpan = span;
+                    tr1.querySelector('.celda-fecha').rowSpan = span;
+                }
             }
         }
 
@@ -1990,6 +2031,13 @@
             
             // Iniciar de forma segura
             await cargarDatosDesdeLaNube();
+            
+            // Si la nube ya trajo el programa, actualizará el valor del input,
+            // de lo contrario usamos el que calculamos con la fecha local guardada o la actual
+            if (programaSemanal && programaSemanal.fechaLunes) {
+                document.getElementById('fecha-lunes').value = programaSemanal.fechaLunes;
+            }
+
             autocompletarFechas(document.getElementById('fecha-lunes').value);
             
             document.getElementById('fecha-lunes').addEventListener('change', (e) => {
