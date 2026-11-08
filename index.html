@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tito: Asistente de territorios</title>
+    
+    <!-- ETIQUETAS PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e293b">
+    <link rel="apple-touch-icon" href="icono.png">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * { box-sizing: border-box; }
@@ -196,23 +202,26 @@
 
         /* --- ESTILOS DEL PROGRAMA (VISTA 1) --- */
         .contenedor-controles { width: 100%; max-width: 800px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .panel-control { background-color: #ffffff; padding: 12px 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04); flex-wrap: wrap; gap: 10px; border: 1px solid #e2e8f0; }
-        .selector-semana { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .panel-control { background-color: #ffffff; padding: 15px; border-radius: 12px; display: flex; flex-direction: row; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04); flex-wrap: wrap; gap: 15px; border: 1px solid #e2e8f0; position: relative; }
+        
+        .selector-semana { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; }
         .selector-semana label { min-height: 48px; padding: 12px 16px; border-radius: 8px; background-color: #1e293b; color: white; display: inline-flex; align-items: center; font-size: 1.05em; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         #fecha-lunes { min-height: 48px; padding: 10px 12px; border-radius: 8px; border: 2px solid #cbd5e1; background-color: white; color: #1e293b; font: inherit; font-size: 1.05em; cursor: pointer; }
         .selector-semana label:focus-within, #fecha-lunes:focus-visible { outline: 3px solid #0ea5e9; outline-offset: 2px; }
         
-        .acciones-wrapper { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; width: 100%; }
+        .acciones-wrapper { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; flex: 1; }
         
         .btn-accion { padding: 8px 15px; font-size: 0.95em; color: white; background-color: #0ea5e9; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; font-weight: bold; }
         .btn-accion:hover { background-color: #0284c7; }
         
-        .btn-limpiar { padding: 8px 15px; font-size: 1em; color: #ef4444; background-color: transparent; border: 1px solid #ef4444; border-radius: 5px; cursor: pointer; transition: all 0.3s; font-weight: bold; margin-right: auto; }
+        .btn-limpiar { padding: 10px 18px; font-size: 1em; color: #ef4444; background-color: transparent; border: 2px solid #ef4444; border-radius: 8px; cursor: pointer; transition: all 0.3s; font-weight: bold; margin-right: auto; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-limpiar:hover { background-color: #fef2f2; }
         
-        .btn-compartir { padding: 8px 15px; font-size: 1em; color: white; background-color: #10b981; border: none; border-radius: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background-color 0.3s; font-weight: bold; }
+        .btn-compartir { padding: 10px 18px; font-size: 1em; color: white; background-color: #10b981; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background-color 0.3s; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-compartir:hover { background-color: #059669; opacity: 0.9; }
         .btn-compartir:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        #indicador-guardado { position: absolute; top: 15px; right: 20px; color: #10b981; font-weight: bold; font-size: 0.9em; opacity: 0; transition: opacity 0.5s; background-color: #d1fae5; padding: 4px 10px; border-radius: 12px; }
         
         .asamblea-activa { background-color: #fef08a !important; color: #854d0e; font-weight: bold; font-size: 1.05em; letter-spacing: 1px; }
 
@@ -221,10 +230,7 @@
         .subtitulo { text-align: center; font-size: 1.2em; color: #334155; margin-bottom: 5px; }
         .rango-fechas { text-align: center; font-size: 1.05em; color: #64748b; margin-bottom: 15px; font-style: italic; }
         
-        /* Modificado para ser un div de texto en lugar de select */
         .mes-display { font-size: 1.8em; font-weight: bold; color: #1e293b; border: none; border-left: 4px solid #0ea5e9; padding: 4px 8px; line-height: normal; margin-bottom: 10px; display: inline-block; }
-        
-        /* Modificado para que no se vea como campo editable */
         .campana-input { font-size: 1em; color: #0284c7; font-style: italic; font-weight: bold; border: none; outline: none; width: 100%; margin-bottom: 15px; padding-bottom: 2px; font-family: inherit; background-color: transparent; }
         
         .tabla-contenedor { width: 100%; overflow-x: auto; margin-bottom: 15px; }
@@ -300,9 +306,14 @@
             .texto-tarjeta { font-size: 1.4em !important; margin: 0 !important; }
             .desc-tarjeta { font-size: 1.05em !important; margin: 0 !important; text-align: left !important; }
 
-            .acciones-wrapper { justify-content: center; gap: 10px; }
-            .btn-limpiar { margin-right: 0; width: 100%; }
-            .btn-compartir { width: 100%; text-align: center; justify-content: center; }
+            .panel-control { padding: 15px 10px; }
+            .acciones-wrapper { flex-direction: column; gap: 10px; width: 100%; margin-top: 10px; align-items: stretch; }
+            .btn-limpiar { width: 100%; margin-right: 0; padding: 12px; border-radius: 8px; font-size: 1.1em;}
+            .btn-compartir { width: 100%; text-align: center; justify-content: center; padding: 12px; border-radius: 8px; font-size: 1.1em;}
+            #indicador-guardado { position: static; margin-bottom: 10px; text-align: center; }
+            .selector-semana { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
+            .selector-semana label { flex: 1; text-align: center; padding: 12px 10px; border-radius: 8px; font-size: 1em; }
+            #fecha-lunes { flex: 1; text-align: center; padding: 10px; border-radius: 8px; font-size: 1em; }
 
             #documento-imagen:not(.modo-exportacion) table { display: block !important; width: 100% !important; min-width: 0 !important; }
             #documento-imagen:not(.modo-exportacion) thead { display: none !important; }
@@ -357,6 +368,15 @@
         body.vista-movil-activa .icono-contenedor { width: 65px !important; height: 65px !important; font-size: 2.2em !important; margin-bottom: 0 !important; }
         body.vista-movil-activa .texto-tarjeta { font-size: 1.4em !important; margin: 0 !important; }
         body.vista-movil-activa .desc-tarjeta { font-size: 1.05em !important; margin: 0 !important; text-align: left !important; }
+
+        body.vista-movil-activa .panel-control { padding: 15px 10px; }
+        body.vista-movil-activa .acciones-wrapper { flex-direction: column; gap: 10px; width: 100%; margin-top: 10px; align-items: stretch;}
+        body.vista-movil-activa .btn-limpiar { width: 100%; margin-right: 0; padding: 12px; border-radius: 8px; font-size: 1.1em; }
+        body.vista-movil-activa .btn-compartir { width: 100%; text-align: center; justify-content: center; padding: 12px; border-radius: 8px; font-size: 1.1em;}
+        body.vista-movil-activa #indicador-guardado { position: static; margin-bottom: 10px; text-align: center;}
+        body.vista-movil-activa .selector-semana { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
+        body.vista-movil-activa .selector-semana label { flex: 1; text-align: center; padding: 12px 10px; border-radius: 8px; font-size: 1em; }
+        body.vista-movil-activa #fecha-lunes { flex: 1; text-align: center; padding: 10px; border-radius: 8px; font-size: 1em; }
 
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) table { display: block !important; width: 100% !important; min-width: 0 !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) thead { display: none !important; }
@@ -552,15 +572,17 @@
 
         <div class="contenedor-controles" data-html2canvas-ignore>
             <div class="panel-control">
+                <!-- Indicador de guardado sutil -->
+                <span id="indicador-guardado">Guardado</span>
+
                 <div class="selector-semana">
                     <label for="fecha-lunes">Lunes de la semana:</label>
                     <input type="date" id="fecha-lunes">
                 </div>
                 <div class="acciones-wrapper">
-                    <span id="indicador-guardado" style="color: #64748b; font-size: 0.8em; font-style: italic; opacity: 0; transition: opacity 0.5s; margin-right: auto;">Guardado</span>
-                    
                     <button class="btn-limpiar" onclick="limpiarSemana()">🗑️ Limpiar</button>
-                    <button class="btn-compartir" id="btn-compartir" onclick="guardarYCompartir()" title="Enviar Imagen">📲 Guardar y Compartir</button>
+                    <!-- ELIMINADO BOTÓN DE IMPRIMIR AQUÍ -->
+                    <button class="btn-compartir" id="btn-compartir" onclick="guardarYCompartir()" title="Generar Imagen">📲 Guardar y Compartir</button>
                 </div>
             </div>
         </div>
@@ -712,10 +734,19 @@
                 </div>
                 <div id="lista-visitas-ui" style="max-height: 120px; overflow-y: auto; background: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
             </div>
+            
+            <!-- SECCIÓN DE RESPALDO (BACKUP LOCAL) -->
+            <div class="admin-seccion" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <label style="color:#1e293b; margin-bottom: 0;">💾 Respaldo Local</label>
+                    <span style="font-size: 0.85em; color: #64748b;">Descarga una copia de seguridad de todos tus datos.</span>
+                </div>
+                <button class="btn-accion" style="background-color: #64748b;" onclick="exportarBackupLocal()">Descargar .json</button>
+            </div>
         </div>
     </div>
     
-    <!-- ZONA EXCLUSIVA PARA IMPRESIÓN NATIVA S-13 -->
+    <!-- ZONA EXCLUSIVA PARA IMPRESIÓN NATIVA -->
     <div id="zona-impresion"></div>
 
     <!-- BOTÓN DE ALTERNANCIA DE VISTA -->
@@ -746,6 +777,46 @@
         let fichasActivas = {};
         let registroS13 = [];
         let programaSemanal = null; // Mantiene el programa semanal activo en memoria para subir a la nube
+
+        // =========================================================================
+        // LÓGICA DE LIMPIEZA AUTOMÁTICA DE EVENTOS PASADOS
+        // =========================================================================
+        function purgarEventosPasados() {
+            const hoy = new Date();
+            // Ajustamos a medianoche para que la comparación sea justa (todo el día cuenta como actual)
+            hoy.setHours(0, 0, 0, 0); 
+            
+            let cambiosRealizados = false;
+
+            // 1. Purgar Asambleas pasadas
+            const asambleasOriginales = asambleas.length;
+            asambleas = asambleas.filter(a => {
+                const fechaEvento = new Date(a.fecha + 'T00:00:00'); // Convertir fecha 'YYYY-MM-DD'
+                return fechaEvento >= hoy; // Mantener si es hoy o en el futuro
+            });
+            if (asambleas.length !== asambleasOriginales) cambiosRealizados = true;
+
+            // 2. Purgar Visitas de Grupos pasadas
+            const visitasGruposOriginales = visitasGrupos.length;
+            visitasGrupos = visitasGrupos.filter(vg => {
+                const fechaEvento = new Date(vg.fecha + 'T00:00:00');
+                return fechaEvento >= hoy;
+            });
+            if (visitasGrupos.length !== visitasGruposOriginales) cambiosRealizados = true;
+
+            // 3. Purgar Semana de Visita del Viajante pasada
+            const visitasOriginales = visitas.length;
+            visitas = visitas.filter(v => {
+                const fechaLunes = new Date(v + 'T00:00:00');
+                // La semana termina el domingo, es decir, 6 días después del lunes
+                const fechaDomingo = new Date(fechaLunes);
+                fechaDomingo.setDate(fechaLunes.getDate() + 6);
+                return fechaDomingo >= hoy; // Mantener si el domingo de esa semana aún no ha pasado
+            });
+            if (visitas.length !== visitasOriginales) cambiosRealizados = true;
+
+            return cambiosRealizados; // Retorna true si borró algo
+        }
 
         // =========================================================================
         // LÓGICA DE SINCRONIZACIÓN Y RESPALDO (ANTI-WIPE)
@@ -825,6 +896,9 @@
                         programaSemanal = datos.programaSemanal;
                     }
 
+                    // Purgamos eventos antiguos justo al descargar
+                    const huboCambiosEventos = purgarEventosPasados();
+
                     respaldarLocalmente();
                     nubeCargadaCorrectamente = true;
                     
@@ -841,6 +915,11 @@
                             if (typeof autocompletarFechas === 'function') autocompletarFechas(programaSemanal.fechaLunes);
                         }
                     }
+
+                    // Si se purgaron eventos, subimos la versión limpia a la nube en silencio
+                    if(huboCambiosEventos) {
+                        guardarEnLaNube();
+                    }
                     
                 } else {
                     throw new Error("Los datos descargados están vacíos o corruptos.");
@@ -854,6 +933,7 @@
         }
 
         function guardarEnLaNube() {
+            purgarEventosPasados(); // Limpiamos justo antes de guardar local y en nube
             respaldarLocalmente();
             clearTimeout(timeoutNube);
             timeoutNube = setTimeout(() => {
@@ -887,6 +967,29 @@
                 cargarDatosDesdeLaNube();
             }
         });
+
+        function exportarBackupLocal() {
+            respaldarLocalmente(); 
+            const backupData = localStorage.getItem('tito_backup');
+            
+            if (!backupData) {
+                alert("No hay datos para respaldar todavía.");
+                return;
+            }
+            
+            const blob = new Blob([backupData], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            const fecha = new Date().toISOString().split('T')[0];
+            
+            a.href = url;
+            a.download = `Tito_Backup_${fecha}.json`;
+            document.body.appendChild(a);
+            a.click();
+            
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
 
         // =========================================================================
         // PÍLDORA DE ESTADO RÁPIDO
@@ -1890,13 +1993,12 @@
             const fechaBase = new Date(fechaSeleccionada + 'T12:00:00'); 
             
             let grupoDeServicioVisitado = null;
-            let conteoMeses = {}; // Para calcular el mes mayoritario
+            let conteoMeses = {}; 
 
             for (let i = 0; i < 7; i++) {
                 const fechaDia = new Date(fechaBase);
                 fechaDia.setDate(fechaBase.getDate() + i);
                 
-                // Lógica de conteo de meses para el título
                 let mesIndex = fechaDia.getMonth();
                 conteoMeses[mesIndex] = (conteoMeses[mesIndex] || 0) + 1;
                 
@@ -1940,11 +2042,9 @@
                 }
             }
 
-            // Identificamos el mes con la mayoría de días en esta semana
             let mesGanador = Object.keys(conteoMeses).reduce((a, b) => conteoMeses[a] > conteoMeses[b] ? a : b);
             document.getElementById('mes-display').innerText = meses[mesGanador];
 
-            // Rellenado automático del campo de eventos (ahora de solo lectura)
             const inputCampana = document.getElementById('input-campana');
             if (grupoDeServicioVisitado) { 
                 inputCampana.value = `VISITA DEL SUP. DE SERVICIO AL GRUPO ${grupoDeServicioVisitado}`; 
@@ -2019,7 +2119,12 @@
                 }
                 autocompletarFechas(e.target.value);
             });
-            // El listener manual del campo de notas fue removido ya que ahora se auto-gestiona
+            
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(err => {
+                    console.log('Fallo el registro del Service Worker:', err);
+                });
+            }
         });
 
         // =========================================================================
@@ -2067,7 +2172,7 @@
 
             await document.fonts?.ready;
             const canvas = await html2canvas(documentoExportacion, {
-                scale: 1, // Reducido a 1 para salvar memoria en teléfonos de entrada
+                scale: 1, 
                 backgroundColor: '#ffffff',
                 width: documentoExportacion.scrollWidth, 
                 height: documentoExportacion.scrollHeight,
