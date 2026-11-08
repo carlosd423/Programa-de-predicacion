@@ -202,16 +202,17 @@
         #fecha-lunes { min-height: 48px; padding: 10px 12px; border-radius: 8px; border: 2px solid #cbd5e1; background-color: white; color: #1e293b; font: inherit; font-size: 1.05em; cursor: pointer; }
         .selector-semana label:focus-within, #fecha-lunes:focus-visible { outline: 3px solid #0ea5e9; outline-offset: 2px; }
         
-        .acciones-wrapper { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: space-between; }
+        .acciones-wrapper { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; width: 100%; }
         
         .btn-accion { padding: 8px 15px; font-size: 0.95em; color: white; background-color: #0ea5e9; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; font-weight: bold; }
         .btn-accion:hover { background-color: #0284c7; }
         
-        .btn-limpiar { padding: 8px 15px; font-size: 1em; color: #ef4444; background-color: transparent; border: 1px solid #ef4444; border-radius: 5px; cursor: pointer; transition: all 0.3s; font-weight: bold; }
+        .btn-limpiar { padding: 8px 15px; font-size: 1em; color: #ef4444; background-color: transparent; border: 1px solid #ef4444; border-radius: 5px; cursor: pointer; transition: all 0.3s; font-weight: bold; margin-right: auto; }
         .btn-limpiar:hover { background-color: #fef2f2; }
         
         .btn-compartir { padding: 8px 15px; font-size: 1em; color: white; background-color: #10b981; border: none; border-radius: 5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background-color 0.3s; font-weight: bold; }
-        .btn-compartir:hover { background-color: #059669; }
+        .btn-compartir:hover { background-color: #059669; opacity: 0.9; }
+        .btn-compartir:disabled { opacity: 0.6; cursor: not-allowed; }
         
         .asamblea-activa { background-color: #fef08a !important; color: #854d0e; font-weight: bold; font-size: 1.05em; letter-spacing: 1px; }
 
@@ -219,10 +220,12 @@
         h1 { text-align: center; margin-top: 5px; margin-bottom: 5px; color: #1e293b; font-size: 1.6em; }
         .subtitulo { text-align: center; font-size: 1.2em; color: #334155; margin-bottom: 5px; }
         .rango-fechas { text-align: center; font-size: 1.05em; color: #64748b; margin-bottom: 15px; font-style: italic; }
-        .mes-select { font-size: 1.8em; font-weight: bold; color: #1e293b; border: none; border-left: 4px solid #0ea5e9; padding: 4px 8px; line-height: normal; margin-bottom: 10px; outline: none; width: auto; background-color: transparent; font-family: inherit; cursor: pointer; appearance: none; display: inline-block; }
-        .mes-select:hover { border-bottom: 1px dashed #cbd5e1; }
-        .campana-input { font-size: 1em; color: #0284c7; font-style: italic; font-weight: bold; border: none; outline: none; width: 100%; margin-bottom: 15px; padding-bottom: 2px; font-family: inherit; }
-        .campana-input:hover { border-bottom: 1px dashed #cbd5e1; }
+        
+        /* Modificado para ser un div de texto en lugar de select */
+        .mes-display { font-size: 1.8em; font-weight: bold; color: #1e293b; border: none; border-left: 4px solid #0ea5e9; padding: 4px 8px; line-height: normal; margin-bottom: 10px; display: inline-block; }
+        
+        /* Modificado para que no se vea como campo editable */
+        .campana-input { font-size: 1em; color: #0284c7; font-style: italic; font-weight: bold; border: none; outline: none; width: 100%; margin-bottom: 15px; padding-bottom: 2px; font-family: inherit; background-color: transparent; }
         
         .tabla-contenedor { width: 100%; overflow-x: auto; margin-bottom: 15px; }
         table { width: 100%; min-width: 550px; border-collapse: collapse; text-align: center; }
@@ -235,7 +238,7 @@
         input[type="text"].in-fecha:hover, select.tabla-select:hover { border-bottom: 1px dashed #94a3b8; }
         [hidden] { display: none !important; }
         
-        /* WRAPPERS DE CELDAS DINÁMICAS (Para alojar botones adjuntos) */
+        /* WRAPPERS DE CELDAS DINÁMICAS */
         .wrapper-celda { display: flex; align-items: center; width: 100%; justify-content: space-between; }
         .wrapper-celda select { flex: 1; width: 100%; }
         .btn-inline-action { background: none; border: none; font-size: 1.2em; cursor: pointer; padding: 0 0 0 5px; color: #475569; flex-shrink: 0; line-height: 1; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
@@ -297,7 +300,10 @@
             .texto-tarjeta { font-size: 1.4em !important; margin: 0 !important; }
             .desc-tarjeta { font-size: 1.05em !important; margin: 0 !important; text-align: left !important; }
 
-            /* Tarjetas de la Tabla */
+            .acciones-wrapper { justify-content: center; gap: 10px; }
+            .btn-limpiar { margin-right: 0; width: 100%; }
+            .btn-compartir { width: 100%; text-align: center; justify-content: center; }
+
             #documento-imagen:not(.modo-exportacion) table { display: block !important; width: 100% !important; min-width: 0 !important; }
             #documento-imagen:not(.modo-exportacion) thead { display: none !important; }
             #documento-imagen:not(.modo-exportacion) tbody { display: flex !important; flex-direction: column !important; gap: 14px !important; width: 100% !important; }
@@ -308,7 +314,6 @@
             #documento-imagen:not(.modo-exportacion) td:last-child { border-bottom: none !important; }
             #documento-imagen:not(.modo-exportacion) tr[hidden] { display: none !important; }
             
-            /* Estilización de los campos */
             #documento-imagen:not(.modo-exportacion) select.tabla-select,
             #documento-imagen:not(.modo-exportacion) input[type="text"].in-fecha {
                 width: 100% !important; max-width: 100% !important; background-color: #f8fafc !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; padding: 10px !important; text-align: left; text-align-last: left; outline: none; font-size: 1em !important; color: #1e293b !important; min-height: 42px !important;
@@ -317,21 +322,17 @@
             #documento-imagen:not(.modo-exportacion) tbody td > div.wrapper-celda { width: 100% !important; justify-content: flex-start !important; gap: 8px !important;}
             #documento-imagen:not(.modo-exportacion) tbody td > div.wrapper-celda select { width: 100% !important; }
             
-            /* Cabecera unificada (Día y Fecha Móvil) */
             #documento-imagen:not(.modo-exportacion) td.celda-dia { 
                 background-color: #1e293b !important; color: white !important; border-radius: 10px 10px 0 0 !important; padding: 12px !important; margin: 0 -12px !important; width: calc(100% + 24px) !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important;
             }
             #documento-imagen:not(.modo-exportacion) td.celda-dia .dia-content { width: 100% !important; display: flex !important; justify-content: space-between !important; align-items: center !important; }
             #documento-imagen:not(.modo-exportacion) td.celda-dia .mobile-fecha-display { display: inline-block !important; color: #bae6fd !important; margin-left: 5px; }
             
-            /* Ocultar la celda de fecha original en móvil para evitar filas vacías */
             #documento-imagen:not(.modo-exportacion) td.celda-fecha { display: none !important; }
-            
             #documento-imagen:not(.modo-exportacion) td.celda-dia::before { display: none !important; }
             #documento-imagen:not(.modo-exportacion) td.celda-asamblea { padding: 15px !important; text-align: center !important; justify-content: center !important; background-color: #fef08a !important; color: #854d0e !important; }
             #documento-imagen:not(.modo-exportacion) tr.fila-extra { margin-top: -10px !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border-top: 3px dashed #cbd5e1 !important; padding-top: 15px !important; }
 
-            /* DÍA COLAPSADO (Modo Acordeón) */
             #documento-imagen:not(.modo-exportacion) tr.dia-colapsado { padding-bottom: 0 !important; }
             #documento-imagen:not(.modo-exportacion) tr.dia-colapsado td:not(.celda-dia):not(.celda-fecha) { display: none !important; }
             #documento-imagen:not(.modo-exportacion) tr.dia-colapsado td.celda-dia { border-bottom: none !important; border-radius: 10px !important; }
@@ -385,12 +386,10 @@
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) td.celda-asamblea { padding: 15px !important; text-align: center !important; justify-content: center !important; background-color: #fef08a !important; color: #854d0e !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr.fila-extra { margin-top: -10px !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; border-top: 3px dashed #cbd5e1 !important; padding-top: 15px !important; }
 
-        /* DÍA COLAPSADO (Modo Acordeón) */
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr.dia-colapsado { padding-bottom: 0 !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr.dia-colapsado td:not(.celda-dia):not(.celda-fecha) { display: none !important; }
         body.vista-movil-activa #documento-imagen:not(.modo-exportacion) tr.dia-colapsado td.celda-dia { border-bottom: none !important; border-radius: 10px !important; }
 
-        /* Excepción para la tabla S-13 forzada (Mantener formato de cuadrícula) */
         body.vista-movil-activa .historial-tabla { display: table !important; width: 100% !important; }
         body.vista-movil-activa .historial-tabla thead { display: table-header-group !important; }
         body.vista-movil-activa .historial-tabla tbody { display: table-row-group !important; flex-direction: unset !important; }
@@ -558,9 +557,10 @@
                     <input type="date" id="fecha-lunes">
                 </div>
                 <div class="acciones-wrapper">
-                    <span id="indicador-guardado" style="color: #64748b; font-size: 0.8em; font-style: italic; opacity: 0; transition: opacity 0.5s;">Guardado</span>
-                    <button class="btn-limpiar" onclick="limpiarSemana()">🗑️ Limpiar Semana</button>
-                    <button class="btn-compartir" id="btn-compartir" onclick="guardarYCompartir()" title="Enviar por WhatsApp">📲 Guardar y Compartir</button>
+                    <span id="indicador-guardado" style="color: #64748b; font-size: 0.8em; font-style: italic; opacity: 0; transition: opacity 0.5s; margin-right: auto;">Guardado</span>
+                    
+                    <button class="btn-limpiar" onclick="limpiarSemana()">🗑️ Limpiar</button>
+                    <button class="btn-compartir" id="btn-compartir" onclick="guardarYCompartir()" title="Enviar Imagen">📲 Guardar y Compartir</button>
                 </div>
             </div>
         </div>
@@ -569,8 +569,11 @@
             <h1>Programa para la Predicación</h1>
             <div class="rango-fechas" id="texto-rango">Selecciona una fecha para generar el rango</div>
 
-            <select class="mes-select" id="selector-mes" onchange="guardarBorradorLocal()"></select>
-            <input type="text" class="campana-input" id="input-campana" value="" placeholder="Escribe aquí el título del evento o notas (opcional)">
+            <!-- Título automático del mes -->
+            <div class="mes-display" id="mes-display"></div>
+            
+            <!-- Campo de eventos automático (solo lectura) -->
+            <input type="text" class="campana-input" id="input-campana" readonly>
 
             <div class="tabla-contenedor">
                 <table>
@@ -742,17 +745,15 @@
         // Variables de Territorios, S-13 y Programa Semanal unificado
         let fichasActivas = {};
         let registroS13 = [];
-        let programaSemanal = null; // NUEVO: Mantiene el programa semanal activo en memoria para subir a la nube
+        let programaSemanal = null; // Mantiene el programa semanal activo en memoria para subir a la nube
 
         // =========================================================================
         // LÓGICA DE SINCRONIZACIÓN Y RESPALDO (ANTI-WIPE)
         // =========================================================================
         
-        // Candado global de seguridad
         let nubeCargadaCorrectamente = false;
         let timeoutNube;
 
-        // 1. Persistencia Unificada (Respaldo Local)
         function respaldarLocalmente() {
             const estadoActual = {
                 horarios: horarios,
@@ -763,7 +764,7 @@
                 visitasGrupos: visitasGrupos,
                 registroS13: registroS13,
                 fichasActivas: fichasActivas,
-                programaSemanal: programaSemanal // Empaquetamos el programa semanal
+                programaSemanal: programaSemanal 
             };
             localStorage.setItem('tito_backup', JSON.stringify(estadoActual));
         }
@@ -783,20 +784,17 @@
                     if (datos.fichasActivas) fichasActivas = datos.fichasActivas;
                     if (datos.programaSemanal) programaSemanal = datos.programaSemanal;
                     
-                    // Refrescar las listas en la interfaz
                     if (typeof actualizarListasDesplegables === 'function') actualizarListasDesplegables();
                     if (typeof actualizarFiltroConductores === 'function') actualizarFiltroConductores();
                 } catch (e) {
                     console.error("Error al recuperar el respaldo local:", e);
                 }
             } else {
-                // Fallback de seguridad en caso de ser la primera vez que se migra
                 fichasActivas = JSON.parse(localStorage.getItem('fichasActivas')) || {};
                 registroS13 = JSON.parse(localStorage.getItem('registroS13')) || [];
             }
         }
 
-        // 2. Flujo de Inicialización Seguro
         async function cargarDatosDesdeLaNube() {
             try {
                 const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { 
@@ -808,7 +806,6 @@
                 const resultado = await response.json();
                 const datos = resultado.record;
 
-                // Validación estricta: Asegurarnos de que la nube nos entregó datos reales y no está vacía
                 if (datos && datos.conductores && datos.conductores.length > 0) {
                     horarios = datos.horarios || horarios;
                     conductores = datos.conductores || conductores;
@@ -828,18 +825,15 @@
                         programaSemanal = datos.programaSemanal;
                     }
 
-                    // Crear el primer respaldo local actualizado y ABRIR el candado
                     respaldarLocalmente();
                     nubeCargadaCorrectamente = true;
                     
-                    // Refrescar la interfaz con los nuevos datos
                     if (typeof actualizarListasDesplegables === 'function') actualizarListasDesplegables();
                     if (typeof actualizarFiltroConductores === 'function') actualizarFiltroConductores();
                     if (typeof renderizarFichas === 'function') renderizarFichas();
                     if (typeof renderizarPlanillaS13 === 'function') renderizarPlanillaS13();
                     if (typeof actualizarPildoraEstado === 'function') actualizarPildoraEstado();
                     
-                    // Llenar el programa con los datos descargados si existen
                     if (programaSemanal && programaSemanal.fechaLunes) {
                         const selectorLunes = document.getElementById('fecha-lunes');
                         if (selectorLunes) {
@@ -855,16 +849,12 @@
             } catch (error) {
                 console.warn("Trabajando en modo local (Offline/Error):", error);
                 recuperarLocalmente();
-                nubeCargadaCorrectamente = false; // Mantenemos el candado cerrado para proteger la nube
+                nubeCargadaCorrectamente = false; 
             }
         }
 
-        // 3. Flujo de Modificación Constante
         function guardarEnLaNube() {
-            // Siempre guardamos en el dispositivo del usuario primero
             respaldarLocalmente();
-
-            // Programamos la subida con un pequeño retraso para no saturar la red (Debounce)
             clearTimeout(timeoutNube);
             timeoutNube = setTimeout(() => {
                 procesarGuardadoNube();
@@ -872,18 +862,12 @@
         }
 
         async function procesarGuardadoNube() {
-            // VALIDACIÓN ESTRICTA: Si la nube falló al inicio, prohibimos subir datos.
-            if (!nubeCargadaCorrectamente) {
-                console.log("Candado activado: Subida bloqueada para evitar pérdida de datos en la nube.");
-                return;
-            }
+            if (!nubeCargadaCorrectamente) return;
 
-            // Asegurar que los arrays mantengan su estructura base antes de subir
             if(horarios[0] !== "") horarios.unshift("");
             if(conductores[0] !== "") conductores.unshift("");
             if(lugares[0] !== "") lugares.unshift("");
 
-            // Incluimos programaSemanal en el paquete hacia la nube
             const nuevosDatos = { horarios, conductores, lugares, asambleas, visitas, visitasGrupos, registroS13, fichasActivas, programaSemanal };
 
             try {
@@ -898,9 +882,7 @@
             }
         }
 
-        // 4. Reconexión Automática
         window.addEventListener('online', () => {
-            // Si recuperamos el internet, intentamos descargar para poder abrir el candado
             if (!nubeCargadaCorrectamente) {
                 cargarDatosDesdeLaNube();
             }
@@ -913,14 +895,12 @@
             const pill = document.getElementById('pildora-estado');
             if(!pill) return;
             
-            // 1. Territorios en curso
             const countTerritorios = Object.keys(fichasActivas).length;
             let textoTerritorios = `${countTerritorios} territorios en curso`;
             if (countTerritorios === 1) textoTerritorios = `1 territorio en curso`;
             
             let htmlPill = `<span>🗺️ ${textoTerritorios}</span>`;
             
-            // 2. Eventos del mes actual
             const hoy = new Date();
             const mesActual = hoy.getMonth();
             const anioActual = hoy.getFullYear();
@@ -985,9 +965,6 @@
             }
         }
 
-        // =========================================================================
-        // LÓGICA DE ALTERNANCIA DE VISTA MÓVIL/ESCRITORIO
-        // =========================================================================
         function alternarModoVista() {
             document.body.classList.toggle('vista-movil-activa');
             const boton = document.getElementById('btn-toggle-vista');
@@ -1085,9 +1062,7 @@
                 const conductor = selConductor.value;
 
                 if (numTerritorio !== "" && conductor !== "") {
-                    // Solo crear si no existe (cumple regla de no sobreescribir)
                     if (!fichasActivas[numTerritorio]) {
-                        // Calcular fecha exacta basada en el lunes + los días correspondientes a esa fila
                         const fechaBase = new Date(fechaReferencia + 'T12:00:00');
                         fechaBase.setDate(fechaBase.getDate() + diaIndex);
                         
@@ -1102,12 +1077,6 @@
                     }
                 }
             }
-        }
-
-        function formatearFechaParaLectura(fechaISO) {
-            const partes = fechaISO.split('-'); 
-            if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
-            return fechaISO;
         }
 
         function purgarRegistrosAntiguosS13() {
@@ -1193,7 +1162,6 @@
                 const num = i.toString();
                 const estaActiva = !!fichasActivas[num];
                 
-                // Mapeo modificado para recordar el índice original y poder eliminarlo correctamente
                 const historial = registroS13
                     .map((r, index) => ({ ...r, indexOriginal: index }))
                     .filter(r => r.numTerritorio === num);
@@ -1329,19 +1297,17 @@
                 registroS13.push(nuevoRegistro);
                 delete fichasActivas[numTerritorio];
 
-                // NUEVO CÓDIGO: Buscar y borrar este territorio en el programa semanal
                 const selectsTerritorio = document.querySelectorAll('.sel-territorio');
                 selectsTerritorio.forEach(sel => {
                     if (sel.value === numTerritorio) {
-                        sel.value = ""; // Vaciamos el territorio
+                        sel.value = ""; 
                         
-                        // También limpiamos al conductor de esa misma fila para que quede limpia
-                        let idParts = sel.id.split('-'); // ej: t-0-1
+                        let idParts = sel.id.split('-');
                         let cSelect = document.getElementById(`c-${idParts[1]}-${idParts[2]}`);
                         if(cSelect) cSelect.value = "";
                     }
                 });
-                guardarBorradorLocal(); // Guardamos el programa semanal actualizado
+                guardarBorradorLocal(); 
 
                 actualizarFiltroConductores();
                 renderizarFichas();
@@ -1370,12 +1336,11 @@
             }
         }
 
-        // Nueva función para eliminar un registro definitivo del array S-13
         function eliminarRegistroS13(index) {
             if (confirm("¿Estás seguro de que deseas eliminar permanentemente este registro del historial?")) {
                 registroS13.splice(index, 1);
-                guardarEnLaNube(); // Aseguramos los cambios
-                renderizarPlanillaS13(); // Refrescamos la vista instantáneamente
+                guardarEnLaNube(); 
+                renderizarPlanillaS13(); 
             }
         }
 
@@ -1519,10 +1484,9 @@
         function quitarUltimaSalida(diaIndex) {
             let tr1 = document.getElementById(`fila-${diaIndex}-1`);
             if (tr1.classList.contains('dia-colapsado')) {
-                return; // Ya está colapsado
+                return; 
             }
 
-            // Si hay filas extras visibles, busca la última y ocúltala
             for (let sf = 4; sf >= 2; sf--) {
                 let trExtra = document.getElementById(`fila-${diaIndex}-${sf}`);
                 if (trExtra && !trExtra.hidden) {
@@ -1531,7 +1495,6 @@
                 }
             }
             
-            // Si llegamos aquí, solo queda la fila principal. Limpiamos valores y colapsamos.
             const idsSelects = [`h-${diaIndex}-1`, `l-${diaIndex}-1`, `t-${diaIndex}-1`, `c-${diaIndex}-1`];
             idsSelects.forEach(id => {
                 const el = document.getElementById(id);
@@ -1606,18 +1569,14 @@
                 }
             });
 
+            // Se elimina el almacenamiento manual del mes y de las notas para que dependa 100% del automatismo
             const borrador = {
                 fechaLunes: fechaLunes,
-                mes: document.getElementById('selector-mes').value,
-                notas: document.getElementById('input-campana').value,
                 valores: valores,
                 grupos: grupos
             };
             
-            // Asignamos el estado al empaquetado global
             programaSemanal = borrador;
-            
-            // Mantenemos el guardado local como fallback
             localStorage.setItem('borrador_predicacion', JSON.stringify(borrador));
 
             const indicador = document.getElementById('indicador-guardado');
@@ -1629,12 +1588,13 @@
             
             evaluarColapsoDias();
             generarFichasAutomaticas();
-            
-            // Activa el flujo de sincronización hacia la nube tras cualquier modificación
             guardarEnLaNube();
         }
 
-        async function guardarYCompartir() {
+        // =========================================================================
+        // COMPARTIR COMO IMAGEN (OPTIMIZADO)
+        // =========================================================================
+        function guardarYCompartir() {
             const boton = document.getElementById('btn-compartir');
             boton.disabled = true; 
             boton.textContent = 'Preparando...';
@@ -1642,33 +1602,34 @@
             generarFichasAutomaticas();
             guardarBorradorLocal();
             
-            try {
-                const canvas = await generarCanvasExportacion();
-                canvas.toBlob(async (blob) => {
-                    if (!blob) throw new Error("Error generando imagen");
-                    const archivo = new File([blob], 'Programa_Predicacion.jpg', { type: 'image/jpeg' });
-                    if (navigator.canShare && navigator.canShare({ files: [archivo] })) { 
-                        await navigator.share({ title: 'Programa', files: [archivo] }); 
-                    } else { 
-                        alert("Tu navegador no soporta compartir directamente. Se descargará el archivo."); 
-                        const link = document.createElement('a');
-                        link.download = 'Programa_Predicacion.jpg'; 
-                        link.href = URL.createObjectURL(blob); 
-                        link.click();
-                    }
-                }, 'image/jpeg', 0.98);
-            } catch (error) { 
-                alert('Error al generar o compartir la imagen.'); 
-            } finally { 
-                boton.disabled = false; 
-                boton.textContent = '📲 Guardar y Compartir'; 
-            }
+            setTimeout(async () => {
+                try {
+                    const canvas = await generarCanvasExportacion();
+                    canvas.toBlob(async (blob) => {
+                        if (!blob) throw new Error("Error generando imagen");
+                        const archivo = new File([blob], 'Programa_Predicacion.jpg', { type: 'image/jpeg' });
+                        if (navigator.canShare && navigator.canShare({ files: [archivo] })) { 
+                            await navigator.share({ title: 'Programa', files: [archivo] }); 
+                        } else { 
+                            const link = document.createElement('a');
+                            link.download = 'Programa_Predicacion.jpg'; 
+                            link.href = URL.createObjectURL(blob); 
+                            link.click();
+                            alert("Tu dispositivo no soporta compartir imágenes directamente. La imagen se ha descargado."); 
+                        }
+                    }, 'image/jpeg', 0.85); 
+                } catch (error) { 
+                    alert('Hubo un error gráfico. Es posible que tu dispositivo no cuente con los recursos de memoria suficientes.'); 
+                } finally { 
+                    boton.disabled = false; 
+                    boton.textContent = '📲 Guardar y Compartir'; 
+                }
+            }, 100);
         }
 
         function cargarBorradorLocal(fechaLunesActual) {
             let borrador = programaSemanal;
 
-            // Si aún no hay datos en la variable global, intentamos recuperarlo del almacenamiento local
             if (!borrador) {
                 const guardado = localStorage.getItem('borrador_predicacion');
                 if(guardado) {
@@ -1679,8 +1640,6 @@
             }
 
             if(borrador && borrador.fechaLunes === fechaLunesActual) {
-                document.getElementById('selector-mes').value = borrador.mes || meses[0];
-                document.getElementById('input-campana').value = borrador.notas || "";
                 
                 for(const [id, val] of Object.entries(borrador.valores || {})) {
                     const el = document.getElementById(id);
@@ -1858,11 +1817,7 @@
         function agregarVisitaGrupoAdmin() { const f = document.getElementById('in-grupo-fecha').value; const g = document.getElementById('in-grupo-num').value; if(f) { visitasGrupos.push({fecha: f, grupo: g}); renderizarVisitasGruposAdmin(); guardarEnLaNube(); } }
         function eliminarVisitaGrupo(index) { visitasGrupos.splice(index, 1); renderizarVisitasGruposAdmin(); guardarEnLaNube(); }
 
-
         function crearOpciones(arrayDatos) { return arrayDatos.map(dato => `<option value="${dato}">${dato}</option>`).join(''); }
-
-        const selectorMes = document.getElementById('selector-mes');
-        selectorMes.innerHTML = crearOpciones(meses);
         
         function inicializarTabla() {
             const tablaBody = document.getElementById('tabla-body');
@@ -1934,12 +1889,16 @@
             if (!fechaSeleccionada) return;
             const fechaBase = new Date(fechaSeleccionada + 'T12:00:00'); 
             
-            selectorMes.value = meses[fechaBase.getMonth()];
             let grupoDeServicioVisitado = null;
+            let conteoMeses = {}; // Para calcular el mes mayoritario
 
             for (let i = 0; i < 7; i++) {
                 const fechaDia = new Date(fechaBase);
                 fechaDia.setDate(fechaBase.getDate() + i);
+                
+                // Lógica de conteo de meses para el título
+                let mesIndex = fechaDia.getMonth();
+                conteoMeses[mesIndex] = (conteoMeses[mesIndex] || 0) + 1;
                 
                 let diaNum = fechaDia.getDate();
                 diaNum = diaNum < 10 ? '0' + diaNum : diaNum; 
@@ -1981,10 +1940,19 @@
                 }
             }
 
+            // Identificamos el mes con la mayoría de días en esta semana
+            let mesGanador = Object.keys(conteoMeses).reduce((a, b) => conteoMeses[a] > conteoMeses[b] ? a : b);
+            document.getElementById('mes-display').innerText = meses[mesGanador];
+
+            // Rellenado automático del campo de eventos (ahora de solo lectura)
             const inputCampana = document.getElementById('input-campana');
-            if (grupoDeServicioVisitado) { inputCampana.value = `VISITA DEL SUP. DE SERVICIO AL GRUPO ${grupoDeServicioVisitado}`; } 
-            else if (visitas.includes(fechaSeleccionada)) { inputCampana.value = "SEMANA DE VISITA DEL SUPERINTENDENTE DE CIRCUITO"; } 
-            else { if(inputCampana.value.includes("VISITA DEL SUP.")) inputCampana.value = ""; }
+            if (grupoDeServicioVisitado) { 
+                inputCampana.value = `VISITA DEL SUP. DE SERVICIO AL GRUPO ${grupoDeServicioVisitado}`; 
+            } else if (visitas.includes(fechaSeleccionada)) { 
+                inputCampana.value = "SEMANA DE VISITA DEL SUPERINTENDENTE DE CIRCUITO"; 
+            } else { 
+                inputCampana.value = ""; 
+            }
 
             const fechaDomingo = new Date(fechaBase);
             fechaDomingo.setDate(fechaBase.getDate() + 6);
@@ -2029,11 +1997,8 @@
             }
             document.getElementById('fecha-lunes').value = savedDate;
             
-            // Iniciar de forma segura
             await cargarDatosDesdeLaNube();
             
-            // Si la nube ya trajo el programa, actualizará el valor del input,
-            // de lo contrario usamos el que calculamos con la fecha local guardada o la actual
             if (programaSemanal && programaSemanal.fechaLunes) {
                 document.getElementById('fecha-lunes').value = programaSemanal.fechaLunes;
             }
@@ -2054,12 +2019,11 @@
                 }
                 autocompletarFechas(e.target.value);
             });
-
-            document.getElementById('input-campana').addEventListener('input', guardarBorradorLocal);
+            // El listener manual del campo de notas fue removido ya que ahora se auto-gestiona
         });
 
         // =========================================================================
-        // EXPORTACIÓN A IMAGEN
+        // EXPORTACIÓN A IMAGEN Y AJUSTES html2canvas
         // =========================================================================
         function prepararDocumentoParaExportar(elemento) {
             const clon = elemento.cloneNode(true);
@@ -2073,7 +2037,6 @@
                 const original = controlesOriginales[index];
                 let valor = original.tagName === 'SELECT' ? (original.selectedOptions[0]?.textContent || original.value) : original.value;
                 
-                // Lógica de fusión de los grupos al exportar
                 if (original.tagName === 'SELECT' && original.classList.contains('sel-lugar')) {
                     const grupo = original.getAttribute('data-grupo');
                     if (grupo) {
@@ -2104,10 +2067,11 @@
 
             await document.fonts?.ready;
             const canvas = await html2canvas(documentoExportacion, {
-                scale: 2, backgroundColor: '#ffffff',
-                width: documentoExportacion.scrollWidth, height: documentoExportacion.scrollHeight,
-                windowWidth: documentoExportacion.scrollWidth, windowHeight: documentoExportacion.scrollHeight,
-                scrollX: 0, scrollY: 0
+                scale: 1, // Reducido a 1 para salvar memoria en teléfonos de entrada
+                backgroundColor: '#ffffff',
+                width: documentoExportacion.scrollWidth, 
+                height: documentoExportacion.scrollHeight,
+                logging: false 
             });
             contenedorTemporal.remove();
             return canvas;
