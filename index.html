@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tito: Asistente de territorios</title>
-    
-    <!-- ETIQUETAS PWA -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1e293b">
-    <link rel="apple-touch-icon" href="icono.png">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * { box-sizing: border-box; }
@@ -202,14 +196,13 @@
 
         /* --- ESTILOS DEL PROGRAMA (VISTA 1) --- */
         .contenedor-controles { width: 100%; max-width: 800px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .panel-control { background-color: #ffffff; padding: 12px 15px; border-radius: 8px; display: flex; flex-direction: row; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04); flex-wrap: wrap; gap: 15px; border: 1px solid #e2e8f0; }
+        .panel-control { background-color: #ffffff; padding: 12px 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04); flex-wrap: wrap; gap: 10px; border: 1px solid #e2e8f0; }
         .selector-semana { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .selector-semana label { min-height: 48px; padding: 12px 16px; border-radius: 8px; background-color: #1e293b; color: white; display: inline-flex; align-items: center; font-size: 1.05em; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         #fecha-lunes { min-height: 48px; padding: 10px 12px; border-radius: 8px; border: 2px solid #cbd5e1; background-color: white; color: #1e293b; font: inherit; font-size: 1.05em; cursor: pointer; }
         .selector-semana label:focus-within, #fecha-lunes:focus-visible { outline: 3px solid #0ea5e9; outline-offset: 2px; }
         
-        /* Ajuste: quitamos el width: 100% y agregamos flex: 1 para alinearlo a un lado en PC */
-        .acciones-wrapper { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; flex: 1; }
+        .acciones-wrapper { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; width: 100%; }
         
         .btn-accion { padding: 8px 15px; font-size: 0.95em; color: white; background-color: #0ea5e9; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; font-weight: bold; }
         .btn-accion:hover { background-color: #0284c7; }
@@ -228,7 +221,10 @@
         .subtitulo { text-align: center; font-size: 1.2em; color: #334155; margin-bottom: 5px; }
         .rango-fechas { text-align: center; font-size: 1.05em; color: #64748b; margin-bottom: 15px; font-style: italic; }
         
+        /* Modificado para ser un div de texto en lugar de select */
         .mes-display { font-size: 1.8em; font-weight: bold; color: #1e293b; border: none; border-left: 4px solid #0ea5e9; padding: 4px 8px; line-height: normal; margin-bottom: 10px; display: inline-block; }
+        
+        /* Modificado para que no se vea como campo editable */
         .campana-input { font-size: 1em; color: #0284c7; font-style: italic; font-weight: bold; border: none; outline: none; width: 100%; margin-bottom: 15px; padding-bottom: 2px; font-family: inherit; background-color: transparent; }
         
         .tabla-contenedor { width: 100%; overflow-x: auto; margin-bottom: 15px; }
@@ -304,8 +300,8 @@
             .texto-tarjeta { font-size: 1.4em !important; margin: 0 !important; }
             .desc-tarjeta { font-size: 1.05em !important; margin: 0 !important; text-align: left !important; }
 
-            .acciones-wrapper { justify-content: center; gap: 10px; flex: none; width: 100%; margin-top: 10px; }
-            .btn-limpiar { width: 100%; margin-right: 0; }
+            .acciones-wrapper { justify-content: center; gap: 10px; }
+            .btn-limpiar { margin-right: 0; width: 100%; }
             .btn-compartir { width: 100%; text-align: center; justify-content: center; }
 
             #documento-imagen:not(.modo-exportacion) table { display: block !important; width: 100% !important; min-width: 0 !important; }
@@ -716,15 +712,6 @@
                 </div>
                 <div id="lista-visitas-ui" style="max-height: 120px; overflow-y: auto; background: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
             </div>
-            
-            <!-- NUEVA SECCIÓN DE RESPALDO (BACKUP LOCAL) -->
-            <div class="admin-seccion" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <div>
-                    <label style="color:#1e293b; margin-bottom: 0;">💾 Respaldo Local</label>
-                    <span style="font-size: 0.85em; color: #64748b;">Descarga una copia de seguridad de todos tus datos.</span>
-                </div>
-                <button class="btn-accion" style="background-color: #64748b;" onclick="exportarBackupLocal()">Descargar .json</button>
-            </div>
         </div>
     </div>
     
@@ -900,30 +887,6 @@
                 cargarDatosDesdeLaNube();
             }
         });
-
-        // NUEVO: Función para exportar Backup Local
-        function exportarBackupLocal() {
-            respaldarLocalmente(); // Asegurarnos de tener la versión más fresca
-            const backupData = localStorage.getItem('tito_backup');
-            
-            if (!backupData) {
-                alert("No hay datos para respaldar todavía.");
-                return;
-            }
-            
-            const blob = new Blob([backupData], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            const fecha = new Date().toISOString().split('T')[0];
-            
-            a.href = url;
-            a.download = `Tito_Backup_${fecha}.json`;
-            document.body.appendChild(a);
-            a.click();
-            
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
 
         // =========================================================================
         // PÍLDORA DE ESTADO RÁPIDO
@@ -1606,6 +1569,7 @@
                 }
             });
 
+            // Se elimina el almacenamiento manual del mes y de las notas para que dependa 100% del automatismo
             const borrador = {
                 fechaLunes: fechaLunes,
                 valores: valores,
@@ -1853,6 +1817,158 @@
         function agregarVisitaGrupoAdmin() { const f = document.getElementById('in-grupo-fecha').value; const g = document.getElementById('in-grupo-num').value; if(f) { visitasGrupos.push({fecha: f, grupo: g}); renderizarVisitasGruposAdmin(); guardarEnLaNube(); } }
         function eliminarVisitaGrupo(index) { visitasGrupos.splice(index, 1); renderizarVisitasGruposAdmin(); guardarEnLaNube(); }
 
+        function crearOpciones(arrayDatos) { return arrayDatos.map(dato => `<option value="${dato}">${dato}</option>`).join(''); }
+        
+        function inicializarTabla() {
+            const tablaBody = document.getElementById('tabla-body');
+            tablaBody.innerHTML = ''; 
+            dias.forEach((dia, index) => {
+                const tr1 = document.createElement('tr');
+                tr1.id = `fila-${index}-1`;
+                tr1.innerHTML = `
+                    <td class="celda-dia" data-label="Día">
+                        <div class="dia-content" style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
+                            <div class="dia-texto-fecha" style="display:inline-flex; align-items:center; gap:8px; font-weight:bold;">
+                                <span>${dia}</span>
+                                <span class="mobile-fecha-display" id="mobile-fecha-${index}" style="display:none; color: #bae6fd;"></span>
+                            </div>
+                            <div style="display:flex; gap: 8px; align-items:center;">
+                                <button onclick="quitarUltimaSalida(${index})" class="btn-remove-salida" data-html2canvas-ignore title="Reducir fila">&times;</button>
+                                <button onclick="agregarSalida(${index})" class="btn-add-salida" data-html2canvas-ignore title="Añadir fila">+</button>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="celda-fecha" data-label="Fecha"><input type="text" class="in-fecha" id="dia-${index}" readonly style="width: 35px; font-weight: bold; cursor: default;"></td>
+                    <td data-label="Hora"><select class="tabla-select sel-horario" id="h-${index}-1" onchange="guardarBorradorLocal()"></select></td>
+                    <td data-label="Lugar">
+                        <div class="wrapper-celda">
+                            <select class="tabla-select sel-lugar" id="l-${index}-1" onchange="guardarBorradorLocal()"></select>
+                            <button onclick="asignarGrupo('l-${index}-1')" class="btn-inline-action" data-html2canvas-ignore title="Asignar Grupo">👥</button>
+                        </div>
+                    </td>
+                    <td data-label="Territorio"><select class="tabla-select sel-territorio" id="t-${index}-1" onchange="guardarBorradorLocal()"></select></td>
+                    <td data-label="Conductor"><select class="tabla-select sel-conductor" id="c-${index}-1" onchange="guardarBorradorLocal()"></select></td>
+                    <td class="celda-asamblea" colspan="4" hidden></td>
+                `;
+                tablaBody.appendChild(tr1);
+
+                for (let sf = 2; sf <= 4; sf++) {
+                    const trExtra = document.createElement('tr');
+                    trExtra.id = `fila-${index}-${sf}`;
+                    trExtra.className = 'fila-extra';
+                    trExtra.hidden = true;
+                    trExtra.innerHTML = `
+                        <td data-label="Hora"><select class="tabla-select sel-horario" id="h-${index}-${sf}" onchange="guardarBorradorLocal()"></select></td>
+                        <td data-label="Lugar">
+                            <div class="wrapper-celda">
+                                <select class="tabla-select sel-lugar" id="l-${index}-${sf}" onchange="guardarBorradorLocal()"></select>
+                                <button onclick="asignarGrupo('l-${index}-${sf}')" class="btn-inline-action" data-html2canvas-ignore title="Asignar Grupo">👥</button>
+                            </div>
+                        </td>
+                        <td data-label="Territorio"><select class="tabla-select sel-territorio" id="t-${index}-${sf}" onchange="guardarBorradorLocal()"></select></td>
+                        <td data-label="Conductor">
+                            <div class="wrapper-celda">
+                                <select class="tabla-select sel-conductor" id="c-${index}-${sf}" onchange="guardarBorradorLocal()"></select>
+                                <button onclick="quitarSalida(${index}, ${sf})" class="btn-inline-action rojo" data-html2canvas-ignore title="Eliminar fila">&times;</button>
+                            </div>
+                        </td>
+                    `;
+                    tablaBody.appendChild(trExtra);
+                }
+            });
+        }
+
+        function actualizarListasDesplegables() {
+            document.querySelectorAll('.sel-horario').forEach(sel => { const v = sel.value; sel.innerHTML = crearOpciones(horarios); if(horarios.includes(v)) sel.value = v; });
+            document.querySelectorAll('.sel-conductor').forEach(sel => { const v = sel.value; sel.innerHTML = crearOpciones(conductores); if(conductores.includes(v)) sel.value = v; });
+            document.querySelectorAll('.sel-lugar').forEach(sel => { const v = sel.value; sel.innerHTML = crearOpciones(lugares); if(lugares.includes(v)) sel.value = v; });
+            document.querySelectorAll('.sel-territorio').forEach(sel => { const v = sel.value; sel.innerHTML = crearOpciones(territorios); if(territorios.includes(v)) sel.value = v; });
+        }
+
+        function autocompletarFechas(fechaSeleccionada) {
+            if (!fechaSeleccionada) return;
+            const fechaBase = new Date(fechaSeleccionada + 'T12:00:00'); 
+            
+            let grupoDeServicioVisitado = null;
+            let conteoMeses = {}; // Para calcular el mes mayoritario
+
+            for (let i = 0; i < 7; i++) {
+                const fechaDia = new Date(fechaBase);
+                fechaDia.setDate(fechaBase.getDate() + i);
+                
+                // Lógica de conteo de meses para el título
+                let mesIndex = fechaDia.getMonth();
+                conteoMeses[mesIndex] = (conteoMeses[mesIndex] || 0) + 1;
+                
+                let diaNum = fechaDia.getDate();
+                diaNum = diaNum < 10 ? '0' + diaNum : diaNum; 
+                document.getElementById(`dia-${i}`).value = diaNum;
+                
+                const mobFecha = document.getElementById(`mobile-fecha-${i}`);
+                if(mobFecha) mobFecha.innerText = diaNum;
+
+                const yyyy = fechaDia.getFullYear();
+                const mm = String(fechaDia.getMonth() + 1).padStart(2, '0');
+                const d = String(fechaDia.getDate()).padStart(2, '0');
+                const fechaStr = `${yyyy}-${mm}-${d}`;
+
+                const tr1 = document.getElementById(`fila-${i}-1`);
+                const celdasNormales = tr1.querySelectorAll('td:not(.celda-asamblea)');
+                const celdaAsamblea = tr1.querySelector('.celda-asamblea');
+                
+                celdasNormales.forEach(c => c.hidden = false);
+                celdaAsamblea.hidden = true;
+                
+                for(let sf=2; sf<=4; sf++){ document.getElementById(`fila-${i}-${sf}`).hidden = true; }
+                tr1.querySelector('.celda-dia').rowSpan = 1;
+                tr1.querySelector('.celda-fecha').rowSpan = 1;
+
+                const asambleaHoy = asambleas.find(a => a.fecha === fechaStr);
+                if (asambleaHoy) {
+                    celdasNormales.forEach(c => { if(c.cellIndex > 1) c.hidden = true; });
+                    celdaAsamblea.hidden = false;
+                    celdaAsamblea.innerText = `🎉 ${asambleaHoy.nombre.toUpperCase()}`;
+                    celdaAsamblea.className = 'celda-asamblea asamblea-activa';
+                } else {
+                    const visitaGrupoHoy = visitasGrupos.find(v => v.fecha === fechaStr);
+                    if (visitaGrupoHoy) {
+                        grupoDeServicioVisitado = visitaGrupoHoy.grupo;
+                        document.getElementById(`fila-${i}-2`).hidden = false;
+                        tr1.querySelector('.celda-dia').rowSpan = 2;
+                        tr1.querySelector('.celda-fecha').rowSpan = 2;
+                    }
+                }
+            }
+
+            // Identificamos el mes con la mayoría de días en esta semana
+            let mesGanador = Object.keys(conteoMeses).reduce((a, b) => conteoMeses[a] > conteoMeses[b] ? a : b);
+            document.getElementById('mes-display').innerText = meses[mesGanador];
+
+            // Rellenado automático del campo de eventos (ahora de solo lectura)
+            const inputCampana = document.getElementById('input-campana');
+            if (grupoDeServicioVisitado) { 
+                inputCampana.value = `VISITA DEL SUP. DE SERVICIO AL GRUPO ${grupoDeServicioVisitado}`; 
+            } else if (visitas.includes(fechaSeleccionada)) { 
+                inputCampana.value = "SEMANA DE VISITA DEL SUPERINTENDENTE DE CIRCUITO"; 
+            } else { 
+                inputCampana.value = ""; 
+            }
+
+            const fechaDomingo = new Date(fechaBase);
+            fechaDomingo.setDate(fechaBase.getDate() + 6);
+            let d1 = fechaBase.getDate(); d1 = d1 < 10 ? '0' + d1 : d1;
+            let m1 = meses[fechaBase.getMonth()].toLowerCase();
+            let d2 = fechaDomingo.getDate(); d2 = d2 < 10 ? '0' + d2 : d2;
+            let m2 = meses[fechaDomingo.getMonth()].toLowerCase();
+
+            let textoRango = `Desde el ${d1} de ${m1} hasta el ${d2} de ${m2}`;
+            if (m1 === m2) textoRango = `Desde el ${d1} hasta el ${d2} de ${m1}`;
+            document.getElementById('texto-rango').innerText = textoRango;
+
+            cargarBorradorLocal(fechaSeleccionada);
+            guardarBorradorLocal(); 
+        }
+
         // =========================================================================
         // INICIO DEL APLICATIVO
         // =========================================================================
@@ -1903,13 +2019,7 @@
                 }
                 autocompletarFechas(e.target.value);
             });
-            
-            // REGISTRO DEL SERVICE WORKER (PWA)
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(err => {
-                    console.log('Fallo el registro del Service Worker:', err);
-                });
-            }
+            // El listener manual del campo de notas fue removido ya que ahora se auto-gestiona
         });
 
         // =========================================================================
@@ -1957,7 +2067,7 @@
 
             await document.fonts?.ready;
             const canvas = await html2canvas(documentoExportacion, {
-                scale: 1, 
+                scale: 1, // Reducido a 1 para salvar memoria en teléfonos de entrada
                 backgroundColor: '#ffffff',
                 width: documentoExportacion.scrollWidth, 
                 height: documentoExportacion.scrollHeight,
