@@ -1,11 +1,10 @@
 {
-  "name": "Tito: Asistente de Territorios",
+  "name": "Tito: Asistente de territorios",
   "short_name": "Tito",
-  "start_url": ".",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f8fafc",
+  "background_color": "#f4f4f9",
   "theme_color": "#1e293b",
-  "description": "Aplicación de gestión de territorios, programa semanal y registros S-13.",
   "icons": [
     {
       "src": "icono.png",
